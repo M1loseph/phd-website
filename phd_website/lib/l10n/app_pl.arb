@@ -1,0 +1,18 @@
+{
+    "@@locale": "pl",
+    "appTitle": "Bogna Jaszczak",
+    "navigationHomePage": "Strona główna",
+    "navigationContactPage": "Kontakt",
+    "navigationConsultationPage": "Konsultacje",
+    "navigationTeachingPage": "Dydaktyka",
+    "navigationResearchPage": "Publikacje",
+    "homePageName": "Bogna Jaszczak",
+    "homePageAbout": "Studentka szkoły doktorskiej",
+    "homePageDepartment": "Wydział Matematyki, Politechnika Wrocławska",
+    "contactPageEmail": "bogna.jaszczak@pwr.edu.pl",
+    "contactPageLinkedinURL": "https://www.linkedin.com/in/bogna-jaszczak-228aab1b4/",
+    "consultationPagePlace": "C19 4.14",
+    "consultationPageDates": "Poniedziałek 11:15 - 12:15",
+    "teachingPageDifferentialEquasionsInTech": "Równania różniczkowe w technice",
+    "teachingPageDifferentialEquasionsInTechDescription": "Zasady zaliczenia oraz listy znajdują się na stronie wykładowcy."
+}

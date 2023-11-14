@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AppGlobalState with ChangeNotifier {
-  bool _expandedMenu = false;
-  final BuildContext context;
+  final _langKey = "lang";
 
-  AppGlobalState(this.context);
+  bool _expandedMenu = false;
+
+  AppGlobalState();
 
   void changeMenuExpansion() {
     _expandedMenu = !_expandedMenu;
@@ -15,12 +17,21 @@ class AppGlobalState with ChangeNotifier {
     return _expandedMenu;
   }
 
-  TextStyle? getMainContextTextStyle() {
-    final textTheme = Theme.of(context).textTheme;
-    if (MediaQuery.of(context).size.width < 700) {
-      return textTheme.bodyMedium;
-    } else {
-      return textTheme.bodyLarge;
+  Future<Locale?> getCurrentLocale(BuildContext context) async {
+    final sharedPref = await SharedPreferences.getInstance();
+    final currentLocale = sharedPref.getString(_langKey);
+    if (currentLocale == null) {
+      if (!context.mounted) {
+        return null;
+      }
+      return Localizations.localeOf(context);
     }
+    return Locale(currentLocale);
+  }
+
+  void setCurrentLocale(String locale) async {
+    final sharedPref = await SharedPreferences.getInstance();
+    await sharedPref.setString(_langKey, locale);
+    notifyListeners();
   }
 }

@@ -1,32 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:phd_website/state/app_global_state.dart';
-import 'package:phd_website/layouts/responsive_layout.dart';
 import 'package:provider/provider.dart';
-import 'navigation/navigation_bar.dart' as navbar;
+import 'package:phd_website/layouts/navigation_layout.dart';
 import 'package:go_router/go_router.dart';
 
 import 'pages/consultation_page.dart';
 import 'pages/contact_page.dart';
 import 'pages/home_page.dart';
 import 'pages/teaching_page.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 void main() {
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(
-        create: (context) => AppGlobalState(context),
+        create: (context) => AppGlobalState(),
       ),
     ],
-    child: App(),
+    child: RouterConfig(),
   ));
 }
 
-class App extends StatelessWidget {
+class RouterConfig extends StatelessWidget {
   final GoRouter _router = GoRouter(
     routes: [
       ShellRoute(
         builder: (context, state, child) {
-          return PageLayout(state: state, child: child);
+          return App(state: state, currentPage: child);
         },
         routes: [
           GoRoute(
@@ -76,11 +76,13 @@ class App extends StatelessWidget {
     ],
   );
 
-  App({super.key});
+  RouterConfig({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
       title: 'Bogna Jaszczak',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.grey.shade100),
@@ -94,78 +96,36 @@ class App extends StatelessWidget {
   }
 }
 
-class PageLayout extends StatelessWidget {
+class App extends StatelessWidget {
   final GoRouterState state;
-  final Widget child;
+  final Widget currentPage;
 
-  const PageLayout({
+  const App({
     super.key,
     required this.state,
-    required this.child,
+    required this.currentPage,
   });
 
   @override
   Widget build(BuildContext context) {
+    final globalState = context.watch<AppGlobalState>();
     return Scaffold(
-      body: SelectionArea(
-        child: NavigationLayout(state: state, child: child),
-      ),
-    );
-  }
-}
-
-class NavigationLayout extends StatelessWidget {
-  final GoRouterState state;
-  final Widget child;
-
-  const NavigationLayout({
-    super.key,
-    required this.state,
-    required this.child,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final nav = navbar.NavigationBar(currentPath: state.fullPath!);
-    final content = Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Flexible(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 1000),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.1),
-                    spreadRadius: 5,
-                    blurRadius: 7,
-                    offset: const Offset(0, 3),
-                  ),
-                ],
-              ),
-              child: Padding(
-                padding: const EdgeInsets.only(top: 100, bottom: 100),
-                child: child,
+      body: FutureBuilder(
+        future: globalState.getCurrentLocale(context),
+        builder: (context, languageData) {
+          final language = languageData.data;
+          return Localizations.override(
+            context: context,
+            locale: language,
+            child: SelectionArea(
+              child: NavigationLayout(
+                state: state,
+                currentPage: currentPage,
               ),
             ),
-          ),
-        ),
-      ],
+          );
+        },
+      ),
     );
-    return ResponsiveLayout(
-        desktopLayout: Column(
-          children: [
-            nav,
-            Expanded(child: content),
-          ],
-        ),
-        mobileLayout: Stack(
-          children: [
-            content,
-            nav,
-          ],
-        ));
   }
 }

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:phd_website/nav/language_switch.dart';
+import 'package:phd_website/nav/navigation_tabs.dart';
 import 'package:phd_website/state/app_global_state.dart';
-import 'package:phd_website/navigation/navigation_bar_first_element.dart';
+import 'package:phd_website/nav/navigation_bar_first_element.dart';
 import 'package:phd_website/layouts/responsive_layout.dart';
 import 'package:provider/provider.dart';
-import '/navigation/navigation_tabs.dart';
 
 class NavigationBar extends StatelessWidget {
   final String currentPath;
@@ -26,6 +27,7 @@ class NavigationBar extends StatelessWidget {
             NavigationTabs(
               currentPath: currentPath,
             ),
+            const LanguageSwitch(),
           ],
         ),
       ),
