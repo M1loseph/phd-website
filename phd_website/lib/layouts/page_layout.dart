@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+/// Need to be applied directly for the page becuase
+/// of this issue: https://github.com/flutter/flutter/issues/129523
 class PageLayout extends StatelessWidget {
   final Widget page;
 
@@ -10,9 +12,9 @@ class PageLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ConstrainedBox(
-      constraints: const BoxConstraints(maxWidth: 1000),
+    return Center(
       child: Container(
+        width: 1000,
         decoration: BoxDecoration(
           color: Colors.white,
           boxShadow: [
@@ -24,7 +26,14 @@ class PageLayout extends StatelessWidget {
             ),
           ],
         ),
-        child: page,
+        child: ListView(
+          children: [
+            const SizedBox(
+              height: 100,
+            ),
+            page,
+          ],
+        ),
       ),
     );
   }

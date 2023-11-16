@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:phd_website/layouts/page_layout.dart';
 import 'package:phd_website/layouts/responsive_layout.dart';
 import 'package:phd_website/nav/navigation_bar.dart' as navbar;
 
@@ -23,17 +22,13 @@ class NavigationLayout extends StatelessWidget {
         children: [
           nav,
           Expanded(
-            child: PageLayout(
-              page: currentPage,
-            ),
+            child: currentPage,
           ),
         ],
       ),
       mobileLayout: Stack(
         children: [
-          PageLayout(
-            page: currentPage,
-          ),
+          currentPage,
           nav,
         ],
       ),

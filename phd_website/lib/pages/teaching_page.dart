@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:phd_website/components/clickable_link.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:phd_website/layouts/page_layout.dart';
 
 class TeachingPage extends StatelessWidget {
   final diferentialEquasionsRulesLink =
@@ -11,55 +12,40 @@ class TeachingPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final locale = AppLocalizations.of(context);
-    return ListView(
-      children: [
-        const SizedBox(
-          height: 100,
-        ),
-        Column(
-          children: [
-            ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 800),
-              child: ExpansionTile(
-                title: Text(
-                  locale!.teachingPageDifferentialEquasionsInTech,
-                  style: theme.textTheme.headlineSmall,
-                ),
-                children: [
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(locale
-                            .teachingPageDifferentialEquasionsInTechDescription),
-                        GestureDetector(
-                          onTap: () async {
-                            final url =
-                                Uri.parse(diferentialEquasionsRulesLink);
-                            await launchUrl(url);
-                          },
-                          child: Text.rich(
-                            TextSpan(
-                              text: diferentialEquasionsRulesLink,
-                              mouseCursor: SystemMouseCursors.click,
-                            ),
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: theme.colorScheme.primary,
-                              decoration: TextDecoration.underline,
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                ],
+    return PageLayout(
+      page: Column(
+        children: [
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 800),
+            child: ExpansionTile(
+              title: Text(
+                locale!.teachingPageDifferentialEquasionsInTech,
+                style: theme.textTheme.headlineSmall,
               ),
-            )
-          ],
-        ),
-      ],
+              children: [
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        locale
+                            .teachingPageDifferentialEquasionsInTechDescription,
+                        style: theme.textTheme.bodyMedium,
+                      ),
+                      ClickableLink(
+                        url: diferentialEquasionsRulesLink,
+                        textStyle: theme.textTheme.bodyMedium,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          )
+        ],
+      ),
     );
   }
 }

@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'pages/consultation_page.dart';
 import 'pages/contact_page.dart';
 import 'pages/home_page.dart';
+import 'pages/research_page.dart';
 import 'pages/teaching_page.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -22,7 +23,8 @@ void main() {
 }
 
 class RouterConfig extends StatelessWidget {
-  final GoRouter _router = GoRouter(
+  final GoRouter router = GoRouter(
+    initialLocation: "/",
     routes: [
       ShellRoute(
         builder: (context, state, child) {
@@ -32,16 +34,18 @@ class RouterConfig extends StatelessWidget {
           GoRoute(
             path: "/",
             pageBuilder: (context, state) {
-              return const NoTransitionPage(
-                child: HomePage(),
+              return NoTransitionPage(
+                key: state.pageKey,
+                child: const HomePage(),
               );
             },
           ),
           GoRoute(
             path: "/contact",
             pageBuilder: (context, state) {
-              return const NoTransitionPage(
-                child: ContactPage(),
+              return NoTransitionPage(
+                key: state.pageKey,
+                child: const ContactPage(),
               );
             },
           ),
@@ -56,8 +60,9 @@ class RouterConfig extends StatelessWidget {
           GoRoute(
             path: "/teaching",
             pageBuilder: (context, state) {
-              return const NoTransitionPage(
-                child: TeachingPage(),
+              return NoTransitionPage(
+                key: state.pageKey,
+                child: const TeachingPage(),
               );
             },
           ),
@@ -65,9 +70,8 @@ class RouterConfig extends StatelessWidget {
             path: "/research",
             pageBuilder: (context, state) {
               return NoTransitionPage(
-                child: Placeholder(
-                  color: Colors.yellow,
-                ),
+                key: state.pageKey,
+                child: ResearchPage(),
               );
             },
           ),
@@ -91,7 +95,7 @@ class RouterConfig extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      routerConfig: _router,
+      routerConfig: router,
     );
   }
 }
