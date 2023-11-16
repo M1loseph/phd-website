@@ -23,9 +23,11 @@ class ConsultationPage extends StatelessWidget {
                 SizedBox(
                   width: iconSpace,
                 ),
-                Text(
-                  locale!.consultationPagePlace,
-                  style: textStyle,
+                Flexible(
+                  child: Text(
+                    locale!.consultationPagePlace,
+                    style: textStyle,
+                  ),
                 ),
               ],
             ),
@@ -36,9 +38,11 @@ class ConsultationPage extends StatelessWidget {
                 SizedBox(
                   width: iconSpace,
                 ),
-                Text(
-                  locale.consultationPageDates,
-                  style: textStyle,
+                Flexible(
+                  child: Text(
+                    locale.consultationPageDates,
+                    style: textStyle,
+                  ),
                 ),
               ],
             ),

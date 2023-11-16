@@ -31,24 +31,42 @@ class NavigationBar extends StatelessWidget {
           ],
         ),
       ),
-      mobileLayout: AnimatedSize(
-        duration: const Duration(milliseconds: 200),
-        alignment: Alignment.topLeft,
-        child: Container(
-          color:
-              globalState.isMenuExpanded() ? appBarColor : Colors.transparent,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const NavigationBarFirstElement(),
-              globalState.isMenuExpanded()
-                  ? NavigationTabs(
+      mobileLayout: Stack(
+        children: [
+          if (globalState.isMenuExpanded())
+            MouseRegion(
+              cursor: SystemMouseCursors.click,
+              child: GestureDetector(
+                onTap: () => globalState.changeMenuExpansion(),
+                child: Container(
+                  color: Colors.grey.shade500.withAlpha(100),
+                ),
+              ),
+            )
+          else
+            const SizedBox.shrink(),
+          AnimatedSize(
+            duration: const Duration(milliseconds: 200),
+            alignment: Alignment.topLeft,
+            child: Container(
+              color: globalState.isMenuExpanded()
+                  ? Colors.white
+                  : Colors.transparent,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const NavigationBarFirstElement(),
+                  if (globalState.isMenuExpanded())
+                    NavigationTabs(
                       currentPath: currentPath,
                     )
-                  : const SizedBox.shrink()
-            ],
+                  else
+                    const SizedBox.shrink()
+                ],
+              ),
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

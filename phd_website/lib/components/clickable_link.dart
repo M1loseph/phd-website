@@ -1,5 +1,26 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+InlineSpan clickableInlineSpanLinkFactory({
+  required String url,
+  required ThemeData theme,
+  TextStyle? textStyle,
+}) {
+  return TextSpan(
+    text: url,
+    mouseCursor: SystemMouseCursors.click,
+    recognizer: TapGestureRecognizer()
+      ..onTap = () async {
+        final parsedUrl = Uri.parse(url);
+        await launchUrl(parsedUrl);
+      },
+    style: textStyle?.copyWith(
+      color: theme.colorScheme.primary,
+      decoration: TextDecoration.underline,
+    ),
+  );
+}
 
 class ClickableLink extends StatelessWidget {
   final String url;
@@ -9,21 +30,7 @@ class ClickableLink extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return GestureDetector(
-      onTap: () async {
-        final parsedUrl = Uri.parse(url);
-        await launchUrl(parsedUrl);
-      },
-      child: Text.rich(
-        TextSpan(
-          text: url,
-          mouseCursor: SystemMouseCursors.click,
-        ),
-        style: textStyle?.copyWith(
-          color: theme.colorScheme.primary,
-          decoration: TextDecoration.underline,
-        ),
-      ),
-    );
+    return Text.rich(clickableInlineSpanLinkFactory(
+        url: url, theme: theme, textStyle: textStyle));
   }
 }

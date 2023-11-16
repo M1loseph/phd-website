@@ -75,32 +75,39 @@ class ResearchPage extends StatelessWidget {
                             width: double.infinity,
                             padding: const EdgeInsets.all(20),
                             child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Row(
-                                  children: [
-                                    Text(
-                                      locale.conferencePageTalkTitle,
-                                      style: textStyle,
-                                    ),
-                                    Text(
-                                      conference.talkTitle,
-                                      style: textStyle?.copyWith(
-                                          fontWeight: FontWeight.bold),
-                                    )
-                                  ],
+                                Text.rich(
+                                  TextSpan(
+                                    children: [
+                                      TextSpan(
+                                        text: locale.conferencePageTalkTitle,
+                                        style: textStyle,
+                                      ),
+                                      TextSpan(
+                                        text: conference.talkTitle,
+                                        style: textStyle?.copyWith(
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                                Row(
-                                  children: [
-                                    Text(
-                                      locale.conferencePageOrganizerWebsite,
-                                      style: textStyle,
-                                    ),
-                                    ClickableLink(
-                                      url: conference.website,
-                                      textStyle: textStyle,
-                                    )
-                                  ],
-                                )
+                                Text.rich(
+                                  TextSpan(
+                                    children: [
+                                      TextSpan(
+                                        text: locale
+                                            .conferencePageOrganizerWebsite,
+                                        style: textStyle,
+                                      ),
+                                      clickableInlineSpanLinkFactory(
+                                        url: conference.website,
+                                        theme: theme,
+                                        textStyle: textStyle,
+                                      )
+                                    ],
+                                  ),
+                                ),
                               ],
                             ),
                           )

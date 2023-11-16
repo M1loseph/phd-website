@@ -15,12 +15,11 @@ class NavigationLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final nav = navbar.NavigationBar(currentPath: state.fullPath!);
     return ResponsiveLayout(
       desktopLayout: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          nav,
+          navbar.NavigationBar(currentPath: state.fullPath!),
           Expanded(
             child: currentPage,
           ),
@@ -29,7 +28,7 @@ class NavigationLayout extends StatelessWidget {
       mobileLayout: Stack(
         children: [
           currentPage,
-          nav,
+          navbar.NavigationBar(currentPath: state.fullPath!)
         ],
       ),
     );
