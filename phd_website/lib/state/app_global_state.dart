@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class AppGlobalState with ChangeNotifier {
   final _langKey = "lang";
+  final _cookiesAcknowledgedKey = "cookiesAcknowledged";
 
   bool _expandedMenu = false;
 
@@ -33,5 +34,16 @@ class AppGlobalState with ChangeNotifier {
     final sharedPref = await SharedPreferences.getInstance();
     await sharedPref.setString(_langKey, locale);
     notifyListeners();
+  }
+
+  void acknowledgeCookies() async {
+    final sharedPref = await SharedPreferences.getInstance();
+    await sharedPref.setBool(_cookiesAcknowledgedKey, true);
+    notifyListeners();
+  }
+
+  Future<bool> areCookiesAcknowledged() async {
+    final sharedPref = await SharedPreferences.getInstance();
+    return sharedPref.getBool(_cookiesAcknowledgedKey) ?? false;
   }
 }

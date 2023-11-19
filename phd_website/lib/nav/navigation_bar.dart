@@ -57,8 +57,18 @@ class NavigationBar extends StatelessWidget {
                 children: [
                   const NavigationBarFirstElement(),
                   if (globalState.isMenuExpanded())
-                    NavigationTabs(
-                      currentPath: currentPath,
+                    Expanded(
+                      child: Column(
+                        children: [
+                          NavigationTabs(
+                            currentPath: currentPath,
+                          ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          const LanguageSwitch()
+                        ],
+                      ),
                     )
                   else
                     const SizedBox.shrink()

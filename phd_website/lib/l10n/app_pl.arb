@@ -1,6 +1,7 @@
 {
     "@@locale": "pl",
     "appTitle": "Bogna Jaszczak",
+    "cookiesPopupMessage": "Korzystając z tej strony, wyrażasz zgodę na wykorzystywanie przez nią ciasteczek w celu dostarczeniu jej funkcjonalności.",
     "navigationHomePage": "Strona główna",
     "navigationContactPage": "Kontakt",
     "navigationConsultationPage": "Konsultacje",

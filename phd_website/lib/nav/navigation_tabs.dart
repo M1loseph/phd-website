@@ -29,12 +29,10 @@ class NavigationTabs extends StatelessWidget {
             children: _sectionNavigations(context),
           ),
         ),
-        mobileLayout: Expanded(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: _sectionNavigations(context),
-          ),
+        mobileLayout: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: _sectionNavigations(context),
         ));
   }
 

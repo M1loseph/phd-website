@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:phd_website/layouts/responsive_layout.dart';
 import 'package:phd_website/state/app_global_state.dart';
 import 'package:provider/provider.dart';
 
 class LanguageSwitch extends StatelessWidget {
+  final polishLocale = "pl";
+  final englishLocale = "en";
   const LanguageSwitch({super.key});
 
   @override
@@ -11,20 +14,49 @@ class LanguageSwitch extends StatelessWidget {
     return FutureBuilder(
       future: globalState.getCurrentLocale(context),
       builder: (context, lang) {
-        return Padding(
-          padding: const EdgeInsets.only(right: 20),
-          child: Container(
-            color: Colors.grey.shade300,
-            child: Row(children: [
-              _LanguageButton(
-                language: "pl",
-                currentLaguage: lang.data,
+        return ResponsiveLayout(
+          mobileLayout: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Flexible(
+                  child: Text(polishLocale.toUpperCase()),
+                ),
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 0, horizontal: 8),
+                  child: Switch(
+                    value: lang.data == Locale(englishLocale),
+                    activeColor: Colors.grey.shade800,
+                    onChanged: (value) => globalState
+                        .setCurrentLocale(value ? englishLocale : polishLocale),
+                  ),
+                ),
+                Flexible(
+                  child: Text(englishLocale.toUpperCase()),
+                ),
+              ],
+            ),
+          ),
+          desktopLayout: Padding(
+            padding: const EdgeInsets.only(right: 20),
+            child: Container(
+              color: Colors.grey.shade300,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _LanguageButton(
+                    language: polishLocale,
+                    currentLaguage: lang.data,
+                  ),
+                  _LanguageButton(
+                    language: englishLocale,
+                    currentLaguage: lang.data,
+                  ),
+                ],
               ),
-              _LanguageButton(
-                language: "en",
-                currentLaguage: lang.data,
-              ),
-            ]),
+            ),
           ),
         );
       },
@@ -34,7 +66,6 @@ class LanguageSwitch extends StatelessWidget {
 
 class _LanguageButton extends StatelessWidget {
   const _LanguageButton({
-    super.key,
     required this.currentLaguage,
     required this.language,
   });
