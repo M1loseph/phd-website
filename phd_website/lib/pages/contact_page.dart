@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:phd_website/components/clickable_link.dart';
+import 'package:phd_website/components/platform_aware_image.dart';
 import 'package:phd_website/layouts/page_layout.dart';
 import 'package:phd_website/layouts/spaced_list_layout.dart';
 import 'package:phd_website/text_theme_service.dart';
@@ -42,7 +43,9 @@ class ContactPage extends StatelessWidget {
                 children: [
                   SizedBox(
                     width: 30,
-                    child: Image.asset(linkedinLogoPath),
+                    child: PlatformAwareImage(
+                      path: linkedinLogoPath,
+                    ),
                   ),
                   SizedBox(
                     width: iconSpace,

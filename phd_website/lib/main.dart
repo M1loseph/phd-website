@@ -20,21 +20,21 @@ void main() {
         create: (context) => AppGlobalState(),
       ),
     ],
-    child: const RouterConfig(),
+    child: const PHDApp(),
   ));
 }
 
-class RouterConfig extends StatefulWidget {
-  const RouterConfig({super.key});
+class PHDApp extends StatefulWidget {
+  const PHDApp({super.key});
 
   @override
-  State<RouterConfig> createState() => _RouterConfigState();
+  State<PHDApp> createState() => _PHDAppState();
 }
 
-class _RouterConfigState extends State<RouterConfig> {
+class _PHDAppState extends State<PHDApp> {
   String? title;
   late GoRouter router;
-  _RouterConfigState() {
+  _PHDAppState() {
     router = GoRouter(
       initialLocation: "/",
       routes: [
@@ -57,11 +57,9 @@ class _RouterConfigState extends State<RouterConfig> {
                         currentTitle: title,
                         child: Stack(
                           children: [
-                            Expanded(
-                              child: NavigationLayout(
-                                state: state,
-                                currentPage: child,
-                              ),
+                            NavigationLayout(
+                              state: state,
+                              currentPage: child,
                             ),
                             const Align(
                               alignment: Alignment.bottomCenter,

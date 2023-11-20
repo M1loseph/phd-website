@@ -14,7 +14,7 @@ class _NevigationDestination {
 class NavigationTabs extends StatelessWidget {
   final String _currentPath;
 
-  NavigationTabs({
+  const NavigationTabs({
     super.key,
     required String currentPath,
   }) : _currentPath = currentPath;

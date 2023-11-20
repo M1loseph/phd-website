@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:phd_website/components/platform_aware_image.dart';
 import 'package:phd_website/layouts/page_layout.dart';
 
 class HomePage extends StatelessWidget {
@@ -15,9 +16,9 @@ class HomePage extends StatelessWidget {
             padding: const EdgeInsets.all(20.0),
             child: ConstrainedBox(
               constraints: BoxConstraints.loose(const Size(400, 400)),
-              child: ClipOval(
-                child: Image.asset(
-                  "images/profile.jpg",
+              child: const ClipOval(
+                child: PlatformAwareImage(
+                  path: "images/profile.jpg",
                 ),
               ),
             ),
