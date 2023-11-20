@@ -31,7 +31,10 @@ class PageLayout extends StatelessWidget {
             const SizedBox(
               height: 100,
             ),
-            page,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+              child: page,
+            ),
           ],
         ),
       ),

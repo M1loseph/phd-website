@@ -16,13 +16,14 @@
     "consultationPageDates": "Poniedziałek 11:15 - 12:15",
     "teachingPageDifferentialEquasionsInTech": "Równania różniczkowe w technice",
     "teachingPageDifferentialEquasionsInTechDescription": "Zasady zaliczenia oraz listy znajdują się na stronie wykładowcy.",
-    "conferencePageConferencesSectionTitle": "Konferencje",
-    "conferencePageTalkTitle": "Temat prezentacji: ",
-    "conferencePageOrganizerWebsite": "Strona organizatorów: ",
-    "conferencePageEcmi2023ConferenceName": "ECMI 2023",
-    "conferencePageEcmi2023Website": "https://ecmi2023.org/",
-    "conferencePageEcmi2023TalkTitle": "Modeling Trail Running",
-    "conferencePage51ConferenceOnApplicationsOfMathematicsConferenceName": "LI Konferencja Zastosowań Matematyki",
-    "conferencePage51ConferenceOnApplicationsOfMathematicsWebsite": "https://sites.google.com/view/51-kzm/",
-    "conferencePage51ConferenceOnApplicationsOfMathematicsTalkTitle": "Mathematical modelling of trail running"
+    "researchPageConferencesSectionTitle": "Konferencje",
+    "researchPageTalkTitle": "Temat prezentacji: ",
+    "researchPageOrganizerWebsite": "Strona konferencji: ",
+    "researchPageEcmi2023ConferenceName": "ECMI 2023",
+    "researchPageEcmi2023Website": "https://ecmi2023.org/",
+    "researchPageEcmi2023TalkTitle": "Modeling Trail Running",
+    "researchPage51ConferenceOnApplicationsOfMathematicsConferenceName": "LI Konferencja Zastosowań Matematyki",
+    "researchPage51ConferenceOnApplicationsOfMathematicsWebsite": "https://sites.google.com/view/51-kzm/",
+    "researchPage51ConferenceOnApplicationsOfMathematicsTalkTitle": "Mathematical modelling of trail running",
+    "researchPageOrcidNumberLabel": "ORCiD"
 }

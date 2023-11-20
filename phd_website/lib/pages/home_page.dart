@@ -32,11 +32,11 @@ class HomePage extends StatelessWidget {
               ),
               Text(
                 locale.homePageAbout,
-                style: Theme.of(context).textTheme.bodyMedium,
+                style: Theme.of(context).textTheme.bodyLarge,
               ),
               Text(
                 locale.homePageDepartment,
-                style: Theme.of(context).textTheme.bodyMedium,
+                style: Theme.of(context).textTheme.bodyLarge,
               ),
             ],
           ),

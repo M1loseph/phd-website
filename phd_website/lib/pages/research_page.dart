@@ -29,17 +29,17 @@ class ResearchPage extends StatelessWidget {
 
     final conferences = [
       _Conference(
-        conferenceName: locale!.conferencePageEcmi2023ConferenceName,
-        website: locale.conferencePageEcmi2023Website,
-        talkTitle: locale.conferencePageEcmi2023TalkTitle,
+        conferenceName: locale!.researchPageEcmi2023ConferenceName,
+        website: locale.researchPageEcmi2023Website,
+        talkTitle: locale.researchPageEcmi2023TalkTitle,
       ),
       _Conference(
         conferenceName: locale
-            .conferencePage51ConferenceOnApplicationsOfMathematicsConferenceName,
+            .researchPage51ConferenceOnApplicationsOfMathematicsConferenceName,
         website:
-            locale.conferencePage51ConferenceOnApplicationsOfMathematicsWebsite,
-        talkTitle: locale
-            .conferencePage51ConferenceOnApplicationsOfMathematicsTalkTitle,
+            locale.researchPage51ConferenceOnApplicationsOfMathematicsWebsite,
+        talkTitle:
+            locale.researchPage51ConferenceOnApplicationsOfMathematicsTalkTitle,
       ),
     ];
 
@@ -49,16 +49,8 @@ class ResearchPage extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Padding(
-                padding: const EdgeInsets.only(
-                  bottom: 20.0,
-                  left: 15,
-                  right: 15,
-                ),
-                child: Text(
-                  locale.conferencePageConferencesSectionTitle,
-                  style: theme.textTheme.displaySmall,
-                ),
+              SectionLabel(
+                text: locale.researchPageConferencesSectionTitle,
               ),
               for (var conference in conferences)
                 Column(
@@ -81,7 +73,7 @@ class ResearchPage extends StatelessWidget {
                                   TextSpan(
                                     children: [
                                       TextSpan(
-                                        text: locale.conferencePageTalkTitle,
+                                        text: locale.researchPageTalkTitle,
                                         style: textStyle,
                                       ),
                                       TextSpan(
@@ -96,8 +88,8 @@ class ResearchPage extends StatelessWidget {
                                   TextSpan(
                                     children: [
                                       TextSpan(
-                                        text: locale
-                                            .conferencePageOrganizerWebsite,
+                                        text:
+                                            locale.researchPageOrganizerWebsite,
                                         style: textStyle,
                                       ),
                                       clickableInlineSpanLinkFactory(
@@ -119,9 +111,42 @@ class ResearchPage extends StatelessWidget {
                     )
                   ],
                 ),
+              Padding(
+                padding: EdgeInsets.only(top: 20),
+                child: SectionLabel(
+                  text: locale.researchPageOrcidNumberLabel,
+                ),
+              ),
+              ClickableLink(
+                url: "https://orcid.org/0009-0008-3835-9170",
+                textStyle: theme.textTheme.bodyLarge,
+              ),
             ],
           ),
         ],
+      ),
+    );
+  }
+}
+
+class SectionLabel extends StatelessWidget {
+  const SectionLabel({
+    super.key,
+    required this.text,
+  });
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.only(
+        bottom: 20.0,
+      ),
+      child: Text(
+        text,
+        style: theme.textTheme.displaySmall,
       ),
     );
   }
