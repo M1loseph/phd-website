@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:phd_website/components/cookie_popup.dart';
+import 'package:phd_website/components/selectable_stack.dart';
 import 'package:phd_website/state/app_global_state.dart';
 import 'package:provider/provider.dart';
 import 'package:phd_website/layouts/navigation_layout.dart';
@@ -49,24 +50,20 @@ class _PHDAppState extends State<PHDApp> {
                   return Localizations.override(
                     context: context,
                     locale: language,
-                    child: SelectionArea(
-                      child: AppTitleUpdater(
-                        appTitleUpdater: (newTitle) => setState(() {
-                          title = newTitle;
-                        }),
-                        currentTitle: title,
-                        child: Stack(
-                          children: [
-                            NavigationLayout(
-                              state: state,
-                              currentPage: child,
-                            ),
-                            const Align(
-                              alignment: Alignment.bottomCenter,
-                              child: CookiePopup(),
-                            )
-                          ],
-                        ),
+                    child: AppTitleUpdater(
+                      appTitleUpdater: (newTitle) => setState(() {
+                        title = newTitle;
+                      }),
+                      currentTitle: title,
+                      child: SelectableStack(
+                        alignment: Alignment.bottomCenter,
+                        children: [
+                          NavigationLayout(
+                            state: state,
+                            currentPage: child,
+                          ),
+                          const CookiePopup()
+                        ],
                       ),
                     ),
                   );
