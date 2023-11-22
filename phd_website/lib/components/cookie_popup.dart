@@ -69,12 +69,13 @@ class CookieButtons extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final globalState = context.read<AppGlobalState>();
+    final locale = AppLocalizations.of(context);
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       mainAxisSize: MainAxisSize.min,
       children: [
         CookieBarButton(
-          text: "Accept all",
+          text: locale!.cookiesPopupAcceptButton,
           icon: Icons.check,
           onPressed: () => globalState.acceptCookies(),
         ),
@@ -82,7 +83,7 @@ class CookieButtons extends StatelessWidget {
           width: 5,
         ),
         CookieBarButton(
-          text: "Reject not essential",
+          text: locale.cookiesPopupRejectButton,
           icon: Icons.close_rounded,
           onPressed: () => globalState.rejectCookies(),
         ),

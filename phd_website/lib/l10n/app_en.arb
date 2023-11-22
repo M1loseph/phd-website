@@ -1,7 +1,9 @@
 {
     "@@locale": "en",
     "appTitle": "Bogna Jaszczak",
-    "cookiesPopupMessage": "This site uses cookies to provide it's core functionalities, for example storing your language preferences.",
+    "cookiesPopupMessage": "This site uses cookies to provide it's main functionalities such as saving language preferences.",
+    "cookiesPopupAcceptButton": "Accept all",
+    "cookiesPopupRejectButton": "Reject non essential",
     "navigationHomePage": "Home",
     "navigationContactPage": "Contact",
     "navigationConsultationPage": "Consultation",
