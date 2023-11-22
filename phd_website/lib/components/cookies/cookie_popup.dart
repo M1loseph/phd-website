@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:phd_website/components/body_text.dart';
 import 'package:phd_website/layouts/responsive_layout.dart';
 import 'package:phd_website/state/app_global_state.dart';
+import 'package:phd_website/state/cookies_approval.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import '../state/cookies_approval.dart';
-import 'cookie_bar_button.dart';
+import 'cookie_buttons.dart';
 
 class CookiePopup extends StatelessWidget {
   const CookiePopup({super.key});
@@ -58,36 +58,5 @@ class CookiePopup extends StatelessWidget {
             ),
           );
         });
-  }
-}
-
-class CookieButtons extends StatelessWidget {
-  const CookieButtons({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final globalState = context.read<AppGlobalState>();
-    final locale = AppLocalizations.of(context);
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        CookieBarButton(
-          text: locale!.cookiesPopupAcceptButton,
-          icon: Icons.check,
-          onPressed: () => globalState.acceptCookies(),
-        ),
-        const SizedBox(
-          width: 5,
-        ),
-        CookieBarButton(
-          text: locale.cookiesPopupRejectButton,
-          icon: Icons.close_rounded,
-          onPressed: () => globalState.rejectCookies(),
-        ),
-      ],
-    );
   }
 }

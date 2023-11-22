@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:phd_website/components/cookie_popup.dart';
+import 'package:phd_website/components/cookies/cookie_popup.dart';
 import 'package:phd_website/components/selectable_stack.dart';
 import 'package:phd_website/services/body_text_style_service.dart';
 import 'package:phd_website/state/app_global_state.dart';
