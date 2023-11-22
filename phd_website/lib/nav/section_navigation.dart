@@ -22,6 +22,9 @@ class _SectionNavigationState extends State<SectionNavigation> {
   bool hoovered = false;
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    final theme = Theme.of(context).textTheme;
+    final style = width > 1000 ? theme.headlineSmall : theme.titleLarge;
     return MouseRegion(
       onEnter: (event) => setState(() => hoovered = true),
       onExit: (event) => setState(() => hoovered = false),
@@ -32,9 +35,9 @@ class _SectionNavigationState extends State<SectionNavigation> {
             text: widget.name,
             mouseCursor: SystemMouseCursors.click,
           ),
-          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontWeight: _determinFontWeight(),
-              ),
+          style: style?.copyWith(
+            fontWeight: _determinFontWeight(),
+          ),
         ),
       ),
     );

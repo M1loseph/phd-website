@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:phd_website/components/cookie_popup.dart';
 import 'package:phd_website/components/selectable_stack.dart';
+import 'package:phd_website/services/body_text_style_service.dart';
 import 'package:phd_website/state/app_global_state.dart';
 import 'package:provider/provider.dart';
 import 'package:phd_website/layouts/navigation_layout.dart';
@@ -19,6 +20,9 @@ void main() {
     providers: [
       ChangeNotifierProvider(
         create: (context) => AppGlobalState(),
+      ),
+      Provider(
+        create: (context) => BodyTextStyleService(),
       ),
     ],
     child: const PHDApp(),

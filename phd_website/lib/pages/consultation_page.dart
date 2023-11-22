@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:phd_website/components/body_text.dart';
 import 'package:phd_website/layouts/page_layout.dart';
 import 'package:phd_website/layouts/spaced_list_layout.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:phd_website/text_theme_service.dart';
 
 class ConsultationPage extends StatelessWidget {
   final iconSpace = 10.0;
@@ -10,7 +10,6 @@ class ConsultationPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textStyle = TextThemeService.getBodyTextStyle(context);
     final locale = AppLocalizations.of(context);
     return PageLayout(
       page: Center(
@@ -24,9 +23,8 @@ class ConsultationPage extends StatelessWidget {
                   width: iconSpace,
                 ),
                 Flexible(
-                  child: Text(
+                  child: BodyText(
                     locale!.consultationPagePlace,
-                    style: textStyle,
                   ),
                 ),
               ],
@@ -39,9 +37,8 @@ class ConsultationPage extends StatelessWidget {
                   width: iconSpace,
                 ),
                 Flexible(
-                  child: Text(
+                  child: BodyText(
                     locale.consultationPageDates,
-                    style: textStyle,
                   ),
                 ),
               ],

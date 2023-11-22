@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:phd_website/components/clickable_link.dart';
 import 'package:phd_website/layouts/page_layout.dart';
+import 'package:phd_website/services/body_text_style_service.dart';
+import 'package:provider/provider.dart';
 
 class _Conference {
   final String conferenceName;
@@ -23,7 +25,8 @@ class ResearchPage extends StatelessWidget {
     final theme = Theme.of(context);
 
     final titleStyle = theme.textTheme.headlineSmall;
-    final textStyle = theme.textTheme.bodyMedium;
+    final textThemeService = context.read<BodyTextStyleService>();
+    final bodyTextStyle = textThemeService.getBodyTextStyle(context);
 
     final locale = AppLocalizations.of(context);
 
@@ -74,11 +77,11 @@ class ResearchPage extends StatelessWidget {
                                     children: [
                                       TextSpan(
                                         text: locale.researchPageTalkTitle,
-                                        style: textStyle,
+                                        style: bodyTextStyle,
                                       ),
                                       TextSpan(
                                         text: conference.talkTitle,
-                                        style: textStyle?.copyWith(
+                                        style: bodyTextStyle?.copyWith(
                                             fontWeight: FontWeight.bold),
                                       ),
                                     ],
@@ -90,12 +93,12 @@ class ResearchPage extends StatelessWidget {
                                       TextSpan(
                                         text:
                                             locale.researchPageOrganizerWebsite,
-                                        style: textStyle,
+                                        style: bodyTextStyle,
                                       ),
                                       clickableInlineSpanLinkFactory(
                                         url: conference.website,
                                         theme: theme,
-                                        textStyle: textStyle,
+                                        textStyle: bodyTextStyle,
                                       )
                                     ],
                                   ),
@@ -119,7 +122,7 @@ class ResearchPage extends StatelessWidget {
               ),
               ClickableLink(
                 url: "https://orcid.org/0009-0008-3835-9170",
-                textStyle: theme.textTheme.bodyLarge,
+                textStyle: bodyTextStyle,
               ),
             ],
           ),

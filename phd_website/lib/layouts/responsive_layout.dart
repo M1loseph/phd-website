@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:phd_website/constants.dart';
 
 class ResponsiveLayout extends StatelessWidget {
-  final _mobileViewMaxWidth = 850;
   final Widget _desktopLayout;
   final Widget _mobileLayout;
 
@@ -21,6 +21,6 @@ class ResponsiveLayout extends StatelessWidget {
 
   bool _isMobileView(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
-    return width < _mobileViewMaxWidth;
+    return width < mobileMaxWidth;
   }
 }

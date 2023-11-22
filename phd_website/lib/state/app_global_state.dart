@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'cookies_approval.dart';
+import 'optional_feature.dart';
+
 class AppGlobalState with ChangeNotifier {
   final _langKey = "lang";
   final _cookiesAcknowledgedKey = "cookiesAcknowledged";
+  final _siteEntriesKey = "siteEntires";
 
   bool _expandedMenu = false;
 
-  AppGlobalState();
+  AppGlobalState() {
+    bumpNumberOfEntires();
+  }
 
   void changeMenuExpansion() {
     _expandedMenu = !_expandedMenu;
@@ -36,14 +42,46 @@ class AppGlobalState with ChangeNotifier {
     notifyListeners();
   }
 
-  void acknowledgeCookies() async {
+  void acceptCookies() async {
     final sharedPref = await SharedPreferences.getInstance();
-    await sharedPref.setBool(_cookiesAcknowledgedKey, true);
+    await sharedPref.setString(
+        _cookiesAcknowledgedKey, CookiesApproval.approved.name);
     notifyListeners();
   }
 
-  Future<bool> areCookiesAcknowledged() async {
+  void rejectCookies() async {
     final sharedPref = await SharedPreferences.getInstance();
-    return sharedPref.getBool(_cookiesAcknowledgedKey) ?? false;
+    await sharedPref.setBool(_cookiesAcknowledgedKey, false);
+    notifyListeners();
+  }
+
+  Future<OptionalFeature<int>> getNumberOfEntires() async {
+    final cookiesApprovalStatus = await getCookiesApprovalStatus();
+    if (cookiesApprovalStatus != CookiesApproval.approved) {
+      return OptionalFeature.disabled();
+    }
+    final sharedPref = await SharedPreferences.getInstance();
+    final entries = sharedPref.getInt(_siteEntriesKey) ?? 1;
+    return OptionalFeature.enabled(value: entries);
+  }
+
+  void bumpNumberOfEntires() async {
+    final cookiesApprovalStatus = await getCookiesApprovalStatus();
+    if (cookiesApprovalStatus != CookiesApproval.approved) {
+      return;
+    }
+    final sharedPref = await SharedPreferences.getInstance();
+    final entries = sharedPref.getInt(_siteEntriesKey) ?? 0;
+    sharedPref.setInt(_siteEntriesKey, entries + 1);
+    notifyListeners();
+  }
+
+  Future<CookiesApproval> getCookiesApprovalStatus() async {
+    final sharedPref = await SharedPreferences.getInstance();
+    final approvalStateString = sharedPref.getString(_cookiesAcknowledgedKey);
+    if (approvalStateString == null) {
+      return CookiesApproval.awaitingApproval;
+    }
+    return CookiesApproval.values.byName(approvalStateString);
   }
 }

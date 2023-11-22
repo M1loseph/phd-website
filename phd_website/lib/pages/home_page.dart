@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:phd_website/components/body_text.dart';
+import 'package:phd_website/components/easter_egg_picture.dart';
 import 'package:phd_website/components/platform_aware_image.dart';
 import 'package:phd_website/layouts/page_layout.dart';
+import 'package:phd_website/state/app_global_state.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final globalState = context.watch<AppGlobalState>();
     final locale = AppLocalizations.of(context);
     return PageLayout(
       page: Column(
@@ -16,10 +21,23 @@ class HomePage extends StatelessWidget {
             padding: const EdgeInsets.all(20.0),
             child: ConstrainedBox(
               constraints: BoxConstraints.loose(const Size(400, 400)),
-              child: const ClipOval(
-                child: PlatformAwareImage(
-                  path: "images/profile.jpg",
-                ),
+              child: ClipOval(
+                child: FutureBuilder(
+                    future: globalState.getNumberOfEntires(),
+                    builder: (context, asyncSnapshot) {
+                      if (!asyncSnapshot.hasData ||
+                          !asyncSnapshot.data!.enabled) {
+                        return const PlatformAwareImage(
+                          path: "images/profile.jpg",
+                        );
+                      }
+                      return EasterEggPicture(
+                        path: "images/profile.jpg",
+                        easterEggPath: "images/profile_sheep.jpg",
+                        currentValue: asyncSnapshot.data!.value!,
+                        easterEggThreshold: 10,
+                      );
+                    }),
               ),
             ),
           ),
@@ -30,13 +48,11 @@ class HomePage extends StatelessWidget {
                 locale!.homePageName,
                 style: Theme.of(context).textTheme.displaySmall,
               ),
-              Text(
+              BodyText(
                 locale.homePageAbout,
-                style: Theme.of(context).textTheme.bodyLarge,
               ),
-              Text(
+              BodyText(
                 locale.homePageDepartment,
-                style: Theme.of(context).textTheme.bodyLarge,
               ),
             ],
           ),

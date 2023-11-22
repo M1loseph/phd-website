@@ -1,0 +1,1 @@
+const mobileMaxWidth = 900;

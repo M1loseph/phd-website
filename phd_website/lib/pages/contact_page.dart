@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:phd_website/components/body_text.dart';
 import 'package:phd_website/components/clickable_link.dart';
 import 'package:phd_website/components/platform_aware_image.dart';
 import 'package:phd_website/layouts/page_layout.dart';
 import 'package:phd_website/layouts/spaced_list_layout.dart';
-import 'package:phd_website/text_theme_service.dart';
+import 'package:phd_website/services/body_text_style_service.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:provider/provider.dart';
 
 class ContactPage extends StatelessWidget {
   final iconSpace = 10.0;
@@ -14,8 +16,9 @@ class ContactPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = TextThemeService.getBodyTextStyle(context);
     final locale = AppLocalizations.of(context);
+    final bodyTextStyleService = context.read<BodyTextStyleService>();
+    final bodyTextTheme = bodyTextStyleService.getBodyTextStyle(context);
     return PageLayout(
       page: Center(
         child: ConstrainedBox(
@@ -32,9 +35,8 @@ class ContactPage extends StatelessWidget {
                     width: iconSpace,
                   ),
                   Expanded(
-                    child: Text(
+                    child: BodyText(
                       locale!.contactPageEmail,
-                      style: textTheme,
                     ),
                   ),
                 ],
@@ -53,7 +55,7 @@ class ContactPage extends StatelessWidget {
                   Expanded(
                     child: ClickableLink(
                       url: locale.contactPageLinkedinURL,
-                      textStyle: textTheme,
+                      textStyle: bodyTextTheme,
                     ),
                   ),
                 ],
