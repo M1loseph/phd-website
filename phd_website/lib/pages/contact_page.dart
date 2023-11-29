@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:phd_website/components/body_text.dart';
 import 'package:phd_website/components/clickable_link.dart';
-import 'package:phd_website/components/platform_aware_image.dart';
+import 'package:phd_website/components/platform_aware_svg.dart';
 import 'package:phd_website/layouts/page_layout.dart';
 import 'package:phd_website/layouts/spaced_list_layout.dart';
 import 'package:phd_website/services/body_text_style_service.dart';
@@ -10,7 +10,7 @@ import 'package:provider/provider.dart';
 
 class ContactPage extends StatelessWidget {
   final iconSpace = 10.0;
-  final linkedinLogoPath = "images/linkedin_logo.png";
+  final linkedinLogoPath = "images/linkedin_logo.svg";
 
   const ContactPage({super.key});
 
@@ -44,8 +44,8 @@ class ContactPage extends StatelessWidget {
               Row(
                 children: [
                   SizedBox(
-                    width: 30,
-                    child: PlatformAwareImage(
+                    width: 25,
+                    child: PlatformAwareSvg(
                       path: linkedinLogoPath,
                     ),
                   ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:phd_website/components/cookies/cookie_popup.dart';
 import 'package:phd_website/components/selectable_stack.dart';
+import 'package:phd_website/components/sweetie_easter_egg.dart';
 import 'package:phd_website/services/body_text_style_service.dart';
 import 'package:phd_website/state/app_global_state.dart';
 import 'package:provider/provider.dart';
@@ -47,31 +48,33 @@ class _PHDAppState extends State<PHDApp> {
           builder: (context, state, child) {
             final globalState = context.watch<AppGlobalState>();
             return Scaffold(
-              body: FutureBuilder(
-                future: globalState.getCurrentLocale(context),
-                builder: (context, languageData) {
-                  final language = languageData.data;
-                  return Localizations.override(
-                    context: context,
-                    locale: language,
-                    child: AppTitleUpdater(
-                      appTitleUpdater: (newTitle) => setState(() {
-                        title = newTitle;
-                      }),
-                      currentTitle: title,
-                      child: SelectableStack(
-                        alignment: Alignment.bottomCenter,
-                        children: [
-                          NavigationLayout(
-                            state: state,
-                            currentPage: child,
-                          ),
-                          const CookiePopup()
-                        ],
+              body: SweetieEasterEgg(
+                child: FutureBuilder(
+                  future: globalState.getCurrentLocale(context),
+                  builder: (context, languageData) {
+                    final language = languageData.data;
+                    return Localizations.override(
+                      context: context,
+                      locale: language,
+                      child: AppTitleUpdater(
+                        appTitleUpdater: (newTitle) => setState(() {
+                          title = newTitle;
+                        }),
+                        currentTitle: title,
+                        child: SelectableStack(
+                          alignment: Alignment.bottomCenter,
+                          children: [
+                            NavigationLayout(
+                              state: state,
+                              currentPage: child,
+                            ),
+                            const CookiePopup()
+                          ],
+                        ),
                       ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               ),
             );
           },

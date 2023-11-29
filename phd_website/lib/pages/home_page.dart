@@ -49,9 +49,6 @@ class HomePage extends StatelessWidget {
                 style: Theme.of(context).textTheme.displaySmall,
               ),
               BodyText(
-                locale.homePageAbout,
-              ),
-              BodyText(
                 locale.homePageDepartment,
               ),
             ],
