@@ -1,8 +1,11 @@
 import 'dart:async';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import 'heart_shower.dart';
 
 enum _EasterEggState {
   notStarted,
@@ -25,9 +28,12 @@ class SweetieEasterEgg extends StatefulWidget {
 class _SweetieEasterEggState extends State<SweetieEasterEgg> {
   final magicEasterEggDestination =
       Uri.parse("https://youtu.be/UTLFbVB8ctc?t=48");
+
   final magicLetterCombination = "sweetie";
   String lettersPressed = "";
+
   _EasterEggState easterEggState = _EasterEggState.notStarted;
+
   @override
   Widget build(BuildContext context) {
     if (easterEggState == _EasterEggState.pending) {
@@ -35,7 +41,7 @@ class _SweetieEasterEggState extends State<SweetieEasterEgg> {
         easterEggState = _EasterEggState.executing;
       });
       scheduleMicrotask(() async {
-        await Future.delayed(Duration(seconds: 5));
+        await Future.delayed(const Duration(seconds: 5));
         await launchUrl(magicEasterEggDestination);
         setState(() {
           easterEggState = _EasterEggState.notStarted;
@@ -44,14 +50,12 @@ class _SweetieEasterEggState extends State<SweetieEasterEgg> {
     }
     return KeyboardListener(
       focusNode: FocusNode(onKey: handleKeyEvent),
-      child: easterEggState == _EasterEggState.executing
-          ? Stack(
-              children: [
-                widget,
-                // TODO: create hears animation down here
-              ],
-            )
-          : widget.child,
+      child: Stack(
+        children: [
+          widget.child,
+          if (easterEggState == _EasterEggState.executing) const HeartShower(),
+        ],
+      ),
     );
   }
 
