@@ -13,38 +13,47 @@ class HeartShower extends StatefulWidget {
 
 class _HeartShowerState extends State<HeartShower>
     with TickerProviderStateMixin {
-  late final controller =
-      AnimationController(duration: Duration(seconds: 6), vsync: this)
-        ..repeat();
-
-  final positions = [
-    for (int i = 0; i < 100; i++) _OffsetAndDuration.random(),
-  ];
+  late final controller = AnimationController(
+    duration: const Duration(seconds: 6),
+    vsync: this,
+  )..repeat();
 
   @override
   Widget build(BuildContext context) {
-    final animation = Tween(begin: 0.0, end: 1.0).animate(controller);
-    return AnimatedBuilder(
-      animation: animation,
-      child: const Icon(
-        CupertinoIcons.heart_fill,
-        color: Colors.red,
-      ),
-      builder: (context, child) {
-        return Stack(
-          children: [
-            for (final position in positions)
-              Transform.scale(
-                scale: position.scale,
-                child: Transform.translate(
-                  offset: Offset(
-                    position.xOffset,
-                    position.height * animation.value,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final positions = [
+          for (int i = 0; i < 100; i++)
+            _OffsetAndDuration.random(
+              windowHeight: constraints.maxHeight,
+              windowWidth: constraints.maxWidth,
+            ),
+        ];
+        final animation =
+            CurveTween(curve: Curves.easeInQuad).animate(controller);
+        return AnimatedBuilder(
+          animation: animation,
+          child: const Icon(
+            CupertinoIcons.heart_fill,
+            color: Colors.red,
+          ),
+          builder: (context, child) {
+            return Stack(
+              children: [
+                for (final position in positions)
+                  Transform.scale(
+                    scale: position.scale,
+                    child: Transform.translate(
+                      offset: Offset(
+                        position.xOffset,
+                        position.yOffset * animation.value,
+                      ),
+                      child: child,
+                    ),
                   ),
-                  child: child,
-                ),
-              ),
-          ],
+              ],
+            );
+          },
         );
       },
     );
@@ -59,13 +68,16 @@ class _HeartShowerState extends State<HeartShower>
 
 class _OffsetAndDuration {
   late final double xOffset;
-  late final double height;
+  late final double yOffset;
   late final double scale;
 
-  _OffsetAndDuration.random() {
+  _OffsetAndDuration.random({
+    required double windowHeight,
+    required double windowWidth,
+  }) {
     final randomGenerator = Random();
-    xOffset = randomGenerator.nextDouble() * 2000;
-    height = randomGenerator.nextDouble() * 4000;
+    xOffset = randomGenerator.nextDouble() * windowWidth;
+    yOffset = randomGenerator.nextDouble() * windowHeight * 2;
     scale = randomGenerator.nextDouble() + 1;
   }
 }
