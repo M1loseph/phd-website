@@ -18,7 +18,7 @@ class NavigationBarFirstElement extends StatelessWidget {
           cursor: SystemMouseCursors.click,
           child: Listener(
             onPointerDown: (event) => context.go("/"),
-            child: PlatformAwareImage(
+            child: const PlatformAwareImage(
               path: "images/wmat_logo.png",
               height: 60,
             ),

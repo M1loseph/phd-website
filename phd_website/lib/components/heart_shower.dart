@@ -75,6 +75,8 @@ class _FallingHeartState extends State<FallingHeart>
                 Duration(milliseconds: animationProps.initialDelayMillis))
             .then((value) => _beginAnimation());
         firstBuild = false;
+      } else {
+        _beginAnimation();
       }
 
       final animation =

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
-/// Need to be applied directly for the page becuase
+/// Needs to be applied directly for the page because
 /// of this issue: https://github.com/flutter/flutter/issues/129523
+/// Long story short: you can't put ListView inside a router.
 class PageLayout extends StatelessWidget {
   final Widget page;
 

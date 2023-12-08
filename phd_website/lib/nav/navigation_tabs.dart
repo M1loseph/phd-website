@@ -4,11 +4,11 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'section_navigation.dart';
 
-class _NevigationDestination {
+class _NavigationDestination {
   final String path;
   final String name;
 
-  _NevigationDestination({required this.name, required this.path});
+  _NavigationDestination({required this.name, required this.path});
 }
 
 class NavigationTabs extends StatelessWidget {
@@ -39,14 +39,14 @@ class NavigationTabs extends StatelessWidget {
   List<Widget> _sectionNavigations(BuildContext context) {
     final locale = AppLocalizations.of(context);
     final destinations = [
-      _NevigationDestination(name: locale!.navigationHomePage, path: "/"),
-      _NevigationDestination(
+      _NavigationDestination(name: locale!.navigationHomePage, path: "/"),
+      _NavigationDestination(
           name: locale.navigationContactPage, path: "/contact"),
-      _NevigationDestination(
+      _NavigationDestination(
           name: locale.navigationConsultationPage, path: "/consultation"),
-      _NevigationDestination(
+      _NavigationDestination(
           name: locale.navigationTeachingPage, path: "/teaching"),
-      _NevigationDestination(
+      _NavigationDestination(
           name: locale.navigationResearchPage, path: "/research"),
     ];
     return List.generate(destinations.length, (index) {

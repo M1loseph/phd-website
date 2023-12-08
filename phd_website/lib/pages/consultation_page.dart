@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:phd_website/components/body_text.dart';
 import 'package:phd_website/layouts/page_layout.dart';
 import 'package:phd_website/layouts/spaced_list_layout.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ConsultationPage extends StatelessWidget {
   final iconSpace = 10.0;

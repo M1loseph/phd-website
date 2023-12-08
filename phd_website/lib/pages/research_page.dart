@@ -115,7 +115,7 @@ class ResearchPage extends StatelessWidget {
                   ],
                 ),
               Padding(
-                padding: EdgeInsets.only(top: 20),
+                padding: const EdgeInsets.only(top: 20),
                 child: SectionLabel(
                   text: locale.researchPageOrcidNumberLabel,
                 ),
