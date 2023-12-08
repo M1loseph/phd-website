@@ -47,6 +47,8 @@ class ContactPage extends StatelessWidget {
                     width: 25,
                     child: PlatformAwareSvg(
                       path: linkedinLogoPath,
+                      colorFilter: const ColorFilter.mode(
+                          Colors.indigo, BlendMode.srcIn),
                     ),
                   ),
                   SizedBox(

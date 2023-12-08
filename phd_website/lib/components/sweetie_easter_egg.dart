@@ -1,15 +1,11 @@
-import 'dart:async';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:url_launcher/url_launcher.dart';
-
-import 'heart_shower.dart';
+import 'package:phd_website/components/heart_shower.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 enum _EasterEggState {
   notStarted,
-  pending,
   executing,
 }
 
@@ -27,32 +23,41 @@ class SweetieEasterEgg extends StatefulWidget {
 
 class _SweetieEasterEggState extends State<SweetieEasterEgg> {
   final magicEasterEggDestination =
-      Uri.parse("https://youtu.be/UTLFbVB8ctc?t=48");
-
+      Uri.parse("https://youtube.com/embed/UTLFbVB8ctc?start=48");
+  late final controller = WebViewController()
+    ..loadRequest(magicEasterEggDestination);
   final magicLetterCombination = "sweetie";
-  String lettersPressed = "";
 
+  String lettersPressed = "";
   _EasterEggState easterEggState = _EasterEggState.notStarted;
 
   @override
   Widget build(BuildContext context) {
-    if (easterEggState == _EasterEggState.pending) {
-      setState(() {
-        easterEggState = _EasterEggState.executing;
-      });
-      scheduleMicrotask(() async {
-        await Future.delayed(const Duration(seconds: 5));
-        await launchUrl(magicEasterEggDestination);
-        setState(() {
-          easterEggState = _EasterEggState.notStarted;
-        });
-      });
-    }
     return KeyboardListener(
       focusNode: FocusNode(onKey: handleKeyEvent),
       child: Stack(
         children: [
           widget.child,
+          if (easterEggState == _EasterEggState.executing)
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  easterEggState = _EasterEggState.notStarted;
+                });
+              },
+              child: Container(
+                color: Colors.black.withAlpha(100),
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(
+                      maxHeight: 360,
+                      maxWidth: 640,
+                    ),
+                    child: WebViewWidget(controller: controller),
+                  ),
+                ),
+              ),
+            ),
           if (easterEggState == _EasterEggState.executing) const HeartShower(),
         ],
       ),
@@ -74,10 +79,10 @@ class _SweetieEasterEggState extends State<SweetieEasterEgg> {
     setState(() {
       lettersPressed += character;
       if (!magicLetterCombination.startsWith(lettersPressed)) {
-        lettersPressed = "";
+        lettersPressed = character;
       } else if (magicLetterCombination == lettersPressed) {
         lettersPressed = "";
-        easterEggState = _EasterEggState.pending;
+        easterEggState = _EasterEggState.executing;
       }
     });
     return KeyEventResult.handled;

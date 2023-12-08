@@ -16,6 +16,12 @@ You can also run it from command line: `flutter run` and then select web browser
 Building a release is also super simple. Simply run `flutter build web`. This script is saved in `tools` directory just in case.
 
 
-### Warning for the future
+### Dev notes
+
+#### 1. Warning for the future
 
 If you ever want to create a simple website with just a bunch of pages and simple routing - don't use flutter. Use anything else. Just not flutter. It's not worth it.
+
+#### 2. Profile mode
+
+Profiling on "profile" build doesn't work on chrome (so i guess it doesn't work on web target at all). Yet another reason not to use flutter for anything serious on the web.
