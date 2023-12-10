@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:phd_website/components/nav/navigation_bar.dart' as navbar;
 import 'package:phd_website/layouts/responsive_layout.dart';
-import 'package:phd_website/nav/navigation_bar.dart' as navbar;
 
 class NavigationLayout extends StatelessWidget {
   final GoRouterState state;
