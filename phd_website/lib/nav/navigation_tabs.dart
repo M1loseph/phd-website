@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:phd_website/layouts/responsive_layout.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:phd_website/layouts/responsive_layout.dart';
 
 import 'section_navigation.dart';
 
@@ -39,15 +39,15 @@ class NavigationTabs extends StatelessWidget {
   List<Widget> _sectionNavigations(BuildContext context) {
     final locale = AppLocalizations.of(context);
     final destinations = [
-      _NavigationDestination(name: locale!.navigationHomePage, path: "/"),
+      _NavigationDestination(name: locale!.navigationHomePage, path: '/'),
       _NavigationDestination(
-          name: locale.navigationContactPage, path: "/contact"),
+          name: locale.navigationContactPage, path: '/contact'),
       _NavigationDestination(
-          name: locale.navigationConsultationPage, path: "/consultation"),
+          name: locale.navigationConsultationPage, path: '/consultation'),
       _NavigationDestination(
-          name: locale.navigationTeachingPage, path: "/teaching"),
+          name: locale.navigationTeachingPage, path: '/teaching'),
       _NavigationDestination(
-          name: locale.navigationResearchPage, path: "/research"),
+          name: locale.navigationResearchPage, path: '/research'),
     ];
     return List.generate(destinations.length, (index) {
       return Padding(

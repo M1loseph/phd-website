@@ -7,7 +7,7 @@ abstract class PlatformAwareWidget extends StatelessWidget {
   @protected
   String getActualPath(String path) {
     if (kIsWeb && !kDebugMode) {
-      return "assets/$path";
+      return 'assets/$path';
     } else {
       return path;
     }

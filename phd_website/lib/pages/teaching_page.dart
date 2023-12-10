@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:phd_website/components/clickable_link.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:phd_website/components/clickable_link.dart';
 import 'package:phd_website/layouts/page_layout.dart';
 import 'package:phd_website/services/body_text_style_service.dart';
 import 'package:provider/provider.dart';
 
 class TeachingPage extends StatelessWidget {
   final differentialEquationsRulesLink =
-      "https://prac.im.pwr.edu.pl/~plociniczak/doku.php?id=ode";
+      'https://prac.im.pwr.edu.pl/~plociniczak/doku.php?id=ode';
 
   const TeachingPage({super.key});
 
@@ -24,7 +24,7 @@ class TeachingPage extends StatelessWidget {
             constraints: const BoxConstraints(maxWidth: 800),
             child: ExpansionTile(
               title: Text(
-                locale!.teachingPageDifferentialEquasionsInTech,
+                locale!.teachingPageDifferentialEquationsInTechnology,
                 style: theme.textTheme.headlineSmall,
               ),
               children: [
@@ -36,7 +36,7 @@ class TeachingPage extends StatelessWidget {
                     children: [
                       Text(
                         locale
-                            .teachingPageDifferentialEquasionsInTechDescription,
+                            .teachingPageDifferentialEquationsInTechDescription,
                         style: bodyTheme,
                       ),
                       ClickableLink(

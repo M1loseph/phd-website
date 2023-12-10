@@ -1,7 +1,6 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:phd_website/components/heart_shower.dart';
+import 'package:phd_website/components/heart_shower/heart_shower.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 enum _EasterEggState {
@@ -23,12 +22,12 @@ class SweetieEasterEgg extends StatefulWidget {
 
 class _SweetieEasterEggState extends State<SweetieEasterEgg> {
   final magicEasterEggDestination =
-      Uri.parse("https://youtube.com/embed/UTLFbVB8ctc?start=48");
+      Uri.parse('https://youtube.com/embed/UTLFbVB8ctc?start=48');
   late final controller = WebViewController()
     ..loadRequest(magicEasterEggDestination);
-  final magicLetterCombination = "sweetie";
+  final magicLetterCombination = 'sweetie';
 
-  String lettersPressed = "";
+  String lettersPressed = '';
   _EasterEggState easterEggState = _EasterEggState.notStarted;
 
   @override
@@ -81,7 +80,7 @@ class _SweetieEasterEggState extends State<SweetieEasterEgg> {
       if (!magicLetterCombination.startsWith(lettersPressed)) {
         lettersPressed = character;
       } else if (magicLetterCombination == lettersPressed) {
-        lettersPressed = "";
+        lettersPressed = '';
         easterEggState = _EasterEggState.executing;
       }
     });

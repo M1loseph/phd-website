@@ -28,12 +28,12 @@ class HomePage extends StatelessWidget {
                       if (!asyncSnapshot.hasData ||
                           !asyncSnapshot.data!.enabled) {
                         return const PlatformAwareImage(
-                          path: "images/profile.jpg",
+                          path: 'images/profile.jpg',
                         );
                       }
                       return EasterEggPicture(
-                        path: "images/profile.jpg",
-                        easterEggPath: "images/profile_sheep.jpg",
+                        path: 'images/profile.jpg',
+                        easterEggPath: 'images/profile_sheep.jpg',
                         currentValue: asyncSnapshot.data!.value!,
                         easterEggThreshold: 10,
                       );

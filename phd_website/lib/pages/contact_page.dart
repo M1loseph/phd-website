@@ -10,7 +10,7 @@ import 'package:provider/provider.dart';
 
 class ContactPage extends StatelessWidget {
   final iconSpace = 10.0;
-  final linkedinLogoPath = "images/linkedin_logo.svg";
+  final linkedinLogoPath = 'images/linkedin_logo.svg';
 
   const ContactPage({super.key});
 

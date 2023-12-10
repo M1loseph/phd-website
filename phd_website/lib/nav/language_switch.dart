@@ -4,8 +4,8 @@ import 'package:phd_website/state/app_global_state.dart';
 import 'package:provider/provider.dart';
 
 class LanguageSwitch extends StatelessWidget {
-  final polishLocale = "pl";
-  final englishLocale = "en";
+  final polishLocale = 'pl';
+  final englishLocale = 'en';
   const LanguageSwitch({super.key});
 
   @override
@@ -48,11 +48,11 @@ class LanguageSwitch extends StatelessWidget {
                 children: [
                   _LanguageButton(
                     language: polishLocale,
-                    currentLaguage: lang.data,
+                    currentLanguage: lang.data,
                   ),
                   _LanguageButton(
                     language: englishLocale,
-                    currentLaguage: lang.data,
+                    currentLanguage: lang.data,
                   ),
                 ],
               ),
@@ -66,11 +66,11 @@ class LanguageSwitch extends StatelessWidget {
 
 class _LanguageButton extends StatelessWidget {
   const _LanguageButton({
-    required this.currentLaguage,
+    required this.currentLanguage,
     required this.language,
   });
 
-  final Locale? currentLaguage;
+  final Locale? currentLanguage;
   final String language;
 
   @override
@@ -82,7 +82,7 @@ class _LanguageButton extends StatelessWidget {
       child: GestureDetector(
         onTap: () => globalState.setCurrentLocale(language),
         child: Container(
-          color: currentLaguage?.languageCode == language
+          color: currentLanguage?.languageCode == language
               ? Colors.white
               : theme.appBarTheme.backgroundColor,
           child: Padding(

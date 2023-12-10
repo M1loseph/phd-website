@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:phd_website/components/platform_aware_image.dart';
-import 'package:phd_website/state/app_global_state.dart';
 import 'package:phd_website/layouts/responsive_layout.dart';
+import 'package:phd_website/state/app_global_state.dart';
 import 'package:provider/provider.dart';
 
 class NavigationBarFirstElement extends StatelessWidget {
@@ -17,9 +17,9 @@ class NavigationBarFirstElement extends StatelessWidget {
         child: MouseRegion(
           cursor: SystemMouseCursors.click,
           child: Listener(
-            onPointerDown: (event) => context.go("/"),
+            onPointerDown: (event) => context.go('/'),
             child: const PlatformAwareImage(
-              path: "images/wmat_logo.png",
+              path: 'images/wmat_logo.png',
               height: 60,
             ),
           ),

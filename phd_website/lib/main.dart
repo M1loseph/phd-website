@@ -8,6 +8,7 @@ import 'package:phd_website/layouts/navigation_layout.dart';
 import 'package:phd_website/services/body_text_style_service.dart';
 import 'package:phd_website/state/app_global_state.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'components/app_title_updater.dart';
 import 'pages/consultation_page.dart';
@@ -20,7 +21,7 @@ void main() {
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(
-        create: (context) => AppGlobalState(),
+        create: (context) => AppGlobalState(SharedPreferences.getInstance()),
       ),
       Provider(
         create: (context) => BodyTextStyleService(),
@@ -39,95 +40,100 @@ class PHDApp extends StatefulWidget {
 
 class _PHDAppState extends State<PHDApp> {
   String? title;
-  late GoRouter router;
-  _PHDAppState() {
-    router = GoRouter(
-      initialLocation: "/",
-      routes: [
-        ShellRoute(
-          builder: (context, state, child) {
-            final globalState = context.watch<AppGlobalState>();
-            return Scaffold(
-              body: SweetieEasterEgg(
-                child: FutureBuilder(
-                  future: globalState.getCurrentLocale(context),
-                  builder: (context, languageData) {
-                    final language = languageData.data;
-                    return Localizations.override(
-                      context: context,
-                      locale: language,
-                      child: AppTitleUpdater(
-                        appTitleUpdater: (newTitle) => setState(() {
-                          title = newTitle;
-                        }),
-                        currentTitle: title,
-                        child: SelectableStack(
-                          alignment: Alignment.bottomCenter,
-                          children: [
-                            NavigationLayout(
-                              state: state,
-                              currentPage: child,
-                            ),
-                            const CookiePopup()
-                          ],
-                        ),
+  late GoRouter router = GoRouter(
+    initialLocation: '/',
+    routes: [
+      ShellRoute(
+        builder: (context, state, child) {
+          final globalState = context.watch<AppGlobalState>();
+          return Scaffold(
+            body: SweetieEasterEgg(
+              child: FutureBuilder(
+                future: globalState.getCurrentLocale(context),
+                builder: (context, languageData) {
+                  final language = languageData.data;
+                  return Localizations.override(
+                    context: context,
+                    locale: language,
+                    child: AppTitleUpdater(
+                      appTitleUpdater: (newTitle) => setState(() {
+                        title = newTitle;
+                      }),
+                      currentTitle: title,
+                      child: SelectableStack(
+                        alignment: Alignment.bottomCenter,
+                        children: [
+                          NavigationLayout(
+                            state: state,
+                            currentPage: child,
+                          ),
+                          const CookiePopup()
+                        ],
                       ),
-                    );
-                  },
-                ),
+                    ),
+                  );
+                },
               ),
-            );
-          },
-          routes: [
-            GoRoute(
-              path: "/",
-              pageBuilder: (context, state) {
-                return NoTransitionPage(
-                  key: state.pageKey,
-                  child: const HomePage(),
-                );
-              },
             ),
-            GoRoute(
-              path: "/contact",
-              pageBuilder: (context, state) {
-                return NoTransitionPage(
-                  key: state.pageKey,
-                  child: const ContactPage(),
-                );
-              },
-            ),
-            GoRoute(
-              path: "/consultation",
-              pageBuilder: (context, state) {
-                return NoTransitionPage(
-                  key: state.pageKey,
-                  child: const ConsultationPage(),
-                );
-              },
-            ),
-            GoRoute(
-              path: "/teaching",
-              pageBuilder: (context, state) {
-                return NoTransitionPage(
-                  key: state.pageKey,
-                  child: const TeachingPage(),
-                );
-              },
-            ),
-            GoRoute(
-              path: "/research",
-              pageBuilder: (context, state) {
-                return NoTransitionPage(
-                  key: state.pageKey,
-                  child: const ResearchPage(),
-                );
-              },
-            ),
-          ],
-        ),
-      ],
-    );
+          );
+        },
+        routes: [
+          GoRoute(
+            path: '/',
+            pageBuilder: (context, state) {
+              return NoTransitionPage(
+                key: state.pageKey,
+                child: const HomePage(),
+              );
+            },
+          ),
+          GoRoute(
+            path: '/contact',
+            pageBuilder: (context, state) {
+              return NoTransitionPage(
+                key: state.pageKey,
+                child: const ContactPage(),
+              );
+            },
+          ),
+          GoRoute(
+            path: '/consultation',
+            pageBuilder: (context, state) {
+              return NoTransitionPage(
+                key: state.pageKey,
+                child: const ConsultationPage(),
+              );
+            },
+          ),
+          GoRoute(
+            path: '/teaching',
+            pageBuilder: (context, state) {
+              return NoTransitionPage(
+                key: state.pageKey,
+                child: const TeachingPage(),
+              );
+            },
+          ),
+          GoRoute(
+            path: '/research',
+            pageBuilder: (context, state) {
+              return NoTransitionPage(
+                key: state.pageKey,
+                child: const ResearchPage(),
+              );
+            },
+          ),
+        ],
+      ),
+    ],
+  );
+
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      context.read<AppGlobalState>().bumpNumberOfEntires();
+    });
   }
 
   @override
@@ -135,7 +141,7 @@ class _PHDAppState extends State<PHDApp> {
     return MaterialApp.router(
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      title: title ?? "",
+      title: title ?? '',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.grey.shade100),
         appBarTheme: AppBarTheme(
