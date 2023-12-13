@@ -5,7 +5,7 @@ import 'package:phd_website/layouts/page_layout.dart';
 import 'package:phd_website/layouts/spaced_list_layout.dart';
 
 class ConsultationPage extends StatelessWidget {
-  final iconSpace = 10.0;
+  static const iconSpace = 10.0;
   const ConsultationPage({super.key});
 
   @override
@@ -19,7 +19,7 @@ class ConsultationPage extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 const Icon(Icons.home),
-                SizedBox(
+                const SizedBox(
                   width: iconSpace,
                 ),
                 Flexible(
@@ -33,7 +33,7 @@ class ConsultationPage extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 const Icon(Icons.calendar_month),
-                SizedBox(
+                const SizedBox(
                   width: iconSpace,
                 ),
                 Flexible(

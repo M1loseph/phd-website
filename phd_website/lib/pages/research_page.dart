@@ -121,7 +121,7 @@ class ResearchPage extends StatelessWidget {
                 ),
               ),
               ClickableLink(
-                url: "https://orcid.org/0009-0008-3835-9170",
+                url: 'https://orcid.org/0009-0008-3835-9170',
                 textStyle: bodyTextStyle,
               ),
             ],

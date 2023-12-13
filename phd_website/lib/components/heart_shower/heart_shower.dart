@@ -1,7 +1,6 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import 'falling_heart.dart';
+import 'falling_heart_facade.dart';
 
 class HeartShower extends StatefulWidget {
   const HeartShower({
@@ -18,7 +17,7 @@ class _HeartShowerState extends State<HeartShower> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        for (int i = 0; i < _fallingHearts; i++) const FallingHeart(),
+        for (int i = 0; i < _fallingHearts; i++) const FallingHeartFacade(),
       ],
     );
   }

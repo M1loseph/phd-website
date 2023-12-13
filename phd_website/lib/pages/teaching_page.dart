@@ -6,7 +6,7 @@ import 'package:phd_website/services/body_text_style_service.dart';
 import 'package:provider/provider.dart';
 
 class TeachingPage extends StatelessWidget {
-  final differentialEquationsRulesLink =
+  static const differentialEquationsRulesLink =
       'https://prac.im.pwr.edu.pl/~plociniczak/doku.php?id=ode';
 
   const TeachingPage({super.key});

@@ -9,8 +9,8 @@ import 'package:phd_website/services/body_text_style_service.dart';
 import 'package:provider/provider.dart';
 
 class ContactPage extends StatelessWidget {
-  final iconSpace = 10.0;
-  final linkedinLogoPath = 'images/linkedin_logo.svg';
+  static const iconSpace = 10.0;
+  static const linkedinLogoPath = 'images/linkedin_logo.svg';
 
   const ContactPage({super.key});
 
@@ -31,7 +31,7 @@ class ContactPage extends StatelessWidget {
                   const Icon(
                     Icons.email,
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: iconSpace,
                   ),
                   Expanded(
@@ -43,15 +43,15 @@ class ContactPage extends StatelessWidget {
               ),
               Row(
                 children: [
-                  SizedBox(
+                  const SizedBox(
                     width: 25,
                     child: PlatformAwareSvg(
                       path: linkedinLogoPath,
-                      colorFilter: const ColorFilter.mode(
+                      colorFilter: ColorFilter.mode(
                           Colors.indigo, BlendMode.srcIn),
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: iconSpace,
                   ),
                   Expanded(

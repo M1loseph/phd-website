@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
@@ -39,7 +41,6 @@ class PHDApp extends StatefulWidget {
 }
 
 class _PHDAppState extends State<PHDApp> {
-  String? title;
   late GoRouter router = GoRouter(
     initialLocation: '/',
     routes: [
@@ -56,10 +57,6 @@ class _PHDAppState extends State<PHDApp> {
                     context: context,
                     locale: language,
                     child: AppTitleUpdater(
-                      appTitleUpdater: (newTitle) => setState(() {
-                        title = newTitle;
-                      }),
-                      currentTitle: title,
                       child: SelectableStack(
                         alignment: Alignment.bottomCenter,
                         children: [
@@ -138,10 +135,11 @@ class _PHDAppState extends State<PHDApp> {
 
   @override
   Widget build(BuildContext context) {
+    final globalState = context.watch<AppGlobalState>();
     return MaterialApp.router(
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      title: title ?? '',
+      title: globalState.applicationTitle,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.grey.shade100),
         appBarTheme: AppBarTheme(

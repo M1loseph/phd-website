@@ -11,6 +11,7 @@ class AppGlobalState with ChangeNotifier {
   static const _siteEntriesInitialValue = 1;
 
   final Future<SharedPreferences> _sharedPref;
+  String? _applicationTitle;
   bool _expandedMenu = false;
 
   AppGlobalState(this._sharedPref);
@@ -32,6 +33,13 @@ class AppGlobalState with ChangeNotifier {
       return Localizations.localeOf(context);
     }
     return Locale(currentLocale);
+  }
+
+  String get applicationTitle => _applicationTitle ?? '';
+
+  void changeApplicationTitle(String newTitle) {
+      _applicationTitle = newTitle;
+      notifyListeners();
   }
 
   Future<void> setCurrentLocale(String locale) async {

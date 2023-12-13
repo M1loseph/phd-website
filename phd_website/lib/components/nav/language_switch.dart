@@ -4,8 +4,9 @@ import 'package:phd_website/state/app_global_state.dart';
 import 'package:provider/provider.dart';
 
 class LanguageSwitch extends StatelessWidget {
-  final polishLocale = 'pl';
-  final englishLocale = 'en';
+  static const polishLocale = 'pl';
+  static const englishLocale = 'en';
+
   const LanguageSwitch({super.key});
 
   @override
@@ -27,7 +28,7 @@ class LanguageSwitch extends StatelessWidget {
                   padding:
                       const EdgeInsets.symmetric(vertical: 0, horizontal: 8),
                   child: Switch(
-                    value: lang.data == Locale(englishLocale),
+                    value: lang.data == const Locale(englishLocale),
                     activeColor: Colors.grey.shade800,
                     onChanged: (value) => globalState
                         .setCurrentLocale(value ? englishLocale : polishLocale),
@@ -46,12 +47,14 @@ class LanguageSwitch extends StatelessWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  _LanguageButton(
-                    language: polishLocale,
+                  LanguageButton(
+                    key: const Key('pl-button'),
+                    buttonLabelLanguage: polishLocale,
                     currentLanguage: lang.data,
                   ),
-                  _LanguageButton(
-                    language: englishLocale,
+                  LanguageButton(
+                    key: const Key('en-button'),
+                    buttonLabelLanguage: englishLocale,
                     currentLanguage: lang.data,
                   ),
                 ],
@@ -64,14 +67,16 @@ class LanguageSwitch extends StatelessWidget {
   }
 }
 
-class _LanguageButton extends StatelessWidget {
-  const _LanguageButton({
-    required this.currentLanguage,
-    required this.language,
-  });
+class LanguageButton extends StatelessWidget {
+  const LanguageButton({
+    super.key,
+    required Locale? currentLanguage,
+    required String buttonLabelLanguage,
+  })  : _buttonLabelLanguage = buttonLabelLanguage,
+        _currentLanguage = currentLanguage;
 
-  final Locale? currentLanguage;
-  final String language;
+  final Locale? _currentLanguage;
+  final String _buttonLabelLanguage;
 
   @override
   Widget build(BuildContext context) {
@@ -80,11 +85,9 @@ class _LanguageButton extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(2),
       child: GestureDetector(
-        onTap: () => globalState.setCurrentLocale(language),
+        onTap: () => globalState.setCurrentLocale(_buttonLabelLanguage),
         child: Container(
-          color: currentLanguage?.languageCode == language
-              ? Colors.white
-              : theme.appBarTheme.backgroundColor,
+          color: isActive() ? Colors.white : theme.appBarTheme.backgroundColor,
           child: Padding(
             padding: const EdgeInsets.symmetric(
               vertical: 1,
@@ -92,12 +95,16 @@ class _LanguageButton extends StatelessWidget {
             ),
             child: Text.rich(
               TextSpan(
-                  text: language.toUpperCase(),
+                  text: _buttonLabelLanguage.toUpperCase(),
                   mouseCursor: SystemMouseCursors.click),
             ),
           ),
         ),
       ),
     );
+  }
+
+  bool isActive() {
+    return _currentLanguage?.languageCode == _buttonLabelLanguage;
   }
 }
