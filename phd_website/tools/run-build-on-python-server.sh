@@ -1,3 +1,7 @@
 set -e
 
-python -m http.server -d build/web 3000
+flutter build web
+
+PORT=3000
+echo "I will start a server on port $PORT"
+python -m http.server -d build/web $PORT
