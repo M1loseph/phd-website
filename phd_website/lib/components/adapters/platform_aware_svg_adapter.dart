@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:phd_website/components/platform_aware_widget.dart';
+import 'package:phd_website/components/adapters/platform_aware_widget.dart';
 
-class PlatformAwareSvg extends PlatformAwareWidget {
+class PlatformAwareSvgAdapter extends PlatformAwareWidget {
   final String path;
   final double? height;
   final ColorFilter? colorFilter;
 
-  const PlatformAwareSvg({
+  const PlatformAwareSvgAdapter({
     super.key,
     required this.path,
     this.height,

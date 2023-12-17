@@ -1,12 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:phd_website/components/adapters/testable_web_view_adapter.dart';
 import 'package:phd_website/components/heart_shower/heart_shower.dart';
-import 'package:webview_flutter/webview_flutter.dart';
-
-enum _EasterEggState {
-  notStarted,
-  executing,
-}
 
 class SweetieEasterEgg extends StatefulWidget {
   final Widget child;
@@ -17,31 +12,30 @@ class SweetieEasterEgg extends StatefulWidget {
   });
 
   @override
-  State<SweetieEasterEgg> createState() => _SweetieEasterEggState();
+  State<SweetieEasterEgg> createState() => SweetieEasterEggState();
 }
 
-class _SweetieEasterEggState extends State<SweetieEasterEgg> {
-  final magicEasterEggDestination =
-      Uri.parse('https://youtube.com/embed/UTLFbVB8ctc?start=48');
-  late final controller = WebViewController()
-    ..loadRequest(magicEasterEggDestination);
+@visibleForTesting
+class SweetieEasterEggState extends State<SweetieEasterEgg> {
+  static const magicEasterEggDestination =
+      'https://youtube.com/embed/UTLFbVB8ctc?start=48';
   final magicLetterCombination = 'sweetie';
 
   String lettersPressed = '';
-  _EasterEggState easterEggState = _EasterEggState.notStarted;
+  EasterEggState easterEggState = EasterEggState.notStarted;
 
   @override
   Widget build(BuildContext context) {
     return KeyboardListener(
-      focusNode: FocusNode(onKey: handleKeyEvent),
+      focusNode: FocusNode(onKey: handleKeyEvent)..requestFocus(),
       child: Stack(
         children: [
           widget.child,
-          if (easterEggState == _EasterEggState.executing)
+          if (easterEggState == EasterEggState.running)
             GestureDetector(
               onTap: () {
                 setState(() {
-                  easterEggState = _EasterEggState.notStarted;
+                  easterEggState = EasterEggState.notStarted;
                 });
               },
               child: Container(
@@ -52,19 +46,20 @@ class _SweetieEasterEggState extends State<SweetieEasterEgg> {
                       maxHeight: 360,
                       maxWidth: 640,
                     ),
-                    child: WebViewWidget(controller: controller),
+                    child: const TestableWebViewAdapter(
+                        destination: magicEasterEggDestination),
                   ),
                 ),
               ),
             ),
-          if (easterEggState == _EasterEggState.executing) const HeartShower(),
+          if (easterEggState == EasterEggState.running) const HeartShower(),
         ],
       ),
     );
   }
 
   KeyEventResult handleKeyEvent(node, event) {
-    if (easterEggState != _EasterEggState.notStarted) {
+    if (easterEggState != EasterEggState.notStarted) {
       return KeyEventResult.ignored;
     }
     if (event is! RawKeyDownEvent) {
@@ -81,9 +76,15 @@ class _SweetieEasterEggState extends State<SweetieEasterEgg> {
         lettersPressed = character;
       } else if (magicLetterCombination == lettersPressed) {
         lettersPressed = '';
-        easterEggState = _EasterEggState.executing;
+        easterEggState = EasterEggState.running;
       }
     });
     return KeyEventResult.handled;
   }
+}
+
+@visibleForTesting
+enum EasterEggState {
+  notStarted,
+  running,
 }

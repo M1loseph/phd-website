@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -16,13 +18,28 @@ class _FallingHeartState extends State<FallingHeart>
     with TickerProviderStateMixin {
   late AnimationController controller;
   late RandomAnimationProperties animationProps;
+  late Timer initialDelayTimer;
 
   @override
   void initState() {
     super.initState();
-    _recreateAnimationPropsAndAnimationController();
-    Future.delayed(animationProps.initialDelay)
-        .then((value) => _beginAnimation());
+    _recreateAnimationProps();
+    controller = AnimationController(
+      duration: animationProps.fallingTime,
+      vsync: this,
+    )..addStatusListener((status) {
+        if (status != AnimationStatus.completed) {
+          return;
+        }
+        setState(() {
+          _recreateAnimationProps();
+          controller.reset();
+          controller.duration = animationProps.fallingTime;
+          _beginAnimation();
+        });
+      });
+
+    initialDelayTimer = Timer(animationProps.initialDelay, _beginAnimation);
   }
 
   @override
@@ -52,36 +69,21 @@ class _FallingHeartState extends State<FallingHeart>
 
   @override
   void dispose() {
-    if (!controller.isCompleted) {
-      controller.dispose();
-    }
+    controller.dispose();
+    initialDelayTimer.cancel();
     super.dispose();
   }
 
   void _beginAnimation() {
-    if (mounted) {
-      controller.forward();
+    if (!mounted) {
+      return;
     }
+    controller.forward();
   }
 
-  void _recreateAnimationPropsAndAnimationController() {
+  void _recreateAnimationProps() {
     animationProps = RandomAnimationProperties.random(
       windowWidth: widget.constraints.maxWidth,
     );
-    controller = AnimationController(
-      duration: animationProps.fallingTime,
-      vsync: this,
-    );
-
-    controller.addStatusListener((status) {
-      if (status != AnimationStatus.completed) {
-        return;
-      }
-      controller.dispose();
-      setState(() {
-        _recreateAnimationPropsAndAnimationController();
-        _beginAnimation();
-      });
-    });
   }
 }

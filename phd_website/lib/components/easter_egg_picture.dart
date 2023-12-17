@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:phd_website/components/platform_aware_image.dart';
+import 'package:phd_website/components/adapters/platform_aware_image_adapter.dart';
 
 class EasterEggPicture extends StatelessWidget {
   final int easterEggThreshold;
@@ -19,6 +19,6 @@ class EasterEggPicture extends StatelessWidget {
   Widget build(BuildContext context) {
     final calculatedPath =
         currentValue % easterEggThreshold == 0 ? easterEggPath : path;
-    return PlatformAwareImage(path: calculatedPath);
+    return PlatformAwareImageAdapter(path: calculatedPath);
   }
 }

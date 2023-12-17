@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:phd_website/components/adapters/platform_aware_image_adapter.dart';
 import 'package:phd_website/components/body_text.dart';
 import 'package:phd_website/components/easter_egg_picture.dart';
-import 'package:phd_website/components/platform_aware_image.dart';
 import 'package:phd_website/layouts/page_layout.dart';
 import 'package:phd_website/state/app_global_state.dart';
 import 'package:provider/provider.dart';
@@ -27,7 +27,7 @@ class HomePage extends StatelessWidget {
                     builder: (context, asyncSnapshot) {
                       if (!asyncSnapshot.hasData ||
                           !asyncSnapshot.data!.enabled) {
-                        return const PlatformAwareImage(
+                        return const PlatformAwareImageAdapter(
                           path: 'images/profile.jpg',
                         );
                       }

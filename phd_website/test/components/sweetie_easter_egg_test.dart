@@ -1,0 +1,57 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:phd_website/components/sweetie_easter_egg.dart';
+
+import '../tester_extensions.dart';
+
+void main() {
+  testWidgets(
+      'Given not started easter egg When "sweetie" is typed Then start animation',
+      (tester) async {
+    tester.initFullHDDesktop();
+    await tester.pumpWidget(MaterialApp(
+      home: Scaffold(
+        body: SweetieEasterEgg(
+          child: Container(),
+        ),
+      ),
+    ));
+
+    final state =
+        tester.state<SweetieEasterEggState>(find.byType(SweetieEasterEgg));
+
+    expect(state.easterEggState, EasterEggState.notStarted);
+
+    for (var char in 'sweetie'.characters) {
+      await tester.sendKeyDownEvent(LogicalKeyboardKey(char.codeUnitAt(0)));
+    }
+    await tester.pump();
+
+    expect(state.easterEggState, EasterEggState.running);
+  });
+
+  testWidgets(
+      'Given not started easter egg When gibberish is typed Then nothing happens',
+      (tester) async {
+    tester.initFullHDDesktop();
+    await tester.pumpWidget(MaterialApp(
+      home: Scaffold(
+        body: SweetieEasterEgg(
+          child: Container(),
+        ),
+      ),
+    ));
+
+    for (var char in 'gibberishswee'.characters) {
+      await tester.sendKeyDownEvent(LogicalKeyboardKey(char.codeUnitAt(0)));
+    }
+    await tester.pump();
+
+    final state =
+        tester.state<SweetieEasterEggState>(find.byType(SweetieEasterEgg));
+
+    expect(state.easterEggState, EasterEggState.notStarted);
+    expect(state.lettersPressed, 'swee');
+  });
+}

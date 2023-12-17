@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:phd_website/components/adapters/platform_aware_svg_adapter.dart';
 import 'package:phd_website/components/body_text.dart';
 import 'package:phd_website/components/clickable_link.dart';
-import 'package:phd_website/components/platform_aware_svg.dart';
 import 'package:phd_website/layouts/page_layout.dart';
 import 'package:phd_website/layouts/spaced_list_layout.dart';
 import 'package:phd_website/services/body_text_style_service.dart';
@@ -45,10 +45,10 @@ class ContactPage extends StatelessWidget {
                 children: [
                   const SizedBox(
                     width: 25,
-                    child: PlatformAwareSvg(
+                    child: PlatformAwareSvgAdapter(
                       path: linkedinLogoPath,
-                      colorFilter: ColorFilter.mode(
-                          Colors.indigo, BlendMode.srcIn),
+                      colorFilter:
+                          ColorFilter.mode(Colors.indigo, BlendMode.srcIn),
                     ),
                   ),
                   const SizedBox(

@@ -34,7 +34,7 @@ void main() {
     final languageButtons = languageButtonFinder
         .evaluate()
         .map((e) => e.widget)
-        .map((e) => e as LanguageButton);
+        .map((w) => w as LanguageButton);
     final plButton = languageButtons
         .where((button) => button.buttonLabelLanguage == 'pl')
         .first;
