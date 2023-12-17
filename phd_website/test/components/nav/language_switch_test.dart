@@ -29,15 +29,21 @@ void main() {
     await globalState.setCurrentLocale('pl');
     await tester.pumpAndSettle();
 
-    final plButtonFinder = find.byKey(const Key('pl-button'));
-    final enButtonFinder = find.byKey(const Key('en-button'));
-    final plButton = plButtonFinder.evaluate().single.widget as LanguageButton;
-    final enButton = enButtonFinder.evaluate().single.widget as LanguageButton;
+    final languageButtonFinder = find.byType(LanguageButton);
 
-    expect(plButtonFinder, findsOne,
-        reason: 'There should be one polish language button');
-    expect(enButtonFinder, findsOne,
-        reason: 'There should be one english language button');
+    final languageButtons = languageButtonFinder
+        .evaluate()
+        .map((e) => e.widget)
+        .map((e) => e as LanguageButton);
+    final plButton = languageButtons
+        .where((button) => button.buttonLabelLanguage == 'pl')
+        .first;
+    final enButton = languageButtons
+        .where((button) => button.buttonLabelLanguage == 'en')
+        .first;
+
+    expect(languageButtonFinder, findsExactly(2),
+        reason: 'There should be two language button');
     expect(plButton.isActive(), true,
         reason: 'Polish language button should be active');
     expect(enButton.isActive(), false,

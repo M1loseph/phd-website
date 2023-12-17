@@ -48,12 +48,10 @@ class LanguageSwitch extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   LanguageButton(
-                    key: const Key('pl-button'),
                     buttonLabelLanguage: polishLocale,
                     currentLanguage: lang.data,
                   ),
                   LanguageButton(
-                    key: const Key('en-button'),
                     buttonLabelLanguage: englishLocale,
                     currentLanguage: lang.data,
                   ),
@@ -103,6 +101,8 @@ class LanguageButton extends StatelessWidget {
       ),
     );
   }
+
+  String get buttonLabelLanguage => _buttonLabelLanguage;
 
   bool isActive() {
     return _currentLanguage?.languageCode == _buttonLabelLanguage;
