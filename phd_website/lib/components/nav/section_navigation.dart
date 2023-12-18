@@ -26,8 +26,8 @@ class _SectionNavigationState extends State<SectionNavigation> {
     final theme = Theme.of(context).textTheme;
     final style = width > 1000 ? theme.headlineSmall : theme.titleLarge;
     return MouseRegion(
-      onEnter: (event) => setState(() => hoovered = true),
-      onExit: (event) => setState(() => hoovered = false),
+      onEnter: (_) => setState(() => hoovered = true),
+      onExit: (_) => setState(() => hoovered = false),
       child: GestureDetector(
         onTap: () => context.go(widget.destination),
         child: Text.rich(

@@ -30,6 +30,8 @@ class _TestableWebViewAdapterState extends State<TestableWebViewAdapter> {
     if (controller == null) {
       return const SizedBox.shrink();
     }
-    return WebViewWidget(controller: controller!);
+    return WebViewWidget(
+      controller: controller!,
+    );
   }
 }

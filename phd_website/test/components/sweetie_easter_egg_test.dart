@@ -54,4 +54,29 @@ void main() {
     expect(state.easterEggState, EasterEggState.notStarted);
     expect(state.lettersPressed, 'swee');
   });
+
+  testWidgets(
+      'Given started easter egg When ESC is pressed Then popup disappears',
+      (tester) async {
+    tester.initFullHDDesktop();
+    await tester.pumpWidget(MaterialApp(
+      home: Scaffold(
+        body: SweetieEasterEgg(
+          child: Container(),
+        ),
+      ),
+    ));
+
+    for (var char in 'sweetie'.characters) {
+      await tester.sendKeyDownEvent(LogicalKeyboardKey(char.codeUnitAt(0)));
+    }
+
+    await tester.pump();
+    await tester.sendKeyDownEvent(LogicalKeyboardKey.escape);
+    await tester.pump();
+
+    final state = tester.state<SweetieEasterEggState>(find.byType(SweetieEasterEgg));
+
+    expect(state.easterEggState, EasterEggState.notStarted);
+  });
 }

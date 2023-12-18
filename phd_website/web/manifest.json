@@ -1,11 +1,11 @@
 {
-    "name": "phd_website",
-    "short_name": "phd_website",
+    "name": "Bogna Jaszczak",
+    "short_name": "Bogna Jaszczak",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "Bogna Jaszczak personal website",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
