@@ -1,0 +1,19 @@
+name: Continuous Delivery
+on:
+  push:
+    branches: [master]
+
+jobs:
+  build:
+    uses: ./.github/workflows/ci.yaml@master
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout deployment repository
+        uses: actions/checkout@v4.1.1
+        with:
+          repository: "M1loseph/M1loseph.github.io"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          path: deployment_repo
