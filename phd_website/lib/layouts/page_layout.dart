@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phd_website/components/footer.dart';
 
 /// Needs to be applied directly for the page because
 /// of this issue: https://github.com/flutter/flutter/issues/129523
@@ -13,32 +14,34 @@ class PageLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Container(
-        width: 1000,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.1),
-              spreadRadius: 5,
-              blurRadius: 7,
-              offset: const Offset(0, 3),
+    return LayoutBuilder(builder: (context, constrains) {
+      return ListView(
+        children: [
+          Center(
+            child: Container(
+              constraints:
+                  BoxConstraints(minHeight: constrains.maxHeight - Footer.height),
+              width: 1000,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.1),
+                    spreadRadius: 5,
+                    blurRadius: 7,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
+              ),
+              child: Padding(
+                padding: const EdgeInsets.only(left: 10, right: 10, top: 100),
+                child: page,
+              ),
             ),
-          ],
-        ),
-        child: ListView(
-          children: [
-            const SizedBox(
-              height: 100,
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
-              child: page,
-            ),
-          ],
-        ),
-      ),
-    );
+          ),
+          const Footer(),
+        ],
+      );
+    });
   }
 }

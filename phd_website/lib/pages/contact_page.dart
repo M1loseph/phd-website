@@ -10,7 +10,9 @@ import 'package:provider/provider.dart';
 
 class ContactPage extends StatelessWidget {
   static const iconSpace = 10.0;
+  static const iconSize = 25.0;
   static const linkedinLogoPath = 'images/linkedin_logo.svg';
+  static const stravaLogoPath = 'images/strava_logo.svg';
 
   const ContactPage({super.key});
 
@@ -20,51 +22,76 @@ class ContactPage extends StatelessWidget {
     final bodyTextStyleService = context.read<BodyTextStyleService>();
     final bodyTextTheme = bodyTextStyleService.getBodyTextStyle(context);
     return PageLayout(
-      page: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 500),
-          child: SpacedListLayout(
-            children: [
-              Row(
-                mainAxisSize: MainAxisSize.min,
+      page: Column(
+        children: [
+          Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 500),
+              child: SpacedListLayout(
                 children: [
-                  const Icon(
-                    Icons.email,
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(
+                        Icons.email,
+                      ),
+                      const SizedBox(
+                        width: iconSpace,
+                      ),
+                      Expanded(
+                        child: BodyText(
+                          locale!.contactPageEmail,
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(
-                    width: iconSpace,
+                  Row(
+                    children: [
+                      const SizedBox(
+                        width: iconSize,
+                        child: PlatformAwareSvgAdapter(
+                          path: linkedinLogoPath,
+                          colorFilter:
+                              ColorFilter.mode(Colors.indigo, BlendMode.srcIn),
+                        ),
+                      ),
+                      const SizedBox(
+                        width: iconSpace,
+                      ),
+                      Expanded(
+                        child: ClickableLink(
+                          url: locale.contactPageLinkedinURL,
+                          textStyle: bodyTextTheme,
+                        ),
+                      ),
+                    ],
                   ),
-                  Expanded(
-                    child: BodyText(
-                      locale!.contactPageEmail,
-                    ),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const SizedBox(
+                        width: iconSize,
+                        height: iconSize,
+                        child: PlatformAwareSvgAdapter(
+                          path: stravaLogoPath,
+                        ),
+                      ),
+                      const SizedBox(
+                        width: iconSpace,
+                      ),
+                      Expanded(
+                        child: ClickableLink(
+                          url: locale.contactPageStravaURL,
+                          textStyle: bodyTextTheme,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
-              Row(
-                children: [
-                  const SizedBox(
-                    width: 25,
-                    child: PlatformAwareSvgAdapter(
-                      path: linkedinLogoPath,
-                      colorFilter:
-                          ColorFilter.mode(Colors.indigo, BlendMode.srcIn),
-                    ),
-                  ),
-                  const SizedBox(
-                    width: iconSpace,
-                  ),
-                  Expanded(
-                    child: ClickableLink(
-                      url: locale.contactPageLinkedinURL,
-                      textStyle: bodyTextTheme,
-                    ),
-                  ),
-                ],
-              ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

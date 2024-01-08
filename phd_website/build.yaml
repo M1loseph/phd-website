@@ -1,0 +1,16 @@
+targets:
+  $default:
+    builders:
+      phd_website|version_file_builder:
+        enabled: true
+        generate_for:
+          - lib/build_properties/build_properties.dart
+builders:
+  version_file_builder:
+    import: "package:phd_website/build_properties/build_properties_generator.dart"
+    builder_factories: ["buildPropertiesGenerator"]
+    build_extensions: { ".dart": [".g.part"] }
+    build_to: cache
+    auto_apply: dependents
+    applies_builders: ["source_gen:combining_builder"]
+

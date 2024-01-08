@@ -12,39 +12,43 @@ class ConsultationPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final locale = AppLocalizations.of(context);
     return PageLayout(
-      page: Center(
-        child: SpacedListLayout(
-          children: [
-            Row(
-              mainAxisSize: MainAxisSize.min,
+      page: Column(
+        children: [
+          Center(
+            child: SpacedListLayout(
               children: [
-                const Icon(Icons.home),
-                const SizedBox(
-                  width: iconSpace,
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.home),
+                    const SizedBox(
+                      width: iconSpace,
+                    ),
+                    Flexible(
+                      child: BodyText(
+                        locale!.consultationPagePlace,
+                      ),
+                    ),
+                  ],
                 ),
-                Flexible(
-                  child: BodyText(
-                    locale!.consultationPagePlace,
-                  ),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.calendar_month),
+                    const SizedBox(
+                      width: iconSpace,
+                    ),
+                    Flexible(
+                      child: BodyText(
+                        locale.consultationPageDates,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(Icons.calendar_month),
-                const SizedBox(
-                  width: iconSpace,
-                ),
-                Flexible(
-                  child: BodyText(
-                    locale.consultationPageDates,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

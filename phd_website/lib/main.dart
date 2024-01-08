@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
+import 'package:phd_website/build_properties/build_properties.dart';
 import 'package:phd_website/components/cookies/cookie_popup.dart';
 import 'package:phd_website/components/selectable_stack.dart';
 import 'package:phd_website/components/sweetie_easter_egg.dart';
@@ -20,14 +21,18 @@ import 'pages/research_page.dart';
 import 'pages/teaching_page.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(
-        create: (context) => AppGlobalState(SharedPreferences.getInstance()),
+        create: (_) => AppGlobalState(SharedPreferences.getInstance()),
       ),
       Provider(
-        create: (context) => BodyTextStyleService(),
+        create: (_) => BodyTextStyleService(),
       ),
+      Provider(
+        create: (_) => BuildProperties(),
+      )
     ],
     child: const PHDApp(),
   ));
