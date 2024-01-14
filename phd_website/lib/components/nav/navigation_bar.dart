@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:phd_website/components/nav/language_switch.dart';
-import 'package:phd_website/components/nav/navigation_bar_first_element.dart';
+import 'package:phd_website/components/nav/menu_expansion_switch.dart';
 import 'package:phd_website/components/nav/navigation_tabs.dart';
+import 'package:phd_website/components/nav/wmat_logo.dart';
 import 'package:phd_website/layouts/responsive_layout.dart';
 import 'package:phd_website/state/app_global_state.dart';
 import 'package:provider/provider.dart';
@@ -23,7 +24,7 @@ class NavigationBar extends StatelessWidget {
         color: appBarColor,
         child: Row(
           children: [
-            const NavigationBarFirstElement(),
+            const WMatLogo(),
             NavigationTabs(
               currentPath: currentPath,
             ),
@@ -42,40 +43,38 @@ class NavigationBar extends StatelessWidget {
                   color: Colors.grey.shade500.withAlpha(100),
                 ),
               ),
-            )
-          else
-            const SizedBox.shrink(),
+            ),
           AnimatedSize(
             duration: const Duration(milliseconds: 200),
-            alignment: Alignment.topLeft,
             child: Container(
+              width: globalState.isMenuExpanded() ? 200 : 0,
               color: globalState.isMenuExpanded()
                   ? Colors.white
                   : Colors.transparent,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const NavigationBarFirstElement(),
-                  if (globalState.isMenuExpanded())
-                    Expanded(
-                      child: Column(
-                        children: [
-                          NavigationTabs(
-                            currentPath: currentPath,
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          const LanguageSwitch()
-                        ],
-                      ),
-                    )
-                  else
-                    const SizedBox.shrink()
+                  Expanded(
+                    child: ListView(
+                      children: [
+                        const SizedBox(
+                          height: 50,
+                        ),
+                        NavigationTabs(
+                          currentPath: currentPath,
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        const LanguageSwitch()
+                      ],
+                    ),
+                  )
                 ],
               ),
             ),
           ),
+          const MenuExpansionSwitch(),
         ],
       ),
     );

@@ -21,6 +21,6 @@ class ResponsiveLayout extends StatelessWidget {
 
   bool _isMobileView(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
-    return width < mobileMaxWidth;
+    return isMobileView(width);
   }
 }

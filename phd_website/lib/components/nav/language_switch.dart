@@ -30,7 +30,7 @@ class LanguageSwitch extends StatelessWidget {
                   child: Switch(
                     value: lang.data == const Locale(englishLocale),
                     activeColor: Colors.grey.shade800,
-                    onChanged: (value) => globalState
+                    onChanged: (value) async => await globalState
                         .setCurrentLocale(value ? englishLocale : polishLocale),
                   ),
                 ),

@@ -50,17 +50,11 @@ class NavigationTabs extends StatelessWidget {
           name: locale.navigationResearchPage, path: '/research'),
     ];
     return List.generate(destinations.length, (index) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 20,
-          vertical: 10,
-        ),
-        child: SectionNavigation(
-          destination: destinations[index].path,
-          index: index,
-          selected: destinations[index].path == _currentPath,
-          name: destinations[index].name,
-        ),
+      return SectionNavigation(
+        destination: destinations[index].path,
+        index: index,
+        selected: destinations[index].path == _currentPath,
+        name: destinations[index].name,
       );
     });
   }

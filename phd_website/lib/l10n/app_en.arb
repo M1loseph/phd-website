@@ -27,5 +27,16 @@
     "researchPage51ConferenceOnApplicationsOfMathematicsConferenceName": "51st Conference on Applications of Mathematics",
     "researchPage51ConferenceOnApplicationsOfMathematicsWebsite": "https://sites.google.com/view/51-kzm/",
     "researchPage51ConferenceOnApplicationsOfMathematicsTalkTitle": "Mathematical modelling of trail running",
-    "researchPageOrcidNumberLabel": "ORCiD"
+    "researchPageOrcidNumberLabel": "ORCiD",
+    "footer": "Copyright © {lastBuildYear} version {appVersion}",
+    "@footer": {
+        "placeholders": {
+            "lastBuildYear": {
+                "type": "int"
+            },
+            "appVersion": {
+                "type": "String"
+            }
+        }
+    }
 }

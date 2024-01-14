@@ -8,6 +8,7 @@ import 'package:phd_website/components/cookies/cookie_popup.dart';
 import 'package:phd_website/components/selectable_stack.dart';
 import 'package:phd_website/components/sweetie_easter_egg.dart';
 import 'package:phd_website/layouts/navigation_layout.dart';
+import 'package:phd_website/responsive_transition_page.dart';
 import 'package:phd_website/services/body_text_style_service.dart';
 import 'package:phd_website/state/app_global_state.dart';
 import 'package:provider/provider.dart';
@@ -83,45 +84,50 @@ class _PHDAppState extends State<PHDApp> {
           GoRoute(
             path: '/',
             pageBuilder: (context, state) {
-              return NoTransitionPage(
+              return responsiveTransitionPage(
                 key: state.pageKey,
                 child: const HomePage(),
+                context: context,
               );
             },
           ),
           GoRoute(
             path: '/contact',
             pageBuilder: (context, state) {
-              return NoTransitionPage(
+              return responsiveTransitionPage(
                 key: state.pageKey,
                 child: const ContactPage(),
+                context: context,
               );
             },
           ),
           GoRoute(
             path: '/consultation',
             pageBuilder: (context, state) {
-              return NoTransitionPage(
+              return responsiveTransitionPage(
                 key: state.pageKey,
                 child: const ConsultationPage(),
+                context: context,
               );
             },
           ),
           GoRoute(
             path: '/teaching',
             pageBuilder: (context, state) {
-              return NoTransitionPage(
+              return responsiveTransitionPage(
                 key: state.pageKey,
                 child: const TeachingPage(),
+                context: context,
               );
             },
           ),
           GoRoute(
             path: '/research',
             pageBuilder: (context, state) {
-              return NoTransitionPage(
+              return responsiveTransitionPage(
                 key: state.pageKey,
                 child: const ResearchPage(),
+                context: context,
               );
             },
           ),
