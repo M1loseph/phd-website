@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:phd_website/layouts/responsive_layout.dart';
 
-class SectionNavigation extends StatefulWidget {
+import 'desktop_section_navigation.dart';
+import 'mobile_section_navigation.dart';
+
+class SectionNavigation extends StatelessWidget {
   final int index;
   final String destination;
   final String name;
@@ -16,78 +18,18 @@ class SectionNavigation extends StatefulWidget {
       required this.name});
 
   @override
-  State<SectionNavigation> createState() => _SectionNavigationState();
-}
-
-class _SectionNavigationState extends State<SectionNavigation> {
-  bool hoovered = false;
-  @override
   Widget build(BuildContext context) {
-    return MouseRegion(
-      onEnter: (_) => setState(() => hoovered = true),
-      onExit: (_) => setState(() => hoovered = false),
-      child: GestureDetector(
-        onTap: () => context.go(widget.destination),
-        child: ResponsiveLayout(
-          desktopLayout: SectionLabel(
-            name: widget.name,
-            selected: widget.selected,
-            hoovered: hoovered,
-          ),
-          mobileLayout: Row(
-            children: [
-              SectionLabel(
-                name: widget.name,
-                selected: widget.selected,
-                hoovered: hoovered,
-              ),
-            ],
-          ),
-        ),
+    return ResponsiveLayout(
+      desktopLayout: DesktopSectionNavigation(
+        destination: destination,
+        name: name,
+        selected: selected,
+      ),
+      mobileLayout: MobileSectionNavigation(
+        destination: destination,
+        name: name,
+        selected: selected,
       ),
     );
-  }
-}
-
-class SectionLabel extends StatelessWidget {
-  final String name;
-  final bool selected;
-  final bool hoovered;
-  const SectionLabel(
-      {super.key,
-      required this.name,
-      required this.selected,
-      required this.hoovered});
-
-  @override
-  Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
-    final theme = Theme.of(context).textTheme;
-    final style = width > 1000 ? theme.headlineSmall : theme.titleLarge;
-    return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 20,
-        vertical: 10,
-      ),
-      child: Text.rich(
-        TextSpan(
-          text: name,
-          mouseCursor: SystemMouseCursors.click,
-        ),
-        style: style?.copyWith(
-          fontWeight: _determinFontWeight(),
-        ),
-      ),
-    );
-  }
-
-  FontWeight _determinFontWeight() {
-    if (selected) {
-      return FontWeight.bold;
-    }
-    if (hoovered) {
-      return FontWeight.bold;
-    }
-    return FontWeight.normal;
   }
 }

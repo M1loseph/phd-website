@@ -21,7 +21,15 @@ class NavigationBar extends StatelessWidget {
     final appBarColor = Theme.of(context).appBarTheme.backgroundColor;
     return ResponsiveLayout(
       desktopLayout: Container(
-        color: appBarColor,
+        decoration: BoxDecoration(
+          color: appBarColor,
+          boxShadow: const [
+            BoxShadow(
+              color: Colors.black26,
+              blurRadius: 10,
+            )
+          ],
+        ),
         child: Row(
           children: [
             const WMatLogo(),
@@ -48,9 +56,17 @@ class NavigationBar extends StatelessWidget {
             duration: const Duration(milliseconds: 200),
             child: Container(
               width: globalState.isMenuExpanded() ? 200 : 0,
-              color: globalState.isMenuExpanded()
-                  ? Colors.white
-                  : Colors.transparent,
+              decoration: BoxDecoration(
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 20,
+                  )
+                ],
+                color: globalState.isMenuExpanded()
+                    ? Colors.white
+                    : Colors.transparent,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

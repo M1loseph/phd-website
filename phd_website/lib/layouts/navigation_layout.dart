@@ -16,13 +16,17 @@ class NavigationLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ResponsiveLayout(
-      desktopLayout: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+      desktopLayout: Stack(
         children: [
-          navbar.NavigationBar(currentPath: state.fullPath!),
-          Expanded(
-            child: currentPage,
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Expanded(
+                child: currentPage,
+              ),
+            ],
           ),
+          navbar.NavigationBar(currentPath: state.fullPath!),
         ],
       ),
       mobileLayout: Stack(

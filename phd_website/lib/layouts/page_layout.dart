@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:phd_website/components/footer.dart';
+import 'package:phd_website/constants.dart';
 
 /// Needs to be applied directly for the page because
 /// of this issue: https://github.com/flutter/flutter/issues/129523
@@ -19,8 +20,8 @@ class PageLayout extends StatelessWidget {
         children: [
           Center(
             child: Container(
-              constraints:
-                  BoxConstraints(minHeight: constrains.maxHeight - Footer.height),
+              constraints: BoxConstraints(
+                  minHeight: constrains.maxHeight - Footer.height),
               width: 1000,
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -34,7 +35,10 @@ class PageLayout extends StatelessWidget {
                 ],
               ),
               child: Padding(
-                padding: const EdgeInsets.only(left: 10, right: 10, top: 100),
+                padding: EdgeInsets.only(
+                    left: 10,
+                    right: 10,
+                    top: isMobileView(constrains.maxWidth) ? 100 : 150),
                 child: page,
               ),
             ),
