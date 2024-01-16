@@ -1,7 +1,7 @@
 targets:
   $default:
     builders:
-      phd_website|version_file_builder:
+      phd_website:version_file_builder:
         enabled: true
         generate_for:
           - lib/build_properties/build_properties.dart
@@ -13,4 +13,3 @@ builders:
     build_to: cache
     auto_apply: dependents
     applies_builders: ["source_gen:combining_builder"]
-
