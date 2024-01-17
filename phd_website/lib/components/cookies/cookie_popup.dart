@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:phd_website/components/body_text.dart';
 import 'package:phd_website/layouts/responsive_layout.dart';
 import 'package:phd_website/state/app_global_state.dart';
 import 'package:phd_website/state/cookies_approval.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'cookie_buttons.dart';
 
@@ -33,6 +33,13 @@ class CookiePopup extends StatelessWidget {
               desktopLayout: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  const Padding(
+                    padding: EdgeInsets.only(right: 10.0),
+                    child: Icon(
+                      Icons.cookie,
+                      color: Colors.brown,
+                    ),
+                  ),
                   Flexible(
                     child: BodyText(
                       locale!.cookiesPopupMessage,
@@ -48,7 +55,19 @@ class CookiePopup extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  BodyText(locale.cookiesPopupMessage),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.only(right: 10.0),
+                        child: Icon(
+                          Icons.cookie,
+                          color: Colors.brown,
+                        ),
+                      ),
+                      Flexible(child: BodyText(locale.cookiesPopupMessage)),
+                    ],
+                  ),
                   const SizedBox(
                     height: 10,
                   ),

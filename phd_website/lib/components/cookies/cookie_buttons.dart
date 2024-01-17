@@ -13,24 +13,33 @@ class CookieButtons extends StatelessWidget {
   Widget build(BuildContext context) {
     final globalState = context.read<AppGlobalState>();
     final locale = AppLocalizations.of(context);
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        CookieBarButton(
-          text: locale!.cookiesPopupAcceptButton,
-          icon: Icons.check,
-          onPressed: () => globalState.acceptCookies(),
-        ),
-        const SizedBox(
-          width: 5,
-        ),
-        CookieBarButton(
-          text: locale.cookiesPopupRejectButton,
-          icon: Icons.close_rounded,
-          onPressed: () => globalState.rejectCookies(),
-        ),
-      ],
+    return IntrinsicHeight(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          CookieBarButton(
+            text: locale!.cookiesPopupAcceptButton,
+            icon: const Icon(
+              Icons.check,
+              color: Color.fromARGB(255, 0, 157, 5),
+            ),
+            onPressed: () => globalState.acceptCookies(),
+          ),
+          const SizedBox(
+            width: 5,
+          ),
+          CookieBarButton(
+            text: locale.cookiesPopupRejectButton,
+            icon: const Icon(
+              Icons.close_rounded,
+              color: Color.fromARGB(255, 182, 3, 0),
+            ),
+            onPressed: () => globalState.rejectCookies(),
+          ),
+        ],
+      ),
     );
   }
 }
