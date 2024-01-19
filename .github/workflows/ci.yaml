@@ -2,6 +2,8 @@ name: Continuous Integration
 on:
   pull_request:
     branches: [master]
+  push:
+    branches: [master]
   workflow_call:
 
 jobs:
@@ -18,14 +20,6 @@ jobs:
           flutter-version: "3.16.4"
           channel: "stable"
 
-      - name: Install dependencies
+      - name: Run build script
         working-directory: phd_website
-        run: flutter pub get
-
-      - name: Run tests
-        working-directory: phd_website
-        run: flutter test
-
-      - name: Build web app
-        working-directory: phd_website
-        run: flutter build web
+        run: ./tools/ci/build.sh ${{ secrets.DEPLOYMENT_ENDPOINT }}

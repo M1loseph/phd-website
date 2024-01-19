@@ -1,0 +1,1 @@
+I created these scripts so I don't forget command I need to run to get basic things done. Don't use them directly, it's a waste of time.

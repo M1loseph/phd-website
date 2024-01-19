@@ -1,7 +1,8 @@
 name: Continuous Delivery
 on:
   push:
-    branches: [master]
+    tags:
+      - '*'
 
 jobs:
   build:
@@ -11,9 +12,11 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout deployment repository
-        uses: actions/checkout@v4.1.1
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
         with:
-          repository: "M1loseph/M1loseph.github.io"
-          token: ${{ secrets.GITHUB_TOKEN }}
-          path: deployment_repo
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
+      - name: Replace all files on target machine
+        working-directory: phd_website
+        run: ./tools/ci/release.sh ${{ secrets.USERNAME }} ${{ secrets.HOST }} ${{ secrets.PATH }}

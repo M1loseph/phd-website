@@ -5,9 +5,10 @@ import 'cookies_approval.dart';
 import 'optional_feature.dart';
 
 class AppGlobalState with ChangeNotifier {
-  static const _langKey = 'lang';
-  static const _cookiesAcknowledgedKey = 'cookiesAcknowledged';
-  static const _siteEntriesKey = 'siteEntries';
+  static const _v1_prefix = '_v1_';
+  static const _langKey = '${_v1_prefix}lang';
+  static const _cookiesAcknowledgedKey = '${_v1_prefix}cookiesAcknowledged';
+  static const _siteEntriesKey = '${_v1_prefix}siteEntries';
   static const _siteEntriesInitialValue = 1;
 
   final Future<SharedPreferences> _sharedPref;
@@ -38,8 +39,8 @@ class AppGlobalState with ChangeNotifier {
   String get applicationTitle => _applicationTitle ?? '';
 
   void changeApplicationTitle(String newTitle) {
-      _applicationTitle = newTitle;
-      notifyListeners();
+    _applicationTitle = newTitle;
+    notifyListeners();
   }
 
   Future<void> setCurrentLocale(String locale) async {
@@ -57,7 +58,8 @@ class AppGlobalState with ChangeNotifier {
 
   Future<void> rejectCookies() async {
     final sharedPref = await _sharedPref;
-    await sharedPref.setString(_cookiesAcknowledgedKey, CookiesApproval.rejected.name);
+    await sharedPref.setString(
+        _cookiesAcknowledgedKey, CookiesApproval.rejected.name);
     notifyListeners();
   }
 
