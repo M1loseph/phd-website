@@ -10,8 +10,8 @@ void main() {
       () async {
     // Given
     SharedPreferences.setMockInitialValues({
-      'siteEntries': 10,
-      'cookiesAcknowledged': CookiesApproval.approved.name
+      '_v1_siteEntries': 10,
+      '_v1_cookiesAcknowledged': CookiesApproval.approved.name
     });
     final appGlobalState = AppGlobalState(SharedPreferences.getInstance());
 
