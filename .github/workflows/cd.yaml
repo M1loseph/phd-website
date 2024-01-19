@@ -19,4 +19,4 @@ jobs:
           known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
       - name: Replace all files on target machine
         working-directory: phd_website
-        run: ./tools/ci/release.sh ${{ secrets.USERNAME }} ${{ secrets.HOST }} ${{ secrets.PATH }}
+        run: ./scripts/ci/release.sh ${{ secrets.USERNAME }} ${{ secrets.HOST }} ${{ secrets.PATH }}

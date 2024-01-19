@@ -22,4 +22,4 @@ jobs:
 
       - name: Run build script
         working-directory: phd_website
-        run: ./tools/ci/build.sh ${{ secrets.DEPLOYMENT_ENDPOINT }}
+        run: ./scripts/ci/build.sh ${{ secrets.DEPLOYMENT_ENDPOINT }}
