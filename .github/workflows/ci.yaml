@@ -28,5 +28,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: web-build-artifact
-          path: build/web
+          path: phd_website/build/web
           retention-days: 1
