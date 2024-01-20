@@ -17,8 +17,8 @@ jobs:
       - name: Install flutter
         uses: subosito/flutter-action@v2.12.0
         with:
-          flutter-version: "3.16.4"
-          channel: "stable"
+          flutter-version: "3.16.7"
+          channel: stable
 
       - name: Run build script
         working-directory: phd_website
