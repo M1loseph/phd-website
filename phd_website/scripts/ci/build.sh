@@ -1,11 +1,12 @@
 !#/bin/bash
+# Creates a release build for web. 
+# This script should be run in the root of flutter project.
+
+set -e
 
 # / is the default deployment endpoint
 DEPLOYMENT_ENDPOINT=${1:-/}
 
-# Creates a release build for web. 
-# This script should be run in the root of flutter project.
-set -e
 
 flutter pub get
 
