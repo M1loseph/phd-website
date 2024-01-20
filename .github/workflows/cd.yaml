@@ -5,11 +5,11 @@ on:
       - '*'
 
 jobs:
-  # build:
-  #   uses: ./.github/workflows/ci.yaml
+  build:
+    uses: ./.github/workflows/ci.yaml
 
   deploy:
-    # needs: build
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Install rsync
