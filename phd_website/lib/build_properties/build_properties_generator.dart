@@ -11,7 +11,7 @@ abstract class VersionSourceRunner {
 class GitVersionSourceRunner implements VersionSourceRunner {
   @override
   FutureOr<String> getGitVersion() async {
-    return Process.run('git', ['describe', '--tags', '--abbrev=0']).then((processResult) {
+    return Process.run('git', ['describe', '--tags']).then((processResult) {
       return (processResult.stdout as String).trim();
     });
   }
