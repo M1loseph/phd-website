@@ -4,8 +4,12 @@
 
 set -e
 
-# / is the default deployment endpoint
-DEPLOYMENT_ENDPOINT=${1:-/}
+DEPLOYMENT_ENDPOINT=$1
+
+if [ -z "${DEPLOYMENT_ENDPOINT}" ]; then
+  echo "Please provide a deployment endpoint as the first argument."
+  exit 1
+fi
 
 
 flutter pub get
