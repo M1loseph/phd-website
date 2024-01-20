@@ -15,24 +15,21 @@ jobs:
       - name: Install rsync
         run: sudo apt-get install -y rsync
 
-      - name: Test rsync
-        run: rsync --version
+      - name: Checkout repo
+        uses: actions/checkout@v4.1.1
 
-      # - name: Checkout repo
-      #   uses: actions/checkout@v4.1.1
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
 
-      # - name: Install SSH key
-      #   uses: shimataro/ssh-key-action@v2
-      #   with:
-      #     key: ${{ secrets.SSH_PRIVATE_KEY }}
-      #     known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
-
-      # - name: Download artifact
-      #   uses: actions/download-artifact@v4
-      #   with:
-      #     name: web-build-artifact
-      #     path: phd_website/build/web
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: web-build-artifact
+          path: phd_website/build/web
           
-      # - name: Replace all files on target machine
-      #   working-directory: phd_website
-      #   run: ./scripts/ci/release.sh ${{ secrets.USERNAME }} ${{ secrets.HOST }} ${{ secrets.PATH }}
+      - name: Replace all files on target machine
+        working-directory: phd_website
+        run: ./scripts/ci/release.sh ${{ secrets.USERNAME }} ${{ secrets.HOST }} ${{ secrets.PATH }}
