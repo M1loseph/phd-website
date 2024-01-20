@@ -1,9 +1,9 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 set -e
 
-USERNAME=$1
-HOST=$2
-PATH=$3
+ARG_USERNAME=$1
+ARG_HOST=$2
+ARG_PATH=$3
 
-rsync -av --delete build/web/ ${USERNAME}@${HOST}:${PATH}
+rsync -av --delete build/web/ ${ARG_USERNAME}@${ARG_HOST}:${ARG_PATH}

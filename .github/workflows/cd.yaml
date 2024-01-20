@@ -12,12 +12,6 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - name: Install rsync
-        run: sudo apt-get install -y rsync
-
-      - name: Rsync version
-        run: rsync --version
-
       - name: Checkout repo
         uses: actions/checkout@v4.1.1
 
@@ -33,14 +27,6 @@ jobs:
           name: web-build-artifact
           path: phd_website/build/web
 
-      - name: Rsync version 2
-        working-directory: phd_website
-        run: rsync --version
-
-      - name: Print env
-        working-directory: phd_website
-        run: env
-          
       - name: Replace all files on target machine
         working-directory: phd_website
         run: ./scripts/ci/release.sh ${{ secrets.USERNAME }} ${{ secrets.HOST }} ${{ secrets.PATH }}
