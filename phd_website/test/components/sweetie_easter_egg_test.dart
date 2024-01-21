@@ -75,7 +75,8 @@ void main() {
     await tester.sendKeyDownEvent(LogicalKeyboardKey.escape);
     await tester.pump();
 
-    final state = tester.state<SweetieEasterEggState>(find.byType(SweetieEasterEgg));
+    final state =
+        tester.state<SweetieEasterEggState>(find.byType(SweetieEasterEgg));
 
     expect(state.easterEggState, EasterEggState.notStarted);
   });

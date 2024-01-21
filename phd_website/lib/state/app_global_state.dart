@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:phd_website/state/cookies_approval.dart';
+import 'package:phd_website/state/optional_feature.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import 'cookies_approval.dart';
-import 'optional_feature.dart';
 
 class AppGlobalState with ChangeNotifier {
   static const _v1_prefix = '_v1_';

@@ -2,8 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
-import 'random_animation_properties.dart';
+import 'package:phd_website/components/heart_shower/random_animation_properties.dart';
 
 class FallingHeart extends StatefulWidget {
   final BoxConstraints constraints;

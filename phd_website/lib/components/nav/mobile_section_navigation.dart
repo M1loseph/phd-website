@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-
-import 'section_label.dart';
+import 'package:phd_website/components/nav/section_label.dart';
 
 class MobileSectionNavigation extends StatelessWidget {
   final String destination;

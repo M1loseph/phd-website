@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:phd_website/components/body_text.dart';
+import 'package:phd_website/components/cookies/cookie_buttons.dart';
 import 'package:phd_website/layouts/responsive_layout.dart';
 import 'package:phd_website/state/app_global_state.dart';
 import 'package:phd_website/state/cookies_approval.dart';
 import 'package:provider/provider.dart';
-
-import 'cookie_buttons.dart';
 
 class CookiePopup extends StatelessWidget {
   const CookiePopup({super.key});

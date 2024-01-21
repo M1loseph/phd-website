@@ -20,15 +20,11 @@
     "teachingPageDifferentialEquationsInTechnology": "Równania różniczkowe w technice",
     "teachingPageDifferentialEquationsInTechDescription": "Zasady zaliczenia oraz listy znajdują się na stronie wykładowcy.",
     "researchPageConferencesSectionTitle": "Konferencje",
-    "researchPageTalkTitle": "Temat prezentacji: ",
-    "researchPageOrganizerWebsite": "Strona konferencji: ",
+    "researchPageOrganizerWebsite": "Strona konferencji",
     "researchPageEcmi2023ConferenceName": "ECMI 2023",
-    "researchPageEcmi2023Website": "https://ecmi2023.org/",
     "researchPageEcmi2023TalkTitle": "Modeling Trail Running",
-    "researchPage51ConferenceOnApplicationsOfMathematicsConferenceName": "LI Konferencja Zastosowań Matematyki",
-    "researchPage51ConferenceOnApplicationsOfMathematicsWebsite": "https://sites.google.com/view/51-kzm/",
+    "researchPage51ConferenceOnApplicationsOfMathematicsConferenceName": "51 Konferencja Zastosowań Matematyki",
     "researchPage51ConferenceOnApplicationsOfMathematicsTalkTitle": "Mathematical modelling of trail running",
-    "researchPageOrcidNumberLabel": "ORCiD",
     "footer": "Wszelkie prawa zastrzeżone © {lastBuildYear} wersja {appVersion}",
     "@footer": {
         "placeholders": {

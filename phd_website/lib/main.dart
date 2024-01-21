@@ -4,22 +4,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:phd_website/build_properties/build_properties.dart';
+import 'package:phd_website/components/app_title_updater.dart';
 import 'package:phd_website/components/cookies/cookie_popup.dart';
 import 'package:phd_website/components/selectable_stack.dart';
 import 'package:phd_website/components/sweetie_easter_egg.dart';
 import 'package:phd_website/layouts/navigation_layout.dart';
+import 'package:phd_website/pages/consultation_page.dart';
+import 'package:phd_website/pages/contact_page.dart';
+import 'package:phd_website/pages/home_page.dart';
+import 'package:phd_website/pages/research_page.dart';
+import 'package:phd_website/pages/teaching_page.dart';
 import 'package:phd_website/responsive_transition_page.dart';
 import 'package:phd_website/services/body_text_style_service.dart';
 import 'package:phd_website/state/app_global_state.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import 'components/app_title_updater.dart';
-import 'pages/consultation_page.dart';
-import 'pages/contact_page.dart';
-import 'pages/home_page.dart';
-import 'pages/research_page.dart';
-import 'pages/teaching_page.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();

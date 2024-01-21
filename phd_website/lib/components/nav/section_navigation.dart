@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:phd_website/components/nav/desktop_section_navigation.dart';
+import 'package:phd_website/components/nav/mobile_section_navigation.dart';
 import 'package:phd_website/layouts/responsive_layout.dart';
-
-import 'desktop_section_navigation.dart';
-import 'mobile_section_navigation.dart';
 
 class SectionNavigation extends StatelessWidget {
   final int index;

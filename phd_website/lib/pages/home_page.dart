@@ -44,9 +44,11 @@ class HomePage extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                locale!.homePageName,
-                style: Theme.of(context).textTheme.displaySmall,
+              FittedBox(
+                child: Text(
+                  locale!.homePageName,
+                  style: Theme.of(context).textTheme.displaySmall,
+                ),
               ),
               BodyText(
                 locale.homePageDepartment,

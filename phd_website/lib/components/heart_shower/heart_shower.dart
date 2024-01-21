@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import 'falling_heart_facade.dart';
+import 'package:phd_website/components/heart_shower/falling_heart_facade.dart';
 
 class HeartShower extends StatefulWidget {
   const HeartShower({
