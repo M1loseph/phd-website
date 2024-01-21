@@ -5,12 +5,14 @@ import 'package:phd_website/components/adapters/platform_aware_widget.dart';
 class PlatformAwareSvgAdapter extends PlatformAwareWidget {
   final String path;
   final double? height;
+  final double? width;
   final ColorFilter? colorFilter;
 
   const PlatformAwareSvgAdapter({
     super.key,
     required this.path,
     this.height,
+    this.width,
     this.colorFilter,
   });
 
@@ -19,7 +21,8 @@ class PlatformAwareSvgAdapter extends PlatformAwareWidget {
     return SvgPicture.asset(
       getActualPath(path),
       height: height,
-      colorFilter: colorFilter, 
+      width: width,
+      colorFilter: colorFilter,
     );
   }
 }

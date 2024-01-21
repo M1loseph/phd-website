@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
+import 'package:phd_website/components/adapters/platform_aware_svg_adapter.dart';
 import 'package:phd_website/layouts/page_layout.dart';
 import 'package:phd_website/model/conference_do.dart';
 import 'package:phd_website/services/body_text_style_service.dart';
@@ -74,8 +74,8 @@ class ORCiD extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: IconButton(
-                icon: SvgPicture.asset(
-                  'images/orcid_logo.svg',
+                icon: const PlatformAwareSvgAdapter(
+                  path: 'images/orcid_logo.svg',
                   width: 150,
                 ),
                 hoverColor: Colors.transparent,
