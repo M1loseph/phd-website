@@ -20,4 +20,4 @@ dart run build_runner build --delete-conflicting-outputs
 
 flutter test
 
-flutter build web --web-renderer=html --base-href "${DEPLOYMENT_ENDPOINT}"
+flutter build web --base-href "${DEPLOYMENT_ENDPOINT}"
