@@ -16,6 +16,7 @@ import 'package:phd_website/pages/research_page.dart';
 import 'package:phd_website/pages/teaching_page.dart';
 import 'package:phd_website/responsive_transition_page.dart';
 import 'package:phd_website/services/body_text_style_service.dart';
+import 'package:phd_website/services/clipboard_service.dart';
 import 'package:phd_website/state/app_global_state.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -27,12 +28,9 @@ void main() {
       ChangeNotifierProvider(
         create: (_) => AppGlobalState(SharedPreferences.getInstance()),
       ),
-      Provider(
-        create: (_) => BodyTextStyleService(),
-      ),
-      Provider(
-        create: (_) => BuildProperties(),
-      )
+      Provider(create: (_) => BodyTextStyleService()),
+      Provider<BuildProperties>(create: (_) => GitBuildProperties()),
+      Provider(create: (_) => ClipboardService())
     ],
     child: const PHDApp(),
   ));

@@ -26,9 +26,11 @@ class AppPropertiesGenerator extends Generator {
   FutureOr<String?> generate(LibraryReader library, BuildStep buildStep) async {
     final version = await gitVersionSourceRunner.getGitVersion();
     return '''
-      extension BuildPropertiesExtension on BuildProperties {
+      class GitBuildProperties implements BuildProperties {
+        @override
         String get appVersion => '$version';
 
+        @override
         int get lastBuildYear => ${DateTime.now().year};
      }
     ''';
