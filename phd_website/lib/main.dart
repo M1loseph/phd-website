@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
@@ -136,9 +134,7 @@ class _PHDAppState extends State<PHDApp> {
   @override
   void initState() {
     super.initState();
-    Future.microtask(() {
-      context.read<AppGlobalState>().bumpNumberOfEntires();
-    });
+    context.read<AppGlobalState>().bumpNumberOfEntires();
   }
 
   @override

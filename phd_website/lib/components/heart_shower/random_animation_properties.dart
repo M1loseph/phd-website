@@ -5,14 +5,14 @@ class RandomAnimationProperties {
 
   final double xOffset;
   final double scale;
-  final Duration fallingTime;
+  final double gForce;
   final Duration initialDelay;
   final double windowWidth;
 
   RandomAnimationProperties(
     this.xOffset,
     this.scale,
-    this.fallingTime,
+    this.gForce,
     this.initialDelay,
     this.windowWidth,
   );
@@ -20,9 +20,7 @@ class RandomAnimationProperties {
   RandomAnimationProperties.random({
     required this.windowWidth,
   })  : xOffset = _randomGenerator.nextDouble() * windowWidth,
-        fallingTime = Duration(
-          milliseconds: (_randomGenerator.nextDouble() * 2500 + 3500).toInt(),
-        ),
+        gForce = _randomGenerator.nextDouble() * 40 + 100,
         initialDelay = Duration(
           milliseconds: (_randomGenerator.nextDouble() * 4000).toInt(),
         ),
@@ -32,7 +30,7 @@ class RandomAnimationProperties {
     return RandomAnimationProperties(
         _randomGenerator.nextDouble() * windowWidth,
         scale,
-        fallingTime,
+        gForce,
         initialDelay,
         windowWidth);
   }

@@ -17,6 +17,8 @@ class SweetieEasterEgg extends StatefulWidget {
 
 @visibleForTesting
 class SweetieEasterEggState extends State<SweetieEasterEgg> {
+  static const closeButtonSize = 40.0;
+  static const playerSize = Size(640, 360);
   static const magicEasterEggDestination =
       'https://youtube.com/embed/UTLFbVB8ctc?start=48';
   final magicLetterCombination = 'sweetie';
@@ -44,20 +46,48 @@ class SweetieEasterEggState extends State<SweetieEasterEgg> {
           if (easterEggState == EasterEggState.running)
             KeyboardListener(
               focusNode: escapeFocusNode,
-              child: GestureDetector(
-                onTap: closePopup,
-                child: Container(
-                  color: Colors.black.withAlpha(100),
-                  child: Center(
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(
-                        maxHeight: 360,
-                        maxWidth: 640,
+              child: Container(
+                color: Colors.black.withAlpha(100),
+                child: Stack(
+                  children: [
+                    Center(
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          maxHeight: playerSize.height + closeButtonSize * 2.5,
+                          maxWidth: playerSize.width + closeButtonSize * 2.5,
+                        ),
+                        child: Align(
+                          alignment: Alignment.topRight,
+                          child: Material(
+                            color: Colors.transparent,
+                            child: Ink(
+                              decoration: ShapeDecoration(
+                                color: Colors.grey.shade800,
+                                shape: const CircleBorder(),
+                              ),
+                              child: IconButton(
+                                icon: const Icon(Icons.close),
+                                iconSize: closeButtonSize,
+                                onPressed: closePopup,
+                                color: Colors.white.withAlpha(200),
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
-                      child: const TestableWebViewAdapter(
-                          destination: magicEasterEggDestination),
                     ),
-                  ),
+                    Center(
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          maxHeight: playerSize.height,
+                          maxWidth: playerSize.width,
+                        ),
+                        child: const TestableWebViewAdapter(
+                          destination: magicEasterEggDestination,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
