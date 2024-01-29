@@ -28,14 +28,13 @@
       // The value below is injected by flutter build, do not touch.
       const serviceWorkerVersion = null;
     </script>
-    <!-- This script adds the flutter initialization JS code -->
     <script src="flutter.js" defer></script>
   </head>
   <body>
     <script>
       window.addEventListener("load", function (ev) {
-        // Download main.dart.js
         _flutter.loader.loadEntrypoint({
+          // https://medium.com/codebrew/how-to-prevent-cache-in-flutter-web-dead8c8d3730
           entrypointUrl: `main.dart.js?v=${serviceWorkerVersion}`,
           serviceWorker: {
             serviceWorkerVersion: serviceWorkerVersion,
