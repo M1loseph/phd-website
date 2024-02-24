@@ -4,10 +4,10 @@ import 'package:phd_website/state/optional_feature.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AppGlobalState with ChangeNotifier {
-  static const _v1_prefix = '_v1_';
-  static const _langKey = '${_v1_prefix}lang';
-  static const _cookiesAcknowledgedKey = '${_v1_prefix}cookiesAcknowledged';
-  static const _siteEntriesKey = '${_v1_prefix}siteEntries';
+  static const _v1Prefix = '_v1_';
+  static const _langKey = '${_v1Prefix}lang';
+  static const _cookiesAcknowledgedKey = '${_v1Prefix}cookiesAcknowledged';
+  static const _siteEntriesKey = '${_v1Prefix}siteEntries';
   static const _siteEntriesInitialValue = 1;
 
   final Future<SharedPreferences> _sharedPref;

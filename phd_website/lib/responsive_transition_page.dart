@@ -1,16 +1,22 @@
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 import 'package:phd_website/constants.dart';
+import 'package:phd_website/services/page_analytics_decorator.dart';
 
 // For some magical reason I could not get the class solution to work.
 // Every time I create the class that acts as a wrapper that delegates
 // all possible calls to the delegate property, some assertions fail.
 responsiveTransitionPage<T>({
-  LocalKey? key,
+  required ValueKey<String> key,
   required Widget child,
+  required String pageName,
   required BuildContext context,
 }) {
   final width = MediaQuery.of(context).size.width;
+  final decoratedChild = PageAnalyticsDecorator(
+    pageName: pageName,
+    child: child,
+  );
 
   if (isMobileView(width)) {
     return CustomTransitionPage<T>(
@@ -19,7 +25,7 @@ responsiveTransitionPage<T>({
       transitionsBuilder: (_, animation, __, child) {
         return FadeTransition(
           opacity: animation.drive(Tween(begin: 0.0, end: 1.0)),
-          child: child,
+          child: decoratedChild,
         );
       },
       child: child,
@@ -27,7 +33,7 @@ responsiveTransitionPage<T>({
   } else {
     return NoTransitionPage<T>(
       key: key,
-      child: child,
+      child: decoratedChild,
     );
   }
 }

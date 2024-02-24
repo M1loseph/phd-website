@@ -1,0 +1,24 @@
+version: "3.10"
+services:
+  nginx:
+    image: nginx
+    restart: always
+    ports:
+      - "10000:10000"
+    volumes:
+      - "./nginx.conf:/etc/nginx/nginx.conf"
+  mongo:
+    image: mongo:7.0.5
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: analytics-server-db
+      MONGO_INITDB_ROOT_USERNAME: test
+      MONGO_INITDB_ROOT_PASSWORD: test
+  redis:
+    # TODO: add password
+    image: redis:7.2.4
+    restart: always
+    ports:
+      - "6379:6379"

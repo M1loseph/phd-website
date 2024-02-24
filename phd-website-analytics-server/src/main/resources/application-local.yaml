@@ -1,0 +1,12 @@
+spring:
+  data:
+    mongodb:
+      uri: mongodb://test:test@localhost:27017/analytics-server-db?authSource=admin
+
+web:
+  limiting:
+    redisUrl: redis://localhost:6379
+  cors:
+    allowed_origins:
+      - mapping: '/**'
+        origin: '*'

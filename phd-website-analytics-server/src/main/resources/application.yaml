@@ -1,0 +1,27 @@
+spring:
+  profiles:
+    default: local
+web:
+  limiting:
+    fullBucketExpiration: PT1M
+    singleIp:
+      capacity: 500
+      refillAmount: 200
+      refillInterval: PT1H
+    global:
+      capacity: 500_000
+      refillAmount: 10_000
+      refillInterval: PT1H
+management:
+  endpoint:
+    env:
+      enabled: true
+    metrics:
+      enabled: true
+    prometheus:
+      enabled: true
+  endpoints:
+    enabled-by-default: false
+    web:
+      exposure:
+        include: [ "env", "metrics", "prometheus" ]

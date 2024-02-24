@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
+import 'package:http/http.dart';
 import 'package:phd_website/build_properties/build_properties.dart';
+import 'package:phd_website/clock/clock.dart';
 import 'package:phd_website/components/app_title_updater.dart';
 import 'package:phd_website/components/cookies/cookie_popup.dart';
 import 'package:phd_website/components/selectable_stack.dart';
@@ -13,13 +15,17 @@ import 'package:phd_website/pages/home_page.dart';
 import 'package:phd_website/pages/research_page.dart';
 import 'package:phd_website/pages/teaching_page.dart';
 import 'package:phd_website/responsive_transition_page.dart';
+import 'package:phd_website/services/analytics_service.dart';
 import 'package:phd_website/services/body_text_style_service.dart';
 import 'package:phd_website/services/clipboard_service.dart';
 import 'package:phd_website/state/app_global_state.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:uuid/uuid.dart';
 
 void main() {
+  // TODO: write a comment about the following line
+  // is it needed and link do docs or stack
   WidgetsFlutterBinding.ensureInitialized();
   runApp(MultiProvider(
     providers: [
@@ -28,7 +34,15 @@ void main() {
       ),
       Provider(create: (_) => BodyTextStyleService()),
       Provider<BuildProperties>(create: (_) => GitBuildProperties()),
-      Provider(create: (_) => ClipboardService())
+      Provider(create: (_) => ClipboardService()),
+      Provider(
+        create: (_) => AnalyticsService(
+          sessionId: const Uuid().v4(),
+          analyticsUrl: 'http://localhost:10000',
+          httpClient: Client(),
+          clock: Clock(),
+        ),
+      ),
     ],
     child: const PHDApp(),
   ));
@@ -81,6 +95,7 @@ class _PHDAppState extends State<PHDApp> {
             pageBuilder: (context, state) {
               return responsiveTransitionPage(
                 key: state.pageKey,
+                pageName: 'home',
                 child: const HomePage(),
                 context: context,
               );
@@ -91,6 +106,7 @@ class _PHDAppState extends State<PHDApp> {
             pageBuilder: (context, state) {
               return responsiveTransitionPage(
                 key: state.pageKey,
+                pageName: 'contact',
                 child: const ContactPage(),
                 context: context,
               );
@@ -101,6 +117,7 @@ class _PHDAppState extends State<PHDApp> {
             pageBuilder: (context, state) {
               return responsiveTransitionPage(
                 key: state.pageKey,
+                pageName: 'consultation',
                 child: const ConsultationPage(),
                 context: context,
               );
@@ -111,6 +128,7 @@ class _PHDAppState extends State<PHDApp> {
             pageBuilder: (context, state) {
               return responsiveTransitionPage(
                 key: state.pageKey,
+                pageName: 'teaching',
                 child: const TeachingPage(),
                 context: context,
               );
@@ -121,6 +139,7 @@ class _PHDAppState extends State<PHDApp> {
             pageBuilder: (context, state) {
               return responsiveTransitionPage(
                 key: state.pageKey,
+                pageName: 'research',
                 child: const ResearchPage(),
                 context: context,
               );
@@ -135,6 +154,7 @@ class _PHDAppState extends State<PHDApp> {
   void initState() {
     super.initState();
     context.read<AppGlobalState>().bumpNumberOfEntires();
+    context.read<AnalyticsService>().registerUserOpenedApp();
   }
 
   @override

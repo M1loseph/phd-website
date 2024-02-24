@@ -1,0 +1,5 @@
+web:
+  cors:
+    allowed_origins:
+      - mapping: '/api/v1/analytics/**'
+        origin: 'https://prac.im.pwr.edu.pl/'
