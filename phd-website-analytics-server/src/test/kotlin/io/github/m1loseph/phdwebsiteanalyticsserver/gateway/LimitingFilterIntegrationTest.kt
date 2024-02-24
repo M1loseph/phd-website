@@ -22,11 +22,9 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 @ActiveProfiles("test")
 class LimitingFilterIntegrationTest : RedisFixture() {
 
-  @MockBean
-  lateinit var analyticsController: AnalyticsController
+  @MockBean lateinit var analyticsController: AnalyticsController
 
-  @Autowired
-  lateinit var mockMvc: MockMvc
+  @Autowired lateinit var mockMvc: MockMvc
 
   @Test
   fun whenCalledTooManyTimes_thenShouldRejectNextRequest() {

@@ -22,7 +22,8 @@ class AnalyticsController(private val analyticsService: AnalyticsService) {
       @RequestHeader("User-Agent") userAgent: String?,
       @RequestBody @Valid createAppOpenedEvent: CreateAppOpenedEventDto
   ): ResponseEntity<Void> {
-    analyticsService.persistAppOpenedEvent(createAppOpenedEvent, UserAgentName.fromNullable(userAgent))
+    analyticsService.persistAppOpenedEvent(
+        createAppOpenedEvent, UserAgentName.fromNullable(userAgent))
     return ResponseEntity(HttpStatus.CREATED)
   }
 
@@ -31,7 +32,8 @@ class AnalyticsController(private val analyticsService: AnalyticsService) {
       @RequestHeader("User-Agent") userAgent: String?,
       @RequestBody @Valid createPageOpenedEventDto: CreatePageOpenedEventDto
   ): ResponseEntity<Void> {
-    analyticsService.persistPageOpenedEvent(createPageOpenedEventDto, UserAgentName.fromNullable(userAgent))
+    analyticsService.persistPageOpenedEvent(
+        createPageOpenedEventDto, UserAgentName.fromNullable(userAgent))
     return ResponseEntity(HttpStatus.CREATED)
   }
 }

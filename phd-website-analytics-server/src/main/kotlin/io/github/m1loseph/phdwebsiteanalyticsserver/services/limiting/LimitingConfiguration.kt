@@ -37,11 +37,12 @@ class LimitingBeanFactory(private val limitingConfiguration: LimitingConfigurati
 
 @Validated
 @ConfigurationProperties("web.limiting")
-data class LimitingConfiguration(val redisUrl: URI,
-                                 val fullBucketExpiration: Duration,
-                                 @field:Valid val singleIp: BucketConfiguration,
-                                 @field:Valid val global: BucketConfiguration,
-    )
+data class LimitingConfiguration(
+    val redisUrl: URI,
+    val fullBucketExpiration: Duration,
+    @field:Valid val singleIp: BucketConfiguration,
+    @field:Valid val global: BucketConfiguration,
+)
 
 @Validated
 data class BucketConfiguration(

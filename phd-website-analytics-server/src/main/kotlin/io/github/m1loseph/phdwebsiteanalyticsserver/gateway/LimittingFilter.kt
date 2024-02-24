@@ -14,10 +14,15 @@ import org.slf4j.LoggerFactory
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus.TOO_MANY_REQUESTS
 
-class LimitingFilter(private val limitingService: LimitingService, meterRegistry: MeterRegistry) : HttpFilter() {
-  private val rejectedNoXForwardedFor: Counter = meterRegistry.counter(REJECTED_REQUEST_COUNTER_NAME, REASON_KEY, "no-x-forwarded-for")
-  private val rejectedTooManyRequestsSingleIp: Counter = meterRegistry.counter(REJECTED_REQUEST_COUNTER_NAME, REASON_KEY, "too-many-requests-single-ip")
-  private val rejectedTooManyRequestsGlobal: Counter = meterRegistry.counter(REJECTED_REQUEST_COUNTER_NAME, REASON_KEY, "too-many-requests-global")
+class LimitingFilter(private val limitingService: LimitingService, meterRegistry: MeterRegistry) :
+    HttpFilter() {
+  private val rejectedNoXForwardedFor: Counter =
+      meterRegistry.counter(REJECTED_REQUEST_COUNTER_NAME, REASON_KEY, "no-x-forwarded-for")
+  private val rejectedTooManyRequestsSingleIp: Counter =
+      meterRegistry.counter(
+          REJECTED_REQUEST_COUNTER_NAME, REASON_KEY, "too-many-requests-single-ip")
+  private val rejectedTooManyRequestsGlobal: Counter =
+      meterRegistry.counter(REJECTED_REQUEST_COUNTER_NAME, REASON_KEY, "too-many-requests-global")
 
   override fun doFilter(
       request: HttpServletRequest,
@@ -34,10 +39,17 @@ class LimitingFilter(private val limitingService: LimitingService, meterRegistry
         return
       }
       val requestIp = IpAddress(xForwardedForHeaderValue)
-      val checks = listOf(
-          { incrementOnFail(rejectedTooManyRequestsSingleIp, limitingService.incrementUsageForIpAddress(requestIp)) },
-          { incrementOnFail(rejectedTooManyRequestsGlobal, limitingService.incrementGlobalUsage()) }
-      )
+      val checks =
+          listOf(
+              {
+                incrementOnFail(
+                    rejectedTooManyRequestsSingleIp,
+                    limitingService.incrementUsageForIpAddress(requestIp))
+              },
+              {
+                incrementOnFail(
+                    rejectedTooManyRequestsGlobal, limitingService.incrementGlobalUsage())
+              })
       for (check in checks) {
         val checkResult = check()
         if (checkResult.success) {
@@ -51,7 +63,6 @@ class LimitingFilter(private val limitingService: LimitingService, meterRegistry
     }
     chain.doFilter(request, response)
   }
-
 
   companion object {
     const val REJECTED_REQUEST_COUNTER_NAME = "request.rejected"

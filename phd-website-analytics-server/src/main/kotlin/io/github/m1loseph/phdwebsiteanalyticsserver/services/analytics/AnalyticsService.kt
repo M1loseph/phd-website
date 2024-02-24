@@ -16,7 +16,10 @@ class AnalyticsService(
     private val serverClock: Clock
 ) {
 
-  fun persistAppOpenedEvent(createAppOpenedEventDto: CreateAppOpenedEventDto, userAgent: UserAgentName?): AppOpenedEvent {
+  fun persistAppOpenedEvent(
+      createAppOpenedEventDto: CreateAppOpenedEventDto,
+      userAgent: UserAgentName?
+  ): AppOpenedEvent {
     val entity =
         AppOpenedEvent(
             eventTime = createAppOpenedEventDto.eventTime,
@@ -27,7 +30,10 @@ class AnalyticsService(
     return appOpenedEventRepository.save(entity)
   }
 
-  fun persistPageOpenedEvent(createPageOpenedEventDto: CreatePageOpenedEventDto, userAgent: UserAgentName?): PageOpenedEvent {
+  fun persistPageOpenedEvent(
+      createPageOpenedEventDto: CreatePageOpenedEventDto,
+      userAgent: UserAgentName?
+  ): PageOpenedEvent {
     val entity =
         PageOpenedEvent(
             eventTime = createPageOpenedEventDto.eventTime,
