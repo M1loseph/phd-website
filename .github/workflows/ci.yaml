@@ -21,12 +21,12 @@ jobs:
           channel: stable
 
       - name: Run build script
-        working-directory: phd-website
+        working-directory: phd_website
         run: ./scripts/ci/build.sh ${{ secrets.DEPLOYMENT_ENDPOINT }}
 
       - name: Save artifact
         uses: actions/upload-artifact@v4
         with:
           name: web-build-artifact
-          path: phd-website/build/web
+          path: phd_website/build/web
           retention-days: 1

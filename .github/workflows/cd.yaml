@@ -26,8 +26,8 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: web-build-artifact
-          path: phd-website/build/web
+          path: phd_website/build/web
 
       - name: Replace all files on target machine
-        working-directory: phd-website
+        working-directory: phd_website
         run: ./scripts/ci/release.sh ${{ secrets.USERNAME }} ${{ secrets.HOST }} ${{ secrets.PATH }}
