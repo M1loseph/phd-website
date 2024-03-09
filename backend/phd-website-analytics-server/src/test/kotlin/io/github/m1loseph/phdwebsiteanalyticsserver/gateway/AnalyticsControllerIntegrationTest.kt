@@ -45,7 +45,8 @@ class AnalyticsControllerIntegrationTest : RedisFixture() {
                     "sessionId": "d7e9a4ae-3582-4b6c-8e6c-dadc38585ecc"
                 }
                 """)
-                .contentType(MediaType.APPLICATION_JSON))
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("x-forwarded-for", "200.200.200.200"))
         .andExpect { assertThat(it.response.status).isEqualTo(400) }
   }
 
@@ -59,7 +60,6 @@ class AnalyticsControllerIntegrationTest : RedisFixture() {
                 pageName = PageName.RESEARCH,
                 insertedAt = Instant.now(),
                 sessionId = SessionId(UUID.fromString("d7e9a4ae-3582-4b6c-8e6c-dadc38585ecc")),
-                userAgent = UserAgentName("SomeBrowser"),
             ),
         )
 
@@ -74,7 +74,8 @@ class AnalyticsControllerIntegrationTest : RedisFixture() {
                     "sessionId": "d7e9a4ae-3582-4b6c-8e6c-dadc38585ecc"
                 }
                 """)
-                .contentType(MediaType.APPLICATION_JSON))
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("x-forwarded-for", "200.200.200.200"))
         .andExpect { assertThat(it.response.status).isEqualTo(201) }
 
     verify(pageOpenedEventRepository).save(any())

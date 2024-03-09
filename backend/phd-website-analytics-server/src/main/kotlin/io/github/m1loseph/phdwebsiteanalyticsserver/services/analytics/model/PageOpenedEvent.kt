@@ -19,7 +19,6 @@ data class PageOpenedEvent(
     val eventTime: Instant,
     val pageName: PageName,
     val insertedAt: Instant,
-    val userAgent: UserAgentName?,
     val sessionId: SessionId,
 )
 

@@ -43,7 +43,7 @@ dependencies {
   testImplementation("org.springframework.boot:spring-boot-starter-test") {
     exclude(group = "com.vaadin.external.google", module = "android-json")
   }
-  testImplementation("org.testcontainers:junit-jupiter:1.19.5")
+  testImplementation("org.testcontainers:junit-jupiter:1.19.7")
   testImplementation("org.mockito.kotlin:mockito-kotlin:5.2.1")
 }
 

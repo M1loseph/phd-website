@@ -12,6 +12,11 @@ value class AppOpenedEventId(private val id: ObjectId) {
   }
 }
 
+enum class Environment {
+  PWR_SERVER,
+  GITHUB_PAGES
+}
+
 @Document
 data class AppOpenedEvent(
     @Id val id: AppOpenedEventId = AppOpenedEventId.create(),
@@ -19,4 +24,5 @@ data class AppOpenedEvent(
     val insertedAt: Instant,
     val userAgent: UserAgentName?,
     val sessionId: SessionId,
+    val environment: Environment,
 )

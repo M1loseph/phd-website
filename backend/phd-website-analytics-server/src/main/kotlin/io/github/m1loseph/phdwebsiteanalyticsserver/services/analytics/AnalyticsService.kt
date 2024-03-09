@@ -2,6 +2,7 @@ package io.github.m1loseph.phdwebsiteanalyticsserver.services.analytics
 
 import io.github.m1loseph.phdwebsiteanalyticsserver.services.analytics.dto.CreateAppOpenedEventDto
 import io.github.m1loseph.phdwebsiteanalyticsserver.services.analytics.dto.CreatePageOpenedEventDto
+import io.github.m1loseph.phdwebsiteanalyticsserver.services.analytics.dto.EnvironmentDto
 import io.github.m1loseph.phdwebsiteanalyticsserver.services.analytics.dto.PageNameDto
 import io.github.m1loseph.phdwebsiteanalyticsserver.services.analytics.model.*
 import java.time.Clock
@@ -25,7 +26,12 @@ class AnalyticsService(
             eventTime = createAppOpenedEventDto.eventTime,
             insertedAt = serverClock.instant(),
             userAgent = userAgent,
-            sessionId = SessionId(createAppOpenedEventDto.sessionId))
+            sessionId = SessionId(createAppOpenedEventDto.sessionId),
+            environment =
+                when (createAppOpenedEventDto.environment) {
+                  EnvironmentDto.PWR_SERVER -> Environment.PWR_SERVER
+                  EnvironmentDto.GITHUB_PAGES -> Environment.GITHUB_PAGES
+                })
     logger.info("Saving event: {}", entity)
     return appOpenedEventRepository.save(entity)
   }
@@ -46,7 +52,6 @@ class AnalyticsService(
                   PageNameDto.TEACHING -> PageName.TEACHING
                 },
             insertedAt = serverClock.instant(),
-            userAgent = userAgent,
             sessionId = SessionId(createPageOpenedEventDto.sessionId))
     logger.info("Saving event: {}", entity)
     return pageOpenedEventRepository.save(entity)

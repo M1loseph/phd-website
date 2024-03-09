@@ -22,7 +22,7 @@ impl Service<Request<hyper::body::Incoming>> for PrometheusExporter {
 
     fn call(&self, req: Request<hyper::body::Incoming>) -> Self::Future {
         match req.uri().path() {
-            "/status/prometheus" => {
+            "/internal/status/prometheus" => {
                 let mut buffer = vec![];
                 let encoder = TextEncoder::new();
                 let metric_families = self.registry.gather();

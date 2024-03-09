@@ -5,7 +5,7 @@ spring:
 
 web:
   limiting:
-    redisUrl: redis://localhost:6379
+    redis_url: redis://localhost:6379
   cors:
     allowed_origins:
       - mapping: '/**'
