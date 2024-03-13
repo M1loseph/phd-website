@@ -8,6 +8,7 @@ plugins {
 
   // Custom plugins
   id("com.diffplug.spotless") version "6.25.0"
+  id("com.google.cloud.tools.jib") version "3.4.1"
 }
 
 group = "io.github.m1loseph"
@@ -62,4 +63,27 @@ spotless {
 
 tasks.withType<Test> {
   useJUnitPlatform()
+}
+
+jib {
+  from {
+    image = "openjdk:21-slim-bookworm"
+    platforms {
+      platform {
+        os = "linux"
+        architecture = "arm64"
+      }
+      platform {
+        os = "linux"
+        architecture = "amd64"
+      }
+    }
+  }
+  to {
+    image = "m1loseph/phd-website-analytics-server"
+    tags = setOf("latest", "0.0.1")
+  }
+  container {
+    ports = listOf("8080")
+  }
 }
