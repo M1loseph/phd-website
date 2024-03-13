@@ -15,9 +15,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 class WebConfiguration(private val corsConfiguration: CorsConfiguration) : WebMvcConfigurer {
 
   override fun addCorsMappings(registry: CorsRegistry) {
-    corsConfiguration.allowedOrigins.forEach { (mapping, origin) ->
-      registry.addMapping(mapping).allowedOrigins(origin)
-    }
+    val allowedOrigins = corsConfiguration.allowedOrigins
+    registry.addMapping(corsConfiguration.mapping).allowedOrigins(*allowedOrigins.toTypedArray())
   }
 
   @Bean
@@ -34,7 +33,8 @@ class WebConfiguration(private val corsConfiguration: CorsConfiguration) : WebMv
   }
 }
 
-data class AllowedOrigin(val mapping: String, val origin: String)
-
 @ConfigurationProperties("web.cors")
-data class CorsConfiguration(val allowedOrigins: List<AllowedOrigin>)
+data class CorsConfiguration(
+    val mapping: String,
+    val allowedOrigins: List<String>
+)

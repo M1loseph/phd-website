@@ -7,6 +7,6 @@ web:
   limiting:
     redis_url: redis://localhost:6379
   cors:
+    mapping: '/**'
     allowed_origins:
-      - mapping: '/**'
-        origin: '*'
+      - '*'

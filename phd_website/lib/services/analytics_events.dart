@@ -18,7 +18,7 @@ class UserOpenedAppEvent extends Event {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'eventTime': _timestamp.millisecondsSinceEpoch,
+      'eventTime': _timestamp.toIso8601StringWithZ(),
       'sessionId': _sessionId,
       'environment': _environment,
     };
@@ -36,8 +36,14 @@ class UserOpenedPageEvent extends Event {
   Map<String, dynamic> toJson() {
     return {
       'sessionId': _sessionId,
-      'eventTime': '${_timestamp.toIso8601String()}Z',
+      'eventTime': _timestamp.toIso8601StringWithZ(),
       'pageName': _pageData.pageName,
     };
+  }
+}
+
+extension on DateTime {
+  String toIso8601StringWithZ() {
+    return '${toIso8601String()}Z';
   }
 }
