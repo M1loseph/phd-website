@@ -11,14 +11,16 @@ abstract class Event {
 class UserOpenedAppEvent extends Event {
   final String _sessionId;
   final DateTime _timestamp;
+  final String _environment;
 
-  UserOpenedAppEvent(this._sessionId, this._timestamp);
+  UserOpenedAppEvent(this._sessionId, this._timestamp, this._environment);
 
   @override
   Map<String, dynamic> toJson() {
     return {
       'eventTime': _timestamp.millisecondsSinceEpoch,
       'sessionId': _sessionId,
+      'environment': _environment,
     };
   }
 }

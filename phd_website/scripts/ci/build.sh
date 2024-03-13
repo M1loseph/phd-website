@@ -5,9 +5,21 @@
 set -e
 
 DEPLOYMENT_ENDPOINT=$1
+ANALYTICS_SERVER_URL=$2
+ENVIRONMENT=$3
 
 if [ -z "${DEPLOYMENT_ENDPOINT}" ]; then
   echo "Please provide a deployment endpoint as the first argument."
+  exit 1
+fi
+
+if [ -z "${ANALYTICS_SERVER_URL}" ]; then
+  echo "Please provide an analytics sever url (including http/https ) as the second argument."
+  exit 1
+fi
+
+if [ -z "${ENVIRONMENT}" ]; then
+  echo "Please provide an analytics sever url (including http/https ) as the second argument."
   exit 1
 fi
 
@@ -20,4 +32,6 @@ dart run build_runner build --delete-conflicting-outputs
 
 flutter test
 
-flutter build web --base-href "${DEPLOYMENT_ENDPOINT}"
+flutter build web --base-href "${DEPLOYMENT_ENDPOINT}" \
+    --dart-define ANALYTICS_SERVER_URL="${ANALYTICS_SERVER_URL}" \
+    --dart-define ENVIRONMENT="${ENVIRONMENT}"

@@ -10,16 +10,18 @@ class AnalyticsService {
   final Uri analyticsUrl;
   final Client httpClient;
   final Clock clock;
+  final String environment;
 
   AnalyticsService({
     required this.sessionId,
     required String analyticsUrl,
     required this.httpClient,
     required this.clock,
+    required this.environment,
   }) : analyticsUrl = Uri.parse(analyticsUrl);
 
   Future<void> registerUserOpenedApp() async {
-    final event = UserOpenedAppEvent(sessionId, clock.now());
+    final event = UserOpenedAppEvent(sessionId, clock.now(), environment);
     await httpClient.post(
       analyticsUrl.replace(path: 'api/v1/analytics/appOpened'),
       headers: Map.from(

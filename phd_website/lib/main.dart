@@ -38,7 +38,8 @@ void main() {
       Provider(
         create: (_) => AnalyticsService(
           sessionId: const Uuid().v4(),
-          analyticsUrl: 'http://localhost:10000',
+          analyticsUrl: const String.fromEnvironment('ANALYTICS_SERVER_URL'),
+          environment: const String.fromEnvironment('ENVIRONMENT'),
           httpClient: Client(),
           clock: Clock(),
         ),
