@@ -61,6 +61,6 @@ services:
       - ddns-runner
       - phd-website-analytics-server
     volumes:
-      - "/home/pi/prometheus:/prometheus"
+      - "/mnt/kingspec-usb/prometheus:/prometheus"
       - "./prometheus.yml:/etc/prometheus/prometheus.yml"
 
