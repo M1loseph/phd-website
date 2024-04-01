@@ -6,6 +6,6 @@ web:
       refillAmount: 1
       refillInterval: PT1M
   cors:
+    mapping: '/**'
     allowed_origins:
-      - mapping: '/**'
-        origin: '*'
+      - '*'

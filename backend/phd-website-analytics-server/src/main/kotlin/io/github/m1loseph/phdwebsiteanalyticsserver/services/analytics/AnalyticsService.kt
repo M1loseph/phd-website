@@ -6,6 +6,7 @@ import io.github.m1loseph.phdwebsiteanalyticsserver.services.analytics.dto.Envir
 import io.github.m1loseph.phdwebsiteanalyticsserver.services.analytics.dto.PageNameDto
 import io.github.m1loseph.phdwebsiteanalyticsserver.services.analytics.model.*
 import java.time.Clock
+import kotlinx.coroutines.reactor.awaitSingle
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
@@ -17,7 +18,7 @@ class AnalyticsService(
     private val serverClock: Clock
 ) {
 
-  fun persistAppOpenedEvent(
+  suspend fun persistAppOpenedEvent(
       createAppOpenedEventDto: CreateAppOpenedEventDto,
       userAgent: UserAgentName?
   ): AppOpenedEvent {
@@ -33,10 +34,10 @@ class AnalyticsService(
                   EnvironmentDto.GITHUB_PAGES -> Environment.GITHUB_PAGES
                 })
     logger.info("Saving event: {}", entity)
-    return appOpenedEventRepository.save(entity)
+    return appOpenedEventRepository.save(entity).awaitSingle()
   }
 
-  fun persistPageOpenedEvent(
+  suspend fun persistPageOpenedEvent(
       createPageOpenedEventDto: CreatePageOpenedEventDto,
       userAgent: UserAgentName?
   ): PageOpenedEvent {
@@ -54,7 +55,7 @@ class AnalyticsService(
             insertedAt = serverClock.instant(),
             sessionId = SessionId(createPageOpenedEventDto.sessionId))
     logger.info("Saving event: {}", entity)
-    return pageOpenedEventRepository.save(entity)
+    return pageOpenedEventRepository.save(entity).awaitSingle()
   }
 
   companion object {

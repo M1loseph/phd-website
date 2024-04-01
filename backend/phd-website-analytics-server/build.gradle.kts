@@ -24,19 +24,17 @@ repositories {
 }
 
 dependencies {
-  implementation("org.springframework.boot:spring-boot-starter")
-  implementation("org.springframework.boot:spring-boot-starter-web")
+  implementation("org.springframework.boot:spring-boot-starter-webflux")
+  implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
+  implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
   implementation("org.springframework.boot:spring-boot-starter-validation")
   implementation("org.springframework.boot:spring-boot-starter-actuator")
-  implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
+  implementation("org.springframework.boot:spring-boot-starter-data-mongodb-reactive")
   implementation("io.micrometer:micrometer-registry-prometheus")
 
-  // Required in order to use validation API. Without this dependency annotations are not available.
-  implementation("jakarta.validation:jakarta.validation-api:3.0.2")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
+  implementation("jakarta.validation:jakarta.validation-api")
 
-  // Rate limiting library and dependency to handle persistence
-  implementation("com.bucket4j:bucket4j-core:8.7.1")
-  implementation("com.bucket4j:bucket4j-redis:8.7.1")
   implementation("redis.clients:jedis:5.1.0")
 
   implementation("org.jetbrains.kotlin:kotlin-reflect")
@@ -44,6 +42,8 @@ dependencies {
   testImplementation("org.springframework.boot:spring-boot-starter-test") {
     exclude(group = "com.vaadin.external.google", module = "android-json")
   }
+  testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test")
+  testImplementation("io.projectreactor:reactor-test")
   testImplementation("org.testcontainers:junit-jupiter:1.19.7")
   testImplementation("org.mockito.kotlin:mockito-kotlin:5.2.1")
 }

@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController
 class AnalyticsController(private val analyticsService: AnalyticsService) {
 
   @PostMapping("/appOpened")
-  fun onAppOpenedEvent(
+  suspend fun onAppOpenedEvent(
       @RequestHeader("User-Agent") userAgent: String?,
       @RequestBody @Valid createAppOpenedEvent: CreateAppOpenedEventDto
   ): ResponseEntity<Void> {
@@ -28,7 +28,7 @@ class AnalyticsController(private val analyticsService: AnalyticsService) {
   }
 
   @PostMapping("/pageOpened")
-  fun onPageOpenedEvent(
+  suspend fun onPageOpenedEvent(
       @RequestHeader("User-Agent") userAgent: String?,
       @RequestBody @Valid createPageOpenedEventDto: CreatePageOpenedEventDto
   ): ResponseEntity<Void> {

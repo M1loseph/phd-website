@@ -1,18 +1,18 @@
 package io.github.m1loseph.phdwebsiteanalyticsserver.gateway
 
-import io.github.m1loseph.phdwebsiteanalyticsserver.services.limiting.LimitingService
+import io.github.m1loseph.phdwebsiteanalyticsserver.services.limiting.impl.LimitingService
 import io.micrometer.core.instrument.MeterRegistry
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.EnableConfigurationProperties
-import org.springframework.boot.web.servlet.FilterRegistrationBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.web.servlet.config.annotation.CorsRegistry
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
+import org.springframework.web.reactive.config.CorsRegistry
+import org.springframework.web.reactive.config.WebFluxConfigurer
+import org.springframework.web.server.WebFilter
 
 @Configuration
 @EnableConfigurationProperties(CorsConfiguration::class)
-class WebConfiguration(private val corsConfiguration: CorsConfiguration) : WebMvcConfigurer {
+class WebConfiguration(private val corsConfiguration: CorsConfiguration) : WebFluxConfigurer {
 
   override fun addCorsMappings(registry: CorsRegistry) {
     val allowedOrigins = corsConfiguration.allowedOrigins
@@ -20,21 +20,12 @@ class WebConfiguration(private val corsConfiguration: CorsConfiguration) : WebMv
   }
 
   @Bean
-  fun limitingFilterRegistrationBean(
-      limitingService: LimitingService,
-      meterRegistry: MeterRegistry
-  ): FilterRegistrationBean<LimitingFilter> {
-    val registrationBean = FilterRegistrationBean<LimitingFilter>()
-
-    registrationBean.setFilter(LimitingFilter(limitingService, meterRegistry))
-    registrationBean.addUrlPatterns("/api/v1/analytics/*")
-
-    return registrationBean
+  fun limitingFilter(limitingService: LimitingService, meterRegistry: MeterRegistry): WebFilter {
+    return OptionalFilter(
+        { it.toString().startsWith("/api/v1/analytics") },
+        LimitingFilter(limitingService, meterRegistry))
   }
 }
 
 @ConfigurationProperties("web.cors")
-data class CorsConfiguration(
-    val mapping: String,
-    val allowedOrigins: List<String>
-)
+data class CorsConfiguration(val mapping: String, val allowedOrigins: List<String>)

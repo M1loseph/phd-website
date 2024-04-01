@@ -1,11 +1,12 @@
 package io.github.m1loseph.phdwebsiteanalyticsserver.services.smoke
 
 import com.mongodb.MongoException
+import kotlinx.coroutines.reactor.awaitSingle
 import org.bson.BsonDocument
 import org.bson.BsonInt64
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.data.mongodb.core.MongoTemplate
+import org.springframework.data.mongodb.core.ReactiveMongoTemplate
 import org.springframework.stereotype.Service
 import redis.clients.jedis.JedisPool
 import redis.clients.jedis.exceptions.JedisConnectionException
@@ -18,9 +19,9 @@ enum class SmokeTestResult {
 @Service
 class SmokeTestsService(
     private val jedisPool: JedisPool,
-    private val mongodbTemplate: MongoTemplate,
+    private val reactiveMongodbTemplate: ReactiveMongoTemplate,
 ) {
-  fun testIfConnectionToRedisIsAlive(): SmokeTestResult {
+  suspend fun testIfConnectionToRedisIsAlive(): SmokeTestResult {
     return try {
       jedisPool.resource.use {
         it.ping()
@@ -33,11 +34,10 @@ class SmokeTestsService(
   }
 
   // TODO: maybe set a timeout in the future
-  fun testIfConnectionToMongodbIsAlive(): SmokeTestResult {
+  suspend fun testIfConnectionToMongodbIsAlive(): SmokeTestResult {
     return try {
-      val db = mongodbTemplate.db
       val command = BsonDocument("ping", BsonInt64(1))
-      db.runCommand(command)
+      reactiveMongodbTemplate.createMono { it.runCommand(command) }.awaitSingle()
       SmokeTestResult.OK
     } catch (e: MongoException) {
       logger.error("Error when executing ping command on mongodb", e)
