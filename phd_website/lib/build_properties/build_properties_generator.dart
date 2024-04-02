@@ -9,10 +9,16 @@ abstract class VersionSourceRunner {
 }
 
 class GitVersionSourceRunner implements VersionSourceRunner {
+  static const appNameSeparator = '/';
   @override
   FutureOr<String> getGitVersion() async {
     return Process.run('git', ['describe', '--tags']).then((processResult) {
-      return (processResult.stdout as String).trim();
+      final version = (processResult.stdout as String).trim();
+      final partsIndex = version.indexOf(appNameSeparator);
+      if (partsIndex == -1) {
+        return version;
+      }
+      return version.substring(partsIndex + 1);
     });
   }
 }
