@@ -12,8 +12,6 @@ plugins {
 }
 
 group = "io.github.m1loseph"
-// TODO: use a dedicated technique to version this app
-version = "0.0.1-SNAPSHOT"
 
 java {
   sourceCompatibility = JavaVersion.VERSION_21
@@ -81,7 +79,7 @@ jib {
   }
   to {
     image = "m1loseph/phd-website-analytics-server"
-    tags = setOf("latest", "0.0.1")
+    tags = setOf("$version")
   }
   container {
     ports = listOf("8080")
