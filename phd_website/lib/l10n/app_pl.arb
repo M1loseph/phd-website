@@ -23,6 +23,8 @@
     "researchPageEcmi2023TalkTitle": "Modeling Trail Running",
     "researchPage51ConferenceOnApplicationsOfMathematicsConferenceName": "51 Konferencja Zastosowań Matematyki",
     "researchPage51ConferenceOnApplicationsOfMathematicsTalkTitle": "Mathematical modelling of trail running",
+    "researchPageXIIForumOfPartialDifferentialEquationsConferenceName": "XIII Forum Równań Różniczkowych Cząstkowych",
+    "researchPageXIIForumOfPartialDifferentialEquationsTalkTitle": "A unified model for blood and lymph flow",
     "footer": "Wszelkie prawa zastrzeżone © {lastBuildYear} wersja {appVersion}",
     "@footer": {
         "placeholders": {

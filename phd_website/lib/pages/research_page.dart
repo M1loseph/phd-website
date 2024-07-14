@@ -33,6 +33,15 @@ class ResearchPage extends StatelessWidget {
         date: DateTime(2023, DateTime.september, 10),
         location: 'Kościelisko',
       ),
+      ConferenceDO(
+        conferenceName: locale
+            .researchPageXIIForumOfPartialDifferentialEquationsConferenceName,
+        website: 'https://sites.google.com/impan.pl/xiiifpde/',
+        talkTitle:
+            locale.researchPageXIIForumOfPartialDifferentialEquationsTalkTitle,
+        date: DateTime(2024, DateTime.june, 27),
+        location: 'Będlewo',
+      ),
     ];
 
     return PageLayout(
