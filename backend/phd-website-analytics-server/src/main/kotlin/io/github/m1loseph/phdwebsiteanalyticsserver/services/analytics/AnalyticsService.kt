@@ -4,56 +4,62 @@ import io.github.m1loseph.phdwebsiteanalyticsserver.services.analytics.dto.Creat
 import io.github.m1loseph.phdwebsiteanalyticsserver.services.analytics.dto.CreatePageOpenedEventDto
 import io.github.m1loseph.phdwebsiteanalyticsserver.services.analytics.dto.EnvironmentDto
 import io.github.m1loseph.phdwebsiteanalyticsserver.services.analytics.dto.PageNameDto
-import io.github.m1loseph.phdwebsiteanalyticsserver.services.analytics.model.*
-import java.time.Clock
+import io.github.m1loseph.phdwebsiteanalyticsserver.services.analytics.model.AppOpenedEvent
+import io.github.m1loseph.phdwebsiteanalyticsserver.services.analytics.model.Environment
+import io.github.m1loseph.phdwebsiteanalyticsserver.services.analytics.model.PageName
+import io.github.m1loseph.phdwebsiteanalyticsserver.services.analytics.model.PageOpenedEvent
+import io.github.m1loseph.phdwebsiteanalyticsserver.services.analytics.model.SessionId
+import io.github.m1loseph.phdwebsiteanalyticsserver.services.analytics.model.UserAgentName
 import kotlinx.coroutines.reactor.awaitSingle
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import java.time.Clock
 
 @Service
 class AnalyticsService(
-    private val appOpenedEventRepository: AppOpenedEventRepository,
-    private val pageOpenedEventRepository: PageOpenedEventRepository,
-    private val serverClock: Clock
+  private val appOpenedEventRepository: AppOpenedEventRepository,
+  private val pageOpenedEventRepository: PageOpenedEventRepository,
+  private val serverClock: Clock,
 ) {
-
   suspend fun persistAppOpenedEvent(
-      createAppOpenedEventDto: CreateAppOpenedEventDto,
-      userAgent: UserAgentName?
+    createAppOpenedEventDto: CreateAppOpenedEventDto,
+    userAgent: UserAgentName?,
   ): AppOpenedEvent {
     val entity =
-        AppOpenedEvent(
-            eventTime = createAppOpenedEventDto.eventTime,
-            insertedAt = serverClock.instant(),
-            userAgent = userAgent,
-            sessionId = SessionId(createAppOpenedEventDto.sessionId),
-            environment =
-                when (createAppOpenedEventDto.environment) {
-                  EnvironmentDto.PWR_SERVER -> Environment.PWR_SERVER
-                  EnvironmentDto.GITHUB_PAGES -> Environment.GITHUB_PAGES
-                })
+      AppOpenedEvent(
+        eventTime = createAppOpenedEventDto.eventTime,
+        insertedAt = serverClock.instant(),
+        userAgent = userAgent,
+        sessionId = SessionId(createAppOpenedEventDto.sessionId),
+        environment =
+          when (createAppOpenedEventDto.environment) {
+            EnvironmentDto.PWR_SERVER -> Environment.PWR_SERVER
+            EnvironmentDto.GITHUB_PAGES -> Environment.GITHUB_PAGES
+          },
+      )
     logger.info("Saving event: {}", entity)
     return appOpenedEventRepository.save(entity).awaitSingle()
   }
 
   suspend fun persistPageOpenedEvent(
-      createPageOpenedEventDto: CreatePageOpenedEventDto,
-      userAgent: UserAgentName?
+    createPageOpenedEventDto: CreatePageOpenedEventDto,
+    userAgent: UserAgentName?,
   ): PageOpenedEvent {
     val entity =
-        PageOpenedEvent(
-            eventTime = createPageOpenedEventDto.eventTime,
-            pageName =
-                when (createPageOpenedEventDto.pageName) {
-                  PageNameDto.HOME -> PageName.HOME
-                  PageNameDto.CONTACT -> PageName.CONTACT
-                  PageNameDto.CONSULTATION -> PageName.CONSULTATION
-                  PageNameDto.RESEARCH -> PageName.RESEARCH
-                  PageNameDto.TEACHING -> PageName.TEACHING
-                },
-            insertedAt = serverClock.instant(),
-            sessionId = SessionId(createPageOpenedEventDto.sessionId))
+      PageOpenedEvent(
+        eventTime = createPageOpenedEventDto.eventTime,
+        pageName =
+          when (createPageOpenedEventDto.pageName) {
+            PageNameDto.HOME -> PageName.HOME
+            PageNameDto.CONTACT -> PageName.CONTACT
+            PageNameDto.CONSULTATION -> PageName.CONSULTATION
+            PageNameDto.RESEARCH -> PageName.RESEARCH
+            PageNameDto.TEACHING -> PageName.TEACHING
+          },
+        insertedAt = serverClock.instant(),
+        sessionId = SessionId(createPageOpenedEventDto.sessionId),
+      )
     logger.info("Saving event: {}", entity)
     return pageOpenedEventRepository.save(entity).awaitSingle()
   }

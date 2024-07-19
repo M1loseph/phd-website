@@ -55,7 +55,7 @@ tasks.withType<KotlinCompile> {
 
 spotless {
   kotlin {
-    ktfmt()
+    ktlint()
   }
 }
 

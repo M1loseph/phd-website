@@ -8,14 +8,17 @@ import redis.clients.jedis.params.SetParams
 interface TokenBucketRepository {
   fun findById(id: BucketId): TokenBucket?
 
-  fun save(id: BucketId, tokenBucket: TokenBucket)
+  fun save(
+    id: BucketId,
+    tokenBucket: TokenBucket,
+  )
 }
 
 @Repository
 class RedisTokenBucketRepository(
-    private val tokenBucketFactory: TokenBucketFactory,
-    private val jedisPool: JedisPool,
-    private val serializer: BucketSnapshotSerializer,
+  private val tokenBucketFactory: TokenBucketFactory,
+  private val jedisPool: JedisPool,
+  private val serializer: BucketSnapshotSerializer,
 ) : TokenBucketRepository {
   override fun findById(id: BucketId): TokenBucket? {
     jedisPool.resource.use { client ->
@@ -25,15 +28,19 @@ class RedisTokenBucketRepository(
     }
   }
 
-  override fun save(id: BucketId, tokenBucket: TokenBucket) {
+  override fun save(
+    id: BucketId,
+    tokenBucket: TokenBucket,
+  ) {
     jedisPool.resource.use { client ->
       tokenBucket.timeToFull()
       val snapshot = tokenBucket.createSnapshot()
       val serialized = serializer.serialize(snapshot)
       client.set(
-          id.toRawId().toByteArray(),
-          serialized,
-          SetParams.setParams().ex(tokenBucket.timeToFull().seconds))
+        id.toRawId().toByteArray(),
+        serialized,
+        SetParams.setParams().ex(tokenBucket.timeToFull().seconds),
+      )
     }
   }
 }

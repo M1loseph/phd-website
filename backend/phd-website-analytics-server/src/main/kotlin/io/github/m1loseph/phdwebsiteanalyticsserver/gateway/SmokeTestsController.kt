@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/internal/tests/smoke")
 class SmokeTestsController(private val smokeTestsService: SmokeTestsService) {
-
   @GetMapping("/redis")
   suspend fun testIfConnectionToRedisIsAlive(): ResponseEntity<Void> {
     return when (smokeTestsService.testIfConnectionToRedisIsAlive()) {

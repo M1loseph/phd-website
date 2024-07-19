@@ -13,17 +13,20 @@ import org.springframework.web.server.WebFilter
 @Configuration
 @EnableConfigurationProperties(CorsConfiguration::class)
 class WebConfiguration(private val corsConfiguration: CorsConfiguration) : WebFluxConfigurer {
-
   override fun addCorsMappings(registry: CorsRegistry) {
     val allowedOrigins = corsConfiguration.allowedOrigins
     registry.addMapping(corsConfiguration.mapping).allowedOrigins(*allowedOrigins.toTypedArray())
   }
 
   @Bean
-  fun limitingFilter(limitingService: LimitingService, meterRegistry: MeterRegistry): WebFilter {
+  fun limitingFilter(
+    limitingService: LimitingService,
+    meterRegistry: MeterRegistry,
+  ): WebFilter {
     return OptionalFilter(
-        { it.toString().startsWith("/api/v1/analytics") },
-        LimitingFilter(limitingService, meterRegistry))
+      { it.toString().startsWith("/api/v1/analytics") },
+      LimitingFilter(limitingService, meterRegistry),
+    )
   }
 }
 

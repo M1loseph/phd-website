@@ -1,27 +1,26 @@
 package io.github.m1loseph.phdwebsiteanalyticsserver.services.smoke
 
 import com.mongodb.MongoException
-import kotlinx.coroutines.reactor.awaitSingle
+import com.mongodb.reactivestreams.client.MongoClient
+import kotlinx.coroutines.reactive.awaitSingle
 import org.bson.BsonDocument
 import org.bson.BsonInt64
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.data.mongodb.core.ReactiveMongoTemplate
-import org.springframework.stereotype.Service
 import redis.clients.jedis.JedisPool
 import redis.clients.jedis.exceptions.JedisConnectionException
 
 enum class SmokeTestResult {
   OK,
-  ERROR
+  ERROR,
 }
 
-@Service
 class SmokeTestsService(
-    private val jedisPool: JedisPool,
-    private val reactiveMongodbTemplate: ReactiveMongoTemplate,
+  private val jedisPool: JedisPool,
+  private val mongoClient: MongoClient,
+  private val databaseName: String,
 ) {
-  suspend fun testIfConnectionToRedisIsAlive(): SmokeTestResult {
+  fun testIfConnectionToRedisIsAlive(): SmokeTestResult {
     return try {
       jedisPool.resource.use {
         it.ping()
@@ -33,11 +32,10 @@ class SmokeTestsService(
     }
   }
 
-  // TODO: maybe set a timeout in the future
   suspend fun testIfConnectionToMongodbIsAlive(): SmokeTestResult {
     return try {
-      val command = BsonDocument("ping", BsonInt64(1))
-      reactiveMongodbTemplate.createMono { it.runCommand(command) }.awaitSingle()
+      val ping = BsonDocument("ping", BsonInt64(1))
+      mongoClient.getDatabase(databaseName).runCommand(ping).awaitSingle()
       SmokeTestResult.OK
     } catch (e: MongoException) {
       logger.error("Error when executing ping command on mongodb", e)

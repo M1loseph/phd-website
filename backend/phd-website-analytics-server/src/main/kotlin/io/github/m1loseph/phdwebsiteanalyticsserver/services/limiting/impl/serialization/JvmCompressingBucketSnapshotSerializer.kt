@@ -20,7 +20,7 @@ class JvmCompressingBucketSnapshotSerializer : BucketSnapshotSerializer {
 
   override fun deserialize(serializedTokenBucketSnapshot: ByteArray): TokenBucketSnapshot {
     val deserializer =
-        ObjectInputStream(GZIPInputStream(ByteArrayInputStream(serializedTokenBucketSnapshot)))
+      ObjectInputStream(GZIPInputStream(ByteArrayInputStream(serializedTokenBucketSnapshot)))
     return deserializer.readObject() as TokenBucketSnapshot
   }
 }

@@ -9,7 +9,10 @@ class HashMapTokenBucketRepository : TokenBucketRepository {
 
   override fun findById(id: BucketId): TokenBucket? = tokens[id]
 
-  override fun save(id: BucketId, tokenBucket: TokenBucket) {
+  override fun save(
+    id: BucketId,
+    tokenBucket: TokenBucket,
+  ) {
     tokens[id] = tokenBucket
   }
 }

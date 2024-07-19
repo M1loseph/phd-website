@@ -15,7 +15,7 @@ abstract class RedisFixture {
     @JvmStatic
     @Container
     val redis: GenericContainer<*> =
-        GenericContainer(DockerImageName.parse("redis:7.2.4")).withExposedPorts(REDIS_PORT)
+      GenericContainer(DockerImageName.parse("redis:7.2.4")).withExposedPorts(REDIS_PORT)
 
     @JvmStatic
     @DynamicPropertySource

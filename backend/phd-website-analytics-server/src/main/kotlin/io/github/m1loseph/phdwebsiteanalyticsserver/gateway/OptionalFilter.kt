@@ -7,8 +7,11 @@ import org.springframework.web.server.WebFilterChain
 import reactor.core.publisher.Mono
 
 class OptionalFilter(private val rule: (RequestPath) -> Boolean, private val delegate: WebFilter) :
-    WebFilter {
-  override fun filter(exchange: ServerWebExchange, chain: WebFilterChain): Mono<Void> {
+  WebFilter {
+  override fun filter(
+    exchange: ServerWebExchange,
+    chain: WebFilterChain,
+  ): Mono<Void> {
     if (!rule(exchange.request.path)) {
       return chain.filter(exchange)
     }

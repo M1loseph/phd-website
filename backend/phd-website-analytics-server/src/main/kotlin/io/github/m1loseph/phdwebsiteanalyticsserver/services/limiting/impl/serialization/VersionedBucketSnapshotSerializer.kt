@@ -3,8 +3,8 @@ package io.github.m1loseph.phdwebsiteanalyticsserver.services.limiting.impl.seri
 import io.github.m1loseph.phdwebsiteanalyticsserver.services.limiting.impl.TokenBucketSnapshot
 
 class VersionedBucketSnapshotSerializer(
-    private val version: Byte,
-    private val delegate: BucketSnapshotSerializer
+  private val version: Byte,
+  private val delegate: BucketSnapshotSerializer,
 ) : BucketSnapshotSerializer {
   override fun serialize(bucketSnapshot: TokenBucketSnapshot): ByteArray {
     val serialized = delegate.serialize(bucketSnapshot)
@@ -19,7 +19,8 @@ class VersionedBucketSnapshotSerializer(
   override fun deserialize(serializedTokenBucketSnapshot: ByteArray): TokenBucketSnapshot {
     assert(serializedTokenBucketSnapshot[0] == version)
     return delegate.deserialize(
-        serializedTokenBucketSnapshot.copyOfRange(1, serializedTokenBucketSnapshot.size))
+      serializedTokenBucketSnapshot.copyOfRange(1, serializedTokenBucketSnapshot.size),
+    )
   }
 
   companion object {

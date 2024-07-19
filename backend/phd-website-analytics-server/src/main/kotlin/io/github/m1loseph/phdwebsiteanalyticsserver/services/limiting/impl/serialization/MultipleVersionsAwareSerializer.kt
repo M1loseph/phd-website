@@ -3,8 +3,8 @@ package io.github.m1loseph.phdwebsiteanalyticsserver.services.limiting.impl.seri
 import io.github.m1loseph.phdwebsiteanalyticsserver.services.limiting.impl.TokenBucketSnapshot
 
 class MultipleVersionsAwareSerializer(
-    private val defaultSerializer: BucketSnapshotSerializer,
-    private val supportedDeserializers: Map<Byte, BucketSnapshotSerializer>
+  private val defaultSerializer: BucketSnapshotSerializer,
+  private val supportedDeserializers: Map<Byte, BucketSnapshotSerializer>,
 ) : BucketSnapshotSerializer {
   override fun serialize(bucketSnapshot: TokenBucketSnapshot): ByteArray {
     return defaultSerializer.serialize(bucketSnapshot)

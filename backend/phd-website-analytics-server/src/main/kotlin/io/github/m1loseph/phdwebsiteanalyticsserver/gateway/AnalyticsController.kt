@@ -16,24 +16,27 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/api/v1/analytics")
 class AnalyticsController(private val analyticsService: AnalyticsService) {
-
   @PostMapping("/appOpened")
   suspend fun onAppOpenedEvent(
-      @RequestHeader("User-Agent") userAgent: String?,
-      @RequestBody @Valid createAppOpenedEvent: CreateAppOpenedEventDto
+    @RequestHeader("User-Agent") userAgent: String?,
+    @RequestBody @Valid createAppOpenedEvent: CreateAppOpenedEventDto,
   ): ResponseEntity<Void> {
     analyticsService.persistAppOpenedEvent(
-        createAppOpenedEvent, UserAgentName.fromNullable(userAgent))
+      createAppOpenedEvent,
+      UserAgentName.fromNullable(userAgent),
+    )
     return ResponseEntity(HttpStatus.CREATED)
   }
 
   @PostMapping("/pageOpened")
   suspend fun onPageOpenedEvent(
-      @RequestHeader("User-Agent") userAgent: String?,
-      @RequestBody @Valid createPageOpenedEventDto: CreatePageOpenedEventDto
+    @RequestHeader("User-Agent") userAgent: String?,
+    @RequestBody @Valid createPageOpenedEventDto: CreatePageOpenedEventDto,
   ): ResponseEntity<Void> {
     analyticsService.persistPageOpenedEvent(
-        createPageOpenedEventDto, UserAgentName.fromNullable(userAgent))
+      createPageOpenedEventDto,
+      UserAgentName.fromNullable(userAgent),
+    )
     return ResponseEntity(HttpStatus.CREATED)
   }
 }

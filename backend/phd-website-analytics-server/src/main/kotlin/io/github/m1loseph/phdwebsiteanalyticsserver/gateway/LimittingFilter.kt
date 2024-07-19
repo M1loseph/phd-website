@@ -1,6 +1,10 @@
 package io.github.m1loseph.phdwebsiteanalyticsserver.gateway
 
-import io.github.m1loseph.phdwebsiteanalyticsserver.services.limiting.impl.*
+import io.github.m1loseph.phdwebsiteanalyticsserver.services.limiting.impl.IpAddressBucketId
+import io.github.m1loseph.phdwebsiteanalyticsserver.services.limiting.impl.LimitingService
+import io.github.m1loseph.phdwebsiteanalyticsserver.services.limiting.impl.TokenAcquireResult
+import io.github.m1loseph.phdwebsiteanalyticsserver.services.limiting.impl.TokenAcquiredResult
+import io.github.m1loseph.phdwebsiteanalyticsserver.services.limiting.impl.TokenDeniedResult
 import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.MeterRegistry
 import kotlinx.coroutines.runBlocking
@@ -15,17 +19,18 @@ import org.springframework.web.server.WebFilterChain
 import reactor.core.publisher.Mono
 
 class LimitingFilter(private val limitingService: LimitingService, meterRegistry: MeterRegistry) :
-    WebFilter {
-
+  WebFilter {
   private val rejectedNoXForwardedFor: Counter =
-      meterRegistry.counter(REJECTED_REQUEST_COUNTER_NAME, REASON_KEY, "no-x-forwarded-for")
+    meterRegistry.counter(REJECTED_REQUEST_COUNTER_NAME, REASON_KEY, "no-x-forwarded-for")
   private val rejectedTooManyRequestsSingleIp: Counter =
-      meterRegistry.counter(
-          REJECTED_REQUEST_COUNTER_NAME, REASON_KEY, "too-many-requests-single-ip")
+    meterRegistry.counter(REJECTED_REQUEST_COUNTER_NAME, REASON_KEY, "too-many-requests-single-ip")
   private val rejectedTooManyRequestsGlobal: Counter =
-      meterRegistry.counter(REJECTED_REQUEST_COUNTER_NAME, REASON_KEY, "too-many-requests-global")
+    meterRegistry.counter(REJECTED_REQUEST_COUNTER_NAME, REASON_KEY, "too-many-requests-global")
 
-  override fun filter(exchange: ServerWebExchange, chain: WebFilterChain): Mono<Void> {
+  override fun filter(
+    exchange: ServerWebExchange,
+    chain: WebFilterChain,
+  ): Mono<Void> {
     val request = exchange.request
     val requestMethod = request.method
     if (HttpMethod.OPTIONS != requestMethod) {
@@ -38,20 +43,21 @@ class LimitingFilter(private val limitingService: LimitingService, meterRegistry
       }
       val requestIp = IpAddressBucketId(xForwardedForHeaderValue)
       val checks =
-          listOf(
-              {
-                runBlocking {
-                  incrementOnFail(
-                      rejectedTooManyRequestsSingleIp,
-                      limitingService.incrementUsageForIpAddress(requestIp))
-                }
-              },
-              {
-                runBlocking {
-                  incrementOnFail(
-                      rejectedTooManyRequestsGlobal, limitingService.incrementGlobalUsage())
-                }
-              })
+        listOf(
+          {
+            runBlocking {
+              incrementOnFail(
+                rejectedTooManyRequestsSingleIp,
+                limitingService.incrementUsageForIpAddress(requestIp),
+              )
+            }
+          },
+          {
+            runBlocking {
+              incrementOnFail(rejectedTooManyRequestsGlobal, limitingService.incrementGlobalUsage())
+            }
+          },
+        )
       for (check in checks) {
         when (val checkResult = check()) {
           is TokenDeniedResult -> {
@@ -62,6 +68,7 @@ class LimitingFilter(private val limitingService: LimitingService, meterRegistry
             response.headers["Retry-After"] = remainingTime.toString()
             return Mono.empty()
           }
+
           TokenAcquiredResult -> {
             continue
           }
@@ -78,7 +85,10 @@ class LimitingFilter(private val limitingService: LimitingService, meterRegistry
   }
 }
 
-fun incrementOnFail(counter: Counter, tokenAcquireResult: TokenAcquireResult): TokenAcquireResult {
+fun incrementOnFail(
+  counter: Counter,
+  tokenAcquireResult: TokenAcquireResult,
+): TokenAcquireResult {
   if (tokenAcquireResult is TokenDeniedResult) {
     counter.increment()
   }
