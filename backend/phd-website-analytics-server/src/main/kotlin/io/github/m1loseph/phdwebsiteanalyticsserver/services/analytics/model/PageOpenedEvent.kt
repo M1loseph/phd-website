@@ -19,6 +19,7 @@ data class PageOpenedEvent(
   val eventTime: Instant,
   val pageName: PageName,
   val insertedAt: Instant,
+  // TODO: add indexing
   val sessionId: SessionId,
 )
 

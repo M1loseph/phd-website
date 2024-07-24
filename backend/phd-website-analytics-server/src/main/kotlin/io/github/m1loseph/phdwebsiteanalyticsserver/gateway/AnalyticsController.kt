@@ -1,12 +1,15 @@
 package io.github.m1loseph.phdwebsiteanalyticsserver.gateway
 
 import io.github.m1loseph.phdwebsiteanalyticsserver.services.analytics.AnalyticsService
+import io.github.m1loseph.phdwebsiteanalyticsserver.services.analytics.SessionNotFoundException
+import io.github.m1loseph.phdwebsiteanalyticsserver.services.analytics.dto.AppOpenedEventResponse
 import io.github.m1loseph.phdwebsiteanalyticsserver.services.analytics.dto.CreateAppOpenedEventDto
 import io.github.m1loseph.phdwebsiteanalyticsserver.services.analytics.dto.CreatePageOpenedEventDto
 import io.github.m1loseph.phdwebsiteanalyticsserver.services.analytics.model.UserAgentName
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestHeader
@@ -20,12 +23,14 @@ class AnalyticsController(private val analyticsService: AnalyticsService) {
   suspend fun onAppOpenedEvent(
     @RequestHeader("User-Agent") userAgent: String?,
     @RequestBody @Valid createAppOpenedEvent: CreateAppOpenedEventDto,
-  ): ResponseEntity<Void> {
-    analyticsService.persistAppOpenedEvent(
-      createAppOpenedEvent,
-      UserAgentName.fromNullable(userAgent),
-    )
-    return ResponseEntity(HttpStatus.CREATED)
+  ): ResponseEntity<AppOpenedEventResponse> {
+    val sessionId =
+      analyticsService.persistAppOpenedEvent(
+        createAppOpenedEvent,
+        UserAgentName.fromNullable(userAgent),
+      )
+    val response = AppOpenedEventResponse(sessionId.rawValue.toString())
+    return ResponseEntity(response, HttpStatus.CREATED)
   }
 
   @PostMapping("/pageOpened")
@@ -38,5 +43,11 @@ class AnalyticsController(private val analyticsService: AnalyticsService) {
       UserAgentName.fromNullable(userAgent),
     )
     return ResponseEntity(HttpStatus.CREATED)
+  }
+
+  @ExceptionHandler(SessionNotFoundException::class)
+  fun handleSessionNotFoundException(): ResponseEntity<Void> {
+    // TODO: introduce some error class?
+    return ResponseEntity.badRequest().build()
   }
 }

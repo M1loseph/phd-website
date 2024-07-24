@@ -15,6 +15,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.time.Clock
+import java.util.UUID
 
 @Service
 class AnalyticsService(
@@ -25,13 +26,14 @@ class AnalyticsService(
   suspend fun persistAppOpenedEvent(
     createAppOpenedEventDto: CreateAppOpenedEventDto,
     userAgent: UserAgentName?,
-  ): AppOpenedEvent {
+  ): SessionId {
+    val sessionId = SessionId(UUID.randomUUID())
     val entity =
       AppOpenedEvent(
         eventTime = createAppOpenedEventDto.eventTime,
         insertedAt = serverClock.instant(),
         userAgent = userAgent,
-        sessionId = SessionId(createAppOpenedEventDto.sessionId),
+        sessionId = sessionId,
         environment =
           when (createAppOpenedEventDto.environment) {
             EnvironmentDto.PWR_SERVER -> Environment.PWR_SERVER
@@ -39,13 +41,18 @@ class AnalyticsService(
           },
       )
     logger.info("Saving event: {}", entity)
-    return appOpenedEventRepository.save(entity).awaitSingle()
+    appOpenedEventRepository.save(entity).awaitSingle()
+    return sessionId
   }
 
   suspend fun persistPageOpenedEvent(
     createPageOpenedEventDto: CreatePageOpenedEventDto,
     userAgent: UserAgentName?,
   ): PageOpenedEvent {
+    val sessionId = SessionId(createPageOpenedEventDto.sessionId)
+    if (!appOpenedEventRepository.existsBySessionId(sessionId).awaitSingle()) {
+      throw SessionNotFoundException("Session ${sessionId.rawValue} was not established yet")
+    }
     val entity =
       PageOpenedEvent(
         eventTime = createPageOpenedEventDto.eventTime,
@@ -68,3 +75,5 @@ class AnalyticsService(
     val logger: Logger = LoggerFactory.getLogger(AnalyticsService::class.java)
   }
 }
+
+class SessionNotFoundException(message: String) : RuntimeException(message)

@@ -1,37 +1,30 @@
 package io.github.m1loseph.phdwebsiteanalyticsserver.gateway
 
-import fixture.RedisFixture
+import fixture.RedisAndMongoFixture
 import io.github.m1loseph.phdwebsiteanalyticsserver.services.analytics.AppOpenedEventRepository
-import io.github.m1loseph.phdwebsiteanalyticsserver.services.analytics.PageOpenedEventRepository
-import io.github.m1loseph.phdwebsiteanalyticsserver.services.analytics.model.PageName
-import io.github.m1loseph.phdwebsiteanalyticsserver.services.analytics.model.PageOpenedEvent
-import io.github.m1loseph.phdwebsiteanalyticsserver.services.analytics.model.PageOpenedEventId
+import io.github.m1loseph.phdwebsiteanalyticsserver.services.analytics.dto.AppOpenedEventResponse
 import io.github.m1loseph.phdwebsiteanalyticsserver.services.analytics.model.SessionId
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.mockito.Mockito.`when`
-import org.mockito.kotlin.any
-import org.mockito.kotlin.verify
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.SpringBootTest.UseMainMethod
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.reactive.server.WebTestClient
-import reactor.core.publisher.Mono
-import java.time.Instant
+import org.springframework.test.web.reactive.server.expectBody
 import java.util.UUID
 
 @SpringBootTest(useMainMethod = UseMainMethod.ALWAYS)
 @ActiveProfiles("test")
 @AutoConfigureWebTestClient
-class AnalyticsControllerIntegrationTest : RedisFixture() {
-  @MockBean lateinit var appOpenedEventRepository: AppOpenedEventRepository
+class AnalyticsControllerIntegrationTest : RedisAndMongoFixture() {
+  @Autowired
+  lateinit var webTestClient: WebTestClient
 
-  @MockBean lateinit var pageOpenedEventRepository: PageOpenedEventRepository
-
-  @Autowired lateinit var webTestClient: WebTestClient
+  @Autowired
+  lateinit var appOpenedEventRepository: AppOpenedEventRepository
 
   @Test
   fun whenSendIncorrectPageName_thenShouldReturnBadRequestStatus() {
@@ -55,19 +48,30 @@ class AnalyticsControllerIntegrationTest : RedisFixture() {
   }
 
   @Test
-  fun whenEventSaved_thenShouldReturnCreatedStatus() {
-    `when`(pageOpenedEventRepository.save(any()))
-      .thenReturn(
-        Mono.just(
-          PageOpenedEvent(
-            id = PageOpenedEventId.create(),
-            eventTime = Instant.now(),
-            pageName = PageName.RESEARCH,
-            insertedAt = Instant.now(),
-            sessionId = SessionId(UUID.fromString("d7e9a4ae-3582-4b6c-8e6c-dadc38585ecc")),
-          ),
-        ),
-      )
+  fun shouldEstablishSession() {
+    val appOpenedEventResponse =
+      webTestClient
+        .post()
+        .uri("/api/v1/analytics/appOpened")
+        .contentType(MediaType.APPLICATION_JSON)
+        .bodyValue(
+          """
+                {
+                    "eventTime": "2023-10-10T10:10:10Z",
+                    "environment": "pwr_server"
+                }
+                """,
+        )
+        .header("x-forwarded-for", "200.200.200.200")
+        .exchange()
+        .expectStatus()
+        .isEqualTo(201)
+        .expectBody<AppOpenedEventResponse>()
+        .returnResult()
+
+    val rawSessionId = appOpenedEventResponse.responseBody!!.sessionId
+    val sessionId = SessionId(UUID.fromString(rawSessionId))
+    assertThat(appOpenedEventRepository.existsBySessionId(sessionId).block()).isTrue()
 
     webTestClient
       .post()
@@ -76,9 +80,9 @@ class AnalyticsControllerIntegrationTest : RedisFixture() {
       .bodyValue(
         """
                 {
-                    "pageName": "research",
-                    "eventTime": "2023-10-10T10:10:10Z",
-                    "sessionId": "d7e9a4ae-3582-4b6c-8e6c-dadc38585ecc"
+                    "eventTime": "2023-10-10T10:10:13Z",
+                    "pageName": "home",
+                    "sessionId": "$rawSessionId"
                 }
                 """,
       )
@@ -86,7 +90,26 @@ class AnalyticsControllerIntegrationTest : RedisFixture() {
       .exchange()
       .expectStatus()
       .isEqualTo(201)
+  }
 
-    verify(pageOpenedEventRepository).save(any())
+  @Test
+  fun whenSendPageOpenedEventWithoutEstablishingSession_thenShouldReturnBadRequest() {
+    webTestClient
+      .post()
+      .uri("/api/v1/analytics/pageOpened")
+      .contentType(MediaType.APPLICATION_JSON)
+      .bodyValue(
+        """
+                {
+                    "eventTime": "2023-10-10T10:10:13Z",
+                    "pageName": "home",
+                    "sessionId": "0b6cb58b-7074-4025-9eeb-24c67c441d2f"
+                }
+                """,
+      )
+      .header("x-forwarded-for", "200.200.200.200")
+      .exchange()
+      .expectStatus()
+      .isEqualTo(400)
   }
 }

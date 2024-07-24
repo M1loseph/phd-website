@@ -59,6 +59,8 @@ spotless {
   }
 }
 
+// TODO: write a dependOn for jib tasks and build tasks on spotless
+
 tasks.withType<Test> {
   useJUnitPlatform()
 }

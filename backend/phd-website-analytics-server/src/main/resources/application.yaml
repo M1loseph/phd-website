@@ -26,3 +26,12 @@ management:
       base-path: /internal/status
       exposure:
         include: [ "env", "metrics", "prometheus" ]
+
+logging:
+  level:
+    org:
+      springframework:
+        data:
+          mongodb:
+            core:
+              ReactiveMongoTemplate: DEBUG

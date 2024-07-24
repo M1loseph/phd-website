@@ -24,6 +24,7 @@ data class AppOpenedEvent(
   val eventTime: Instant,
   val insertedAt: Instant,
   val userAgent: UserAgentName?,
+  // TODO: add indexing
   val sessionId: SessionId,
   val environment: Environment,
 )
