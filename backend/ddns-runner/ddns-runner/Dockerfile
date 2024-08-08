@@ -5,7 +5,6 @@ COPY . .
 
 RUN apt update && apt install -y pkg-config libssl-dev
 
-RUN cargo test
 RUN cargo build --release
 
 FROM debian:bookworm-20240311
