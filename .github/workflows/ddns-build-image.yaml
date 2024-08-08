@@ -47,7 +47,7 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v6
         env:
-          DDNS_VERSION: ${{ needs.test.outputs.ddns-version.version }}
+          DDNS_VERSION: ${{ needs.test.outputs.ddns-version }}
         with:
           context: backend/ddns-runner/ddns-runner
           platforms: linux/amd64,linux/arm64
