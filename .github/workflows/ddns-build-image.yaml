@@ -32,9 +32,6 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Setup rust toolchain
-        uses: actions-rust-lang/setup-rust-toolchain@v1
-
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
@@ -49,8 +46,10 @@ jobs:
 
       - name: Build and push
         uses: docker/build-push-action@v6
+        env:
+          DDNS_VERSION: ${{ needs.test.outputs.ddns-version.version }}
         with:
           context: backend/ddns-runner/ddns-runner
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: m1loseph/ddns-runner:${{ needs.test.outputs.ddns-version }}
+          tags: m1loseph/ddns-runner:${{}}
