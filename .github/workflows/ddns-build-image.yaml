@@ -1,4 +1,4 @@
-name: Continuous Integration
+name: DDNS-Runner Deployment
 on:
   push:
     tags:
@@ -23,7 +23,7 @@ jobs:
       - name: Determine version
         id: determine_version
         working-directory: backend/ddns-runner/ddns-runner
-        run: ecgo "version=$(./tools/current-version.sh)" >> "$GITHUB_OUTPUT"
+        run: echo "version=$(./tools/current-version.sh)" >> "$GITHUB_OUTPUT"
 
   docker:
     needs: test
