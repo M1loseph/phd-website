@@ -52,4 +52,4 @@ jobs:
           context: backend/ddns-runner/ddns-runner
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: m1loseph/ddns-runner:${{}}
+          tags: m1loseph/ddns-runner:${DDNS_VERSION}
