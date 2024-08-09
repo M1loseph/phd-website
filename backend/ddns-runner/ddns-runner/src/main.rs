@@ -1,15 +1,16 @@
 mod config;
+mod prometheus_metrics;
 mod duck_dns_client;
-mod prometheus_exporter;
+mod prometheus_handler;
 
 use std::time::Duration;
-
+use prometheus_metrics::PrometheusSystemInfoMetrics;
 use dotenv::dotenv;
 use duck_dns_client::client::{DuckDnsClient, DuckDnsConfig};
 use iron::Iron;
 use log::{error, info};
 use prometheus::IntCounterVec;
-use prometheus_exporter::PrometheusExporter;
+use prometheus_handler::PrometheusExporter;
 use router::Router;
 use tokio::time::sleep;
 
@@ -53,6 +54,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let registry = prometheus::Registry::new();
     registry.register(Box::new(ddns_request_counter.clone()))?;
 
+    let process_info_metrics = PrometheusSystemInfoMetrics::new(&registry)?;
+
     let config = config::read_config_with_default()?;
     let client = DuckDnsClient::new(DuckDnsConfig {
         domain_to_update: config.domain_to_update,
@@ -63,6 +66,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     tokio::spawn(async move {
         update_dns_record_task(client, ddns_request_counter, sleep_time).await;
+    });
+    tokio::spawn(async move {
+        process_info_metrics.update_system_info().await;
     });
 
     let exporter = PrometheusExporter::new(registry);
