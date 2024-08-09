@@ -1,10 +1,47 @@
-use std::env;
+use std::env::{self, VarError};
+use std::error::Error;
+use std::fmt::Display;
 use std::result::Result;
 use std::time::Duration;
 
 const DEFAULT_PORT: u16 = 3000;
 const DEFAULT_INTERVAL: Duration = Duration::from_secs(60 * 5);
 
+#[derive(Debug, PartialEq)]
+pub enum ConfigReadingError {
+    VariableNotSet { variable_name: String },
+    VariableMalformed { variable_name: String },
+}
+
+impl ConfigReadingError {
+    fn from(value: VarError, variable_name: String) -> Self {
+        match value {
+            VarError::NotPresent => ConfigReadingError::VariableNotSet { variable_name },
+            VarError::NotUnicode(_) => ConfigReadingError::VariableMalformed { variable_name },
+        }
+    }
+}
+
+impl Error for ConfigReadingError {}
+
+impl Display for ConfigReadingError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            ConfigReadingError::VariableNotSet { variable_name } => {
+                write!(f, "Env variable {} is not set", variable_name)
+            }
+            ConfigReadingError::VariableMalformed { variable_name } => {
+                write!(
+                    f,
+                    "Env variable {} is malformed, can't read it",
+                    variable_name
+                )
+            }
+        }
+    }
+}
+
+#[derive(Debug)]
 pub struct ApplicationConfig {
     pub domain_to_update: String,
     pub duck_dns_address: String,
@@ -18,13 +55,12 @@ fn to_env_variable_name(name: &str) -> String {
     format!("{}_{}", ENV_VAR_PREFIX, name)
 }
 
-fn read_env_variable(name: &str) -> Result<String, Box<dyn std::error::Error>> {
+fn read_env_variable(name: &str) -> Result<String, ConfigReadingError> {
     let env_variable_name = to_env_variable_name(name);
-    env::var(&env_variable_name)
-        .map_err(|_| format!("{} environment variable is not set", env_variable_name).into())
+    env::var(&env_variable_name).map_err(|e| ConfigReadingError::from(e, env_variable_name))
 }
 
-pub fn read_config_with_default() -> Result<ApplicationConfig, Box<dyn std::error::Error>> {
+pub fn read_config_with_default() -> Result<ApplicationConfig, ConfigReadingError> {
     let domain_to_update = read_env_variable("DOMAIN_TO_UPDATE")?;
     let token = read_env_variable("TOKEN")?;
     let server_port = read_env_variable("SERVER_PORT")
@@ -46,4 +82,79 @@ pub fn read_config_with_default() -> Result<ApplicationConfig, Box<dyn std::erro
         server_port,
         ip_update_interval,
     })
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    struct EnvVariableCleanup;
+
+    impl Drop for EnvVariableCleanup {
+        fn drop(&mut self) {
+            for (env_var, _) in std::env::vars() {
+                std::env::remove_var(env_var);
+            }
+        }
+    }
+
+    #[test]
+    fn should_exit_with_error_when_domain_is_missing() {
+        let _cleaner = EnvVariableCleanup{};
+        let error = read_config_with_default().unwrap_err();
+        let expected_error = ConfigReadingError::VariableNotSet {
+            variable_name: "DDNS_RUNNER_DOMAIN_TO_UPDATE".to_string(),
+        };
+        assert_eq!(error, expected_error);
+    }
+
+    #[test]
+    fn should_exit_with_error_when_token_is_missing() {
+        let _cleaner = EnvVariableCleanup{};
+        std::env::set_var("DDNS_RUNNER_DOMAIN_TO_UPDATE", "phdwebsite");
+        let error = read_config_with_default().unwrap_err();
+        let expected_error = ConfigReadingError::VariableNotSet {
+            variable_name: "DDNS_RUNNER_TOKEN".to_string(),
+        };
+        assert_eq!(error, expected_error);
+    }
+
+    #[test]
+    fn should_exit_with_error_when_address_is_missing() {
+        let _cleaner = EnvVariableCleanup{};
+        std::env::set_var("DDNS_RUNNER_DOMAIN_TO_UPDATE", "phdwebsite");
+        std::env::set_var("DDNS_RUNNER_TOKEN", "1234");
+        let error = read_config_with_default().unwrap_err();
+        let expected_error = ConfigReadingError::VariableNotSet {
+            variable_name: "DDNS_RUNNER_DUCK_DNS_ADDRESS".to_string(),
+        };
+        assert_eq!(error, expected_error);
+    }
+
+    #[test]
+    fn should_read_config_and_apply_defaults() {
+        let _cleaner = EnvVariableCleanup{};
+        std::env::set_var("DDNS_RUNNER_DOMAIN_TO_UPDATE", "phdwebsite");
+        std::env::set_var("DDNS_RUNNER_TOKEN", "1234");
+        std::env::set_var("DDNS_RUNNER_DUCK_DNS_ADDRESS", "https://duckdns.org");
+        let result = read_config_with_default().unwrap();
+        assert_eq!(result.domain_to_update, "phdwebsite");
+        assert_eq!(result.token, "1234");
+        assert_eq!(result.duck_dns_address, "https://duckdns.org");
+        assert_eq!(result.server_port, 3000);
+        assert_eq!(result.ip_update_interval, Duration::from_secs(5 * 60));
+    }
+
+    #[test]
+    fn should_read_config_and_override_defaults() {
+        let _cleaner = EnvVariableCleanup{};
+        std::env::set_var("DDNS_RUNNER_DOMAIN_TO_UPDATE", "phdwebsite");
+        std::env::set_var("DDNS_RUNNER_TOKEN", "1234");
+        std::env::set_var("DDNS_RUNNER_DUCK_DNS_ADDRESS", "https://duckdns.org");
+        std::env::set_var("DDNS_RUNNER_IP_UPDATE_INTERVAL_SEC", "60");
+        std::env::set_var("DDNS_RUNNER_SERVER_PORT", "4000");
+        let result = read_config_with_default().unwrap();
+        assert_eq!(result.server_port, 4000);
+        assert_eq!(result.ip_update_interval, Duration::from_secs(60));
+    }
 }
