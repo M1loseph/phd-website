@@ -1,8 +1,11 @@
-use log::trace;
+use log::{trace, warn};
+use reqwest::StatusCode;
 use std::{
     net::{Ipv4Addr, Ipv6Addr},
     str::FromStr,
 };
+
+use crate::duck_dns_client::errors::StatusCodeError;
 
 use super::errors::{DuckDnsMessageParsingError, UpdateIpError};
 
@@ -41,6 +44,11 @@ impl DuckDnsClient {
         );
         trace!("Sending request to: {}", url);
         let response = reqwest::get(url).await?;
+        if response.status() != StatusCode::OK {
+            warn!("Received {} status from DuckDNS", response.status());
+            let err = StatusCodeError::new(response.status().as_u16());
+            return Err(UpdateIpError::from(err));
+        }
         let response_text = response.text().await?;
         let parsed_response = IPUpdateResult::try_from(response_text)?;
         Ok(parsed_response)
