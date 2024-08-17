@@ -180,6 +180,6 @@ fn main() {
     });
 
     Iron::new(router)
-        .http(format!("127.0.0.1:{}", PORT))
+        .http(format!("0.0.0.0:{}", PORT))
         .unwrap();
 }

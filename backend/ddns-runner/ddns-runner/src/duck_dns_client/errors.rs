@@ -42,7 +42,7 @@ impl Display for StatusCodeError {
 
 #[derive(Debug)]
 pub struct UpdateIpError {
-    inner: Box<dyn std::error::Error>,
+    inner: Box<dyn std::error::Error + Send>,
 }
 
 impl Error for UpdateIpError {}
