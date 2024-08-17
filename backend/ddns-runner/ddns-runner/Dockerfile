@@ -1,10 +1,9 @@
 FROM rust:1.76.0-slim-bookworm as build
 
-WORKDIR /app
-COPY . .
-
 RUN apt update && apt install -y pkg-config libssl-dev
 
+WORKDIR /build
+COPY . .
 RUN cargo build --release
 
 FROM debian:bookworm-20240311
@@ -23,6 +22,7 @@ RUN adduser \
     appuser
 USER appuser
 
-COPY --from=build /app/target/release/ddns-runner /bin/ddns-runner
+COPY --from=build /build/target/release/ddns-runner /ddns-runner/ddns-runner
+COPY --chown=appuser:appuser ./migrations /ddns-runner/migrations/
 EXPOSE 3000
-CMD ["/bin/ddns-runner"]
+CMD ["/ddns-runner/ddns-runner"]

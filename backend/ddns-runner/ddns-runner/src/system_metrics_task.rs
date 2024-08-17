@@ -4,12 +4,12 @@ use std::time::Duration;
 use sysinfo::{get_current_pid, System};
 use tokio::time::sleep;
 
-pub struct PrometheusSystemInfoMetrics {
+pub struct PrometheusSystemInfoMetricsTask {
     memory_used: Gauge,
     cpu_used: Gauge,
 }
 
-impl PrometheusSystemInfoMetrics {
+impl PrometheusSystemInfoMetricsTask {
     pub fn new(registry: &Registry) -> Result<Self> {
         let memory_used = Gauge::with_opts(
             Opts::new(
@@ -23,7 +23,7 @@ impl PrometheusSystemInfoMetrics {
         registry.register(Box::new(memory_used.clone()))?;
         registry.register(Box::new(cpu_used.clone()))?;
 
-        Ok(PrometheusSystemInfoMetrics {
+        Ok(PrometheusSystemInfoMetricsTask {
             memory_used,
             cpu_used,
         })

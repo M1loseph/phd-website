@@ -18,7 +18,7 @@ jobs:
 
       - name: Run tests
         working-directory: backend/ddns-runner/ddns-runner
-        run: cargo test -- --test-threads=1
+        run: cargo test
 
       - name: Determine version
         id: determine_version
