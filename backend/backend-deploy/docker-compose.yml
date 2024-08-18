@@ -67,6 +67,8 @@ services:
       POSTGRES_USER: ${DDNS_RUNNER_POSTGRES_USER}
       POSTGRES_DB: ${DDNS_RUNNER_POSTGRES_DB}
   prometheus:
+    # WARN: before changing this image please run docker inspect {new-image} and copy paste argument to 'coomand' section (leave last flag in it's place)
+    # https://stackoverflow.com/questions/56560188/how-to-append-command-to-docker-compose-yml-without-override-existing
     image: prom/prometheus:v2.50.1
     user: root
     restart: always
@@ -78,4 +80,10 @@ services:
     volumes:
       - "/mnt/kingspec-usb/prometheus:/prometheus"
       - "./prometheus.yml:/etc/prometheus/prometheus.yml"
+    command: 
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--web.console.libraries=/usr/share/prometheus/console_libraries"
+      - "--web.console.templates=/usr/share/prometheus/consoles"
+      - "--storage.tsdb.retention.time=60d"
 
