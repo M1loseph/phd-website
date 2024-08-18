@@ -42,6 +42,7 @@ impl From<ServerActionAPI> for ServerAction {
     }
 }
 pub struct IpUpdateResult {
+    #[allow(dead_code)]
     pub id: Option<i64>,
     pub server_action: ServerAction,
     pub ipv4: Ipv4Addr,
