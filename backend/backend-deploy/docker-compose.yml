@@ -44,7 +44,8 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-      - ddns-runner-postgres
+      ddns-runner-postgres:
+        condition: service_healthy
     environment:
       DDNS_RUNNER_DOMAIN_TO_UPDATE: phdwebsite
       DDNS_RUNNER_DUCK_DNS_ADDRESS: https://duckdns.org
