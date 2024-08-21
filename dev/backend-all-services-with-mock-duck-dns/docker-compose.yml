@@ -78,3 +78,6 @@ services:
     image: grafana/grafana:11.1.4-ubuntu
     ports:
       - "4000:3000"
+    volumes:
+      - "./grafana/grafana.ini:/etc/grafana/grafana.ini"
+      - "./grafana/prometheus-provisioning.yaml:/etc/grafana/provisioning/datasources/promethus-provisioning.yaml"
