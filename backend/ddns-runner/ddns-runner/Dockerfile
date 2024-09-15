@@ -25,4 +25,4 @@ USER appuser
 COPY --from=build /build/target/release/ddns-runner /ddns-runner/ddns-runner
 COPY --chown=appuser:appuser ./migrations /ddns-runner/migrations/
 EXPOSE 3000
-CMD ["/ddns-runner/ddns-runner"]
+ENTRYPOINT ["/ddns-runner/ddns-runner"]
