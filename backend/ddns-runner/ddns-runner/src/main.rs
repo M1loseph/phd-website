@@ -6,6 +6,8 @@ mod prometheus_handler;
 mod system_metrics_task;
 mod update_ip_task;
 use std::path::PathBuf;
+use std::sync::atomic::AtomicBool;
+use std::sync::Arc;
 
 use duck_dns_client::client::{DuckDnsClient, DuckDnsConfig};
 use iron::Iron;
@@ -18,6 +20,8 @@ use update_ip_task::{IpUpdateResultPostgresRepository, UpdateIpTask};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    // required by Docker to exit the container gracefully by SIGTERM without waiting for SIGKILL
+    signal_hook::flag::register_conditional_shutdown(signal_hook::consts::SIGTERM, 0, Arc::new(AtomicBool::new(true)))?;
     dotenv::read_env_file();
     env_logger::init();
 
