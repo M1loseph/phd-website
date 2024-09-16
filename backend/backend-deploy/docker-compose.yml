@@ -39,7 +39,7 @@ services:
       SPRING_DATA_MONGODB_URI: mongodb://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@mongo:27017/${MONGODB_DATABASE_NAME}?authSource=admin
       WEB_LIMITING_REDIS_URL: redis://redis:6379
   ddns-runner:
-    image: m1loseph/ddns-runner:0.0.3
+    image: m1loseph/ddns-runner:0.0.4
     restart: always
     ports:
       - "3000:3000"
