@@ -1,0 +1,93 @@
+services: 
+  nginx:
+    image: nginx:1.25.4-bookworm
+    ports:
+      - "80:80"
+    volumes:
+      - "./nginx.conf:/etc/nginx/nginx.conf"
+    depends_on:
+      - phd-website-analytics-server
+  mongo:
+    image: mongo:4.4.18
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: analytics-server-db
+      MONGO_INITDB_ROOT_USERNAME: test
+      MONGO_INITDB_ROOT_PASSWORD: test
+  redis:
+    image: redis:7.2.4
+    ports:
+      - "6379:6379"
+  phd-website-analytics-server:
+    image: m1loseph/phd-website-analytics-server:0.3
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mongo
+      - redis
+    environment:
+      SPRING_PROFILES_ACTIVE: local
+      SPRING_DATA_MONGODB_URI: mongodb://test:test@mongo:27017/analytics-server-db?authSource=admin
+      WEB_LIMITING_REDIS_URL: redis://redis:6379
+  ddns-runner:
+    build:
+      context: "../../backend/ddns-runner/ddns-runner"
+      dockerfile: Dockerfile
+      args:
+        ADDITIONAL_PACKAGES: procps
+    ports:
+      - "3000:3000"
+    depends_on:
+      ddns-runner-postgres:
+        condition: service_healthy
+    environment:
+      DDNS_RUNNER_DOMAIN_TO_UPDATE: phdwebsite
+      DDNS_RUNNER_DUCK_DNS_ADDRESS: http://duck-dns-server-mock:6000
+      DDNS_RUNNER_TOKEN: dbaceba3-3e25-44b6-ad6b-c6b39a2ec16a
+      DDNS_RUNNER_POSTGRES_URI: postgres://user:password@ddns-runner-postgres:5432/ddns-runner
+      DDNS_RUNNER_MIGRATION_FILES_DIRECTORY: /ddns-runner/migrations
+      DDNS_RUNNER_IP_UPDATE_INTERVAL_SEC: 10
+      DDNS_RUNNER_SERVER_PORT: 3000
+      RUST_LOG: debug
+  ddns-runner-postgres:
+    image: postgres:16.4
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_USER: user
+      POSTGRES_DB: ddns-runner
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d ddns-runner"]
+      interval: 10s
+      start_period: 10s
+      timeout: 10s
+      retries: 5
+  duck-dns-server-mock:
+    build:
+      context: "../../backend/ddns-runner/duck-dns-server-mock"
+      dockerfile: Dockerfile
+    init: true
+  prometheus:
+    image: prom/prometheus:v2.50.1
+    user: root
+    ports:
+      - "9090:9090"
+    depends_on:
+      - ddns-runner
+      - phd-website-analytics-server
+    volumes:
+      - "./prometheus.yml:/etc/prometheus/prometheus.yml"
+  grafana:
+    image: grafana/grafana:11.1.4-ubuntu
+    ports:
+      - "4000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=user
+      - GF_SECURITY_ADMIN_PASSWORD=password
+    volumes:
+      - "./grafana/prometheus-provisioning.yaml:/etc/grafana/provisioning/datasources/promethus-provisioning.yaml"
+      - "./grafana/dashboards-provisioning.yaml:/etc/grafana/provisioning/dashboards/dashboards-provisioning.yaml"
+      - "./grafana/DDNS-Runner.json:/var/lib/grafana/dashboards/DDNS-Runner.json"
+      - "./grafana/Analytics-Server.json:/var/lib/grafana/dashboards/Analytics-Server.json"

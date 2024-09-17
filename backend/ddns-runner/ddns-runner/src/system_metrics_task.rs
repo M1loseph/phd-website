@@ -1,7 +1,8 @@
+use log::{debug, error};
 use prometheus::Result;
 use prometheus::{Gauge, Opts, Registry};
 use std::time::Duration;
-use sysinfo::{get_current_pid, System};
+use sysinfo::{get_current_pid, ProcessRefreshKind, ProcessesToUpdate, System};
 use tokio::time::sleep;
 
 pub struct PrometheusSystemInfoMetricsTask {
@@ -30,17 +31,43 @@ impl PrometheusSystemInfoMetricsTask {
     }
 
     pub async fn update_system_info(&self) {
+        sysinfo::set_open_files_limit(0);
+        let mut system_info = System::new_all();
         loop {
-            if let Ok(pid) = get_current_pid() {
-                let system_info = System::new_all();
-                if let Some(process) = system_info.process(pid) {
-                    let memory_in_bytes = process.memory() as f64;
-                    let cpu_usage_percent = process.cpu_usage() as f64;
-                    self.memory_used.set(memory_in_bytes);
-                    self.cpu_used.set(cpu_usage_percent);
+            sleep(Duration::from_secs(1)).await;
+            let pid = match get_current_pid() {
+                Ok(pid) => pid,
+                Err(e) => {
+                    error!("Error occurred when getting pid - {e}");
+                    continue;
                 }
             };
-            sleep(Duration::from_secs(10)).await;
+            // TODO: replace existing code with commented one when this issue is resolved
+            // https://github.com/GuillaumeGomez/sysinfo/issues/1351
+            //
+            // let updated_processes = system_info.refresh_processes_specifics(
+            //     ProcessesToUpdate::Some(&[pid]),
+            //     ProcessRefreshKind::new().with_cpu().with_memory(),
+            // );
+            let updated_processes = system_info.refresh_processes_specifics(
+                ProcessesToUpdate::All,
+                ProcessRefreshKind::new().with_cpu().with_memory(),
+            );
+
+            debug!("Updated {} processes information", updated_processes);
+
+            let process = match system_info.process(pid) {
+                Some(process) => process,
+                None => {
+                    error!("Unable to find process with pid {}", pid);
+                    continue;
+                }
+            };
+            debug!("Process ({pid}) info - cpu={},memory={}", process.cpu_usage(), process.memory());
+            let memory_in_bytes = process.memory() as f64;
+            let cpu_usage_percent = process.cpu_usage() as f64;
+            self.memory_used.set(memory_in_bytes);
+            self.cpu_used.set(cpu_usage_percent);
         }
     }
 }

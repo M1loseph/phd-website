@@ -1,9 +1,3 @@
-use std::sync::Arc;
-use std::sync::Mutex;
-use std::sync::MutexGuard;
-use std::time::Duration;
-use std::time::Instant;
-
 use iron::prelude::*;
 use iron::status;
 use iron::Handler;
@@ -12,6 +6,13 @@ use params::Params;
 use params::Value;
 use rand::random;
 use router::Router;
+use std::io::stdin;
+use std::io::IsTerminal;
+use std::sync::Arc;
+use std::sync::Mutex;
+use std::sync::MutexGuard;
+use std::time::Duration;
+use std::time::Instant;
 
 const CORRECT_TOKEN: &str = "dbaceba3-3e25-44b6-ad6b-c6b39a2ec16a";
 const UPDATE_INTERVAL: Duration = Duration::from_secs(5);
@@ -142,44 +143,47 @@ fn main() {
         "update-ip",
     );
 
-    std::thread::spawn(move || loop {
-        println!(
-            "Chose a mode: \n\
+    std::thread::spawn(move || {
+        if !stdin().is_terminal() {
+            return;
+        }
+        loop {
+            println!(
+                "Chose a mode: \n\
             1. Normal Responses\n\
             2. KO Errors \n\
             3. 500 Errors"
-        );
+            );
 
-        let mut buffer = String::new();
-        match std::io::stdin().read_line(&mut buffer) {
-            Ok(_) => match buffer.trim().parse::<u8>() {
-                Ok(index) => match index {
-                    1 => {
-                        println!("Set Normal mode");
-                        server_data.lock().unwrap().mode = Mode::Normal;
+            let mut buffer = String::new();
+            match stdin().read_line(&mut buffer) {
+                Ok(_) => match buffer.trim().parse::<u8>() {
+                    Ok(index) => match index {
+                        1 => {
+                            println!("Set Normal mode");
+                            server_data.lock().unwrap().mode = Mode::Normal;
+                        }
+                        2 => {
+                            println!("Set ErrorKO mode");
+                            server_data.lock().unwrap().mode = Mode::ErrorKO;
+                        }
+                        3 => {
+                            println!("Set Error500 mode");
+                            server_data.lock().unwrap().mode = Mode::Error500;
+                        }
+                        _ => {}
+                    },
+                    Err(e) => {
+                        println!("{}", e);
                     }
-                    2 => {
-                        println!("Set ErrorKO mode");
-                        server_data.lock().unwrap().mode = Mode::ErrorKO;
-                    }
-                    3 => {
-                        println!("Set Error500 mode");
-                        server_data.lock().unwrap().mode = Mode::Error500;
-                    }
-                    _ => {}
                 },
                 Err(e) => {
                     println!("{}", e);
                 }
-            },
-            Err(e) => {
-                println!("{}", e);
             }
+            buffer.clear();
         }
-        buffer.clear();
     });
 
-    Iron::new(router)
-        .http(format!("0.0.0.0:{}", PORT))
-        .unwrap();
+    Iron::new(router).http(format!("0.0.0.0:{}", PORT)).unwrap();
 }
