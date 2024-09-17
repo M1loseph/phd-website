@@ -39,7 +39,7 @@ services:
       SPRING_DATA_MONGODB_URI: mongodb://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@mongo:27017/${MONGODB_DATABASE_NAME}?authSource=admin
       WEB_LIMITING_REDIS_URL: redis://redis:6379
   ddns-runner:
-    image: m1loseph/ddns-runner:0.0.4
+    image: m1loseph/ddns-runner:0.0.5
     restart: always
     ports:
       - "3000:3000"
@@ -93,4 +93,16 @@ services:
       - "--web.console.libraries=/usr/share/prometheus/console_libraries"
       - "--web.console.templates=/usr/share/prometheus/consoles"
       - "--storage.tsdb.retention.time=60d"
+  grafana:
+    image: grafana/grafana:11.1.4-ubuntu
+    ports:
+      - "4000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_USER}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD}
+    volumes:
+      - "./grafana/prometheus-provisioning.yaml:/etc/grafana/provisioning/datasources/promethus-provisioning.yaml"
+      - "./grafana/dashboards-provisioning.yaml:/etc/grafana/provisioning/dashboards/dashboards-provisioning.yaml"
+      - "./grafana/DDNS-Runner.json:/var/lib/grafana/dashboards/DDNS-Runner.json"
+      - "./grafana/Analytics-Server.json:/var/lib/grafana/dashboards/Analytics-Server.json"
 
