@@ -93,4 +93,16 @@ services:
       - "--web.console.libraries=/usr/share/prometheus/console_libraries"
       - "--web.console.templates=/usr/share/prometheus/consoles"
       - "--storage.tsdb.retention.time=60d"
+  grafana:
+    image: grafana/grafana:11.1.4-ubuntu
+    ports:
+      - "4000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_USER}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD}
+    volumes:
+      - "./grafana/prometheus-provisioning.yaml:/etc/grafana/provisioning/datasources/promethus-provisioning.yaml"
+      - "./grafana/dashboards-provisioning.yaml:/etc/grafana/provisioning/dashboards/dashboards-provisioning.yaml"
+      - "./grafana/DDNS-Runner.json:/var/lib/grafana/dashboards/DDNS-Runner.json"
+      - "./grafana/Analytics-Server.json:/var/lib/grafana/dashboards/Analytics-Server.json"
 

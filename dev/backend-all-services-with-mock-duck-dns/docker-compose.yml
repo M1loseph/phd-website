@@ -87,7 +87,7 @@ services:
       - GF_SECURITY_ADMIN_USER=user
       - GF_SECURITY_ADMIN_PASSWORD=password
     volumes:
-      - "./grafana/prometheus-provisioning.yaml:/etc/grafana/provisioning/datasources/promethus-provisioning.yaml"
-      - "./grafana/dashboards-provisioning.yaml:/etc/grafana/provisioning/dashboards/dashboards-provisioning.yaml"
-      - "./grafana/DDNS-Runner.json:/var/lib/grafana/dashboards/DDNS-Runner.json"
-      - "./grafana/Analytics-Server.json:/var/lib/grafana/dashboards/Analytics-Server.json"
+      - "../../backend/backend-deploy/grafana/prometheus-provisioning.yaml:/etc/grafana/provisioning/datasources/promethus-provisioning.yaml"
+      - "../../backend/backend-deploy/grafana/dashboards-provisioning.yaml:/etc/grafana/provisioning/dashboards/dashboards-provisioning.yaml"
+      - "../../backend/backend-deploy/grafana/DDNS-Runner.json:/var/lib/grafana/dashboards/DDNS-Runner.json"
+      - "../../backend/backend-deploy/grafana/Analytics-Server.json:/var/lib/grafana/dashboards/Analytics-Server.json"
