@@ -1,4 +1,4 @@
-FROM rust:1.76.0-slim-bookworm AS build
+FROM rust:1.80.1-slim-bookworm AS build
 
 RUN apt update && apt install -y pkg-config libssl-dev
 
@@ -8,7 +8,9 @@ RUN cargo build --release
 
 FROM debian:bookworm-20240311
 
-RUN apt update && apt install -y libssl-dev && apt clean
+ARG ADDITIONAL_PACKAGES
+
+RUN apt update && apt install -y libssl-dev ${ADDITIONAL_PACKAGES} && apt clean
 # Create a non-privileged user that the app will run under.
 # See https://docs.docker.com/go/dockerfile-user-best-practices/
 ARG UID=10001

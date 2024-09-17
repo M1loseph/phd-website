@@ -31,7 +31,11 @@ services:
       SPRING_DATA_MONGODB_URI: mongodb://test:test@mongo:27017/analytics-server-db?authSource=admin
       WEB_LIMITING_REDIS_URL: redis://redis:6379
   ddns-runner:
-    image: m1loseph/ddns-runner:0.0.3
+    build:
+      context: "../../backend/ddns-runner/ddns-runner"
+      dockerfile: Dockerfile
+      args:
+        ADDITIONAL_PACKAGES: procps
     ports:
       - "3000:3000"
     depends_on:
@@ -45,7 +49,7 @@ services:
       DDNS_RUNNER_MIGRATION_FILES_DIRECTORY: /ddns-runner/migrations
       DDNS_RUNNER_IP_UPDATE_INTERVAL_SEC: 10
       DDNS_RUNNER_SERVER_PORT: 3000
-      RUST_LOG: info
+      RUST_LOG: debug
   ddns-runner-postgres:
     image: postgres:16.4
     ports:
@@ -64,6 +68,7 @@ services:
     build:
       context: "../../backend/ddns-runner/duck-dns-server-mock"
       dockerfile: Dockerfile
+    init: true
   prometheus:
     image: prom/prometheus:v2.50.1
     user: root
@@ -78,6 +83,11 @@ services:
     image: grafana/grafana:11.1.4-ubuntu
     ports:
       - "4000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=user
+      - GF_SECURITY_ADMIN_PASSWORD=password
     volumes:
-      - "./grafana/grafana.ini:/etc/grafana/grafana.ini"
       - "./grafana/prometheus-provisioning.yaml:/etc/grafana/provisioning/datasources/promethus-provisioning.yaml"
+      - "./grafana/dashboards-provisioning.yaml:/etc/grafana/provisioning/dashboards/dashboards-provisioning.yaml"
+      - "./grafana/DDNS-Runner.json:/var/lib/grafana/dashboards/DDNS-Runner.json"
+      - "./grafana/Analytics-Server.json:/var/lib/grafana/dashboards/Analytics-Server.json"

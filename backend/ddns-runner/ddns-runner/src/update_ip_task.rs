@@ -118,6 +118,7 @@ impl IpUpdateResultPostgresRepository {
 
 impl Repository<IpUpdateResult> for IpUpdateResultPostgresRepository {
     async fn insert(&self, entity: IpUpdateResult) -> Result<IpUpdateResult> {
+        // TODO: unwrapping there is more deadly
         let row = self
             .client
             .query_one(
@@ -154,7 +155,7 @@ impl UpdateIpTask {
     ) -> std::result::Result<Self, Box<dyn std::error::Error>> {
         let ddns_request_counter = IntCounterVec::new(
             prometheus::Opts::new(
-                "ddnsrunner_ddns_requests",
+                "ddnsrunner_ddns_requests_total",
                 "Number of successful updates in duck dns.",
             ),
             &["result"],
@@ -177,6 +178,7 @@ impl UpdateIpTask {
                 Ok(response) => {
                     info!("Got response from Duck DNS: {:?}", response);
                     let entity = IpUpdateResult::from(response);
+                    // TODO: handle the error to not be fatal
                     let _ = self
                         .ip_update_result_repository
                         .insert(entity)
