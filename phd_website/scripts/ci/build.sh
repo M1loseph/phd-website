@@ -32,6 +32,9 @@ dart run build_runner build --delete-conflicting-outputs
 
 flutter test
 
+# Fix for icons caching issue
+# https://github.com/flutter/flutter/issues/136585#issuecomment-2354612183
 flutter build web --base-href "${DEPLOYMENT_ENDPOINT}" \
     --dart-define ANALYTICS_SERVER_URL="${ANALYTICS_SERVER_URL}" \
-    --dart-define ENVIRONMENT="${ENVIRONMENT}"
+    --dart-define ENVIRONMENT="${ENVIRONMENT}" \
+    --no-tree-shake-icons
