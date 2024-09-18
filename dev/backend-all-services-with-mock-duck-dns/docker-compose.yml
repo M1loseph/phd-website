@@ -2,7 +2,7 @@ services:
   nginx:
     image: nginx:1.25.4-bookworm
     ports:
-      - "80:80"
+      - "10000:80"
     volumes:
       - "./nginx.conf:/etc/nginx/nginx.conf"
     depends_on:

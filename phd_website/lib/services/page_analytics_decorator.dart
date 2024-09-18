@@ -23,7 +23,7 @@ class _PageAnalyticsDecoratorState extends State<PageAnalyticsDecorator> {
     super.initState();
     context
         .read<AnalyticsService>()
-        .registerUserOpenedPage(PageData(pageName: widget._pageName));
+        .registerPageOpenedEvent(PageData(pageName: widget._pageName));
   }
 
   @override

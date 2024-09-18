@@ -7,7 +7,9 @@
       "type": "dart",
       "toolArgs": [
         "--dart-define",
-        "ANALYTICS_SERVER_URL=http://localhost:10000"
+        "ANALYTICS_SERVER_URL=http://localhost:10000",
+        "--dart-define",
+        "ENVIRONMENT=pwr_server"
       ]
     },
     {
@@ -17,7 +19,9 @@
       "flutterMode": "release",
       "toolArgs": [
         "--dart-define",
-        "ANALYTICS_SERVER_URL=http://localhost:10000"
+        "ANALYTICS_SERVER_URL=http://localhost:10000",
+        "--dart-define",
+        "ENVIRONMENT=pwr_server"
       ]
     }
   ]

@@ -21,12 +21,8 @@ import 'package:phd_website/services/clipboard_service.dart';
 import 'package:phd_website/state/app_global_state.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:uuid/uuid.dart';
 
 void main() {
-  // TODO: write a comment about the following line
-  // is it needed and link do docs or stack
-  WidgetsFlutterBinding.ensureInitialized();
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(
@@ -37,7 +33,6 @@ void main() {
       Provider(create: (_) => ClipboardService()),
       Provider(
         create: (_) => AnalyticsService(
-          sessionId: const Uuid().v4(),
           analyticsUrl: const String.fromEnvironment('ANALYTICS_SERVER_URL'),
           environment: const String.fromEnvironment('ENVIRONMENT'),
           httpClient: Client(),
@@ -155,7 +150,7 @@ class _PHDAppState extends State<PHDApp> {
   void initState() {
     super.initState();
     context.read<AppGlobalState>().bumpNumberOfEntires();
-    context.read<AnalyticsService>().registerUserOpenedApp();
+    context.read<AnalyticsService>().registerAppOpenedEvent();
   }
 
   @override
