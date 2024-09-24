@@ -24,7 +24,9 @@ void main() {
     expect(state.easterEggState, EasterEggState.notStarted);
 
     for (var char in 'sweetie'.characters) {
-      await tester.sendKeyDownEvent(LogicalKeyboardKey(char.codeUnitAt(0)));
+      var characterCode = char.codeUnitAt(0);
+      var keyboardKey = LogicalKeyboardKey(characterCode);
+      await tester.sendKeyEvent(keyboardKey);
     }
     await tester.pump();
 
@@ -44,7 +46,7 @@ void main() {
     ));
 
     for (var char in 'gibberishswee'.characters) {
-      await tester.sendKeyDownEvent(LogicalKeyboardKey(char.codeUnitAt(0)));
+      await tester.sendKeyEvent(LogicalKeyboardKey(char.codeUnitAt(0)));
     }
     await tester.pump();
 
@@ -68,7 +70,7 @@ void main() {
     ));
 
     for (var char in 'sweetie'.characters) {
-      await tester.sendKeyDownEvent(LogicalKeyboardKey(char.codeUnitAt(0)));
+      await tester.sendKeyEvent(LogicalKeyboardKey(char.codeUnitAt(0)));
     }
 
     await tester.pump();

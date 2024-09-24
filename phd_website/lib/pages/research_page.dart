@@ -18,11 +18,13 @@ class ResearchPage extends StatelessWidget {
 
     final conferences = [
       ConferenceDO(
-        conferenceName: locale!.researchPageEcmi2023ConferenceName,
-        website: 'https://ecmi2023.org/',
-        talkTitle: locale.researchPageEcmi2023TalkTitle,
-        date: DateTime(2023, DateTime.july, 26),
-        location: 'Wrocław',
+        conferenceName: locale!
+            .researchPageXIIForumOfPartialDifferentialEquationsConferenceName,
+        website: 'https://sites.google.com/impan.pl/xiiifpde/',
+        talkTitle:
+            locale.researchPageXIIForumOfPartialDifferentialEquationsTalkTitle,
+        date: DateTime(2024, DateTime.june, 27),
+        location: 'Będlewo',
       ),
       ConferenceDO(
         conferenceName: locale
@@ -34,13 +36,11 @@ class ResearchPage extends StatelessWidget {
         location: 'Kościelisko',
       ),
       ConferenceDO(
-        conferenceName: locale
-            .researchPageXIIForumOfPartialDifferentialEquationsConferenceName,
-        website: 'https://sites.google.com/impan.pl/xiiifpde/',
-        talkTitle:
-            locale.researchPageXIIForumOfPartialDifferentialEquationsTalkTitle,
-        date: DateTime(2024, DateTime.june, 27),
-        location: 'Będlewo',
+        conferenceName: locale.researchPageEcmi2023ConferenceName,
+        website: 'https://ecmi2023.org/',
+        talkTitle: locale.researchPageEcmi2023TalkTitle,
+        date: DateTime(2023, DateTime.july, 26),
+        location: 'Wrocław',
       ),
     ];
 
