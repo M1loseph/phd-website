@@ -95,6 +95,7 @@ services:
       - "--storage.tsdb.retention.time=60d"
   grafana:
     image: grafana/grafana:11.1.4-ubuntu
+    restart: always
     ports:
       - "4000:3000"
     environment:
