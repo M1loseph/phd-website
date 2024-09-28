@@ -1,7 +1,9 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:phd_website/components/adapters/testable_web_view_adapter.dart';
 import 'package:phd_website/components/heart_shower/heart_shower.dart';
+import 'package:phd_website/logger/logger.dart';
 
 class SweetieEasterEgg extends StatefulWidget {
   final Widget child;
@@ -21,7 +23,9 @@ class SweetieEasterEggState extends State<SweetieEasterEgg> {
   static const playerSize = Size(640, 360);
   static const magicEasterEggDestination =
       'https://youtube.com/embed/UTLFbVB8ctc?start=48';
-  final magicLetterCombination = 'sweetie';
+  static const magicLetterCombination = 'sweetie';
+
+  final Logger logger = Logger(loggingClass: SweetieEasterEggState);
   late final FocusNode sweetieKeyboardFocusNode;
   late final FocusNode escapeFocusNode;
 
@@ -31,21 +35,22 @@ class SweetieEasterEggState extends State<SweetieEasterEgg> {
   @override
   void initState() {
     super.initState();
-    sweetieKeyboardFocusNode = FocusNode(onKey: handleMagicCombinationEvent)
-      ..requestFocus();
-    escapeFocusNode = FocusNode(onKey: handleDesiredEscapeEvent);
+    sweetieKeyboardFocusNode = FocusNode()..requestFocus();
+    escapeFocusNode = FocusNode();
   }
 
   @override
   Widget build(BuildContext context) {
     return KeyboardListener(
       focusNode: sweetieKeyboardFocusNode,
+      onKeyEvent: handleMagicCombinationEvent,
       child: Stack(
         children: [
           widget.child,
           if (easterEggState == EasterEggState.running)
             KeyboardListener(
               focusNode: escapeFocusNode,
+              onKeyEvent: handleDesiredEscapeEvent,
               child: Container(
                 color: Colors.black.withAlpha(100),
                 child: Stack(
@@ -110,15 +115,17 @@ class SweetieEasterEggState extends State<SweetieEasterEgg> {
     });
   }
 
-  KeyEventResult handleMagicCombinationEvent(node, event) {
+  KeyEventResult handleMagicCombinationEvent(KeyEvent event) {
+    if (kDebugMode) {
+      logger.debug('magic combination => event ${event.runtimeType} ${event.logicalKey.debugName}');
+    }
     if (easterEggState == EasterEggState.running) {
       return KeyEventResult.ignored;
     }
-    if (event is! RawKeyDownEvent) {
+    if (event is! KeyDownEvent) {
       return KeyEventResult.ignored;
     }
-    final castedEvent = event;
-    final character = castedEvent.character;
+    final character = event.character;
     if (character == null) {
       return KeyEventResult.ignored;
     }
@@ -135,13 +142,15 @@ class SweetieEasterEggState extends State<SweetieEasterEgg> {
     return KeyEventResult.handled;
   }
 
-  KeyEventResult handleDesiredEscapeEvent(node, event) {
-    if (event is RawKeyDownEvent &&
+  KeyEventResult handleDesiredEscapeEvent(KeyEvent event) {
+    if (kDebugMode) {
+      logger.debug('escape listener => event ${event.runtimeType} ${event.logicalKey.debugName}');
+    }
+    if (event is KeyDownEvent &&
         event.logicalKey == LogicalKeyboardKey.escape) {
       closePopup();
-      return KeyEventResult.handled;
     }
-    return KeyEventResult.ignored;
+    return KeyEventResult.handled;
   }
 }
 

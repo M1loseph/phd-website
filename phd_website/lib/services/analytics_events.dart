@@ -8,29 +8,41 @@ abstract class Event {
   Map<String, dynamic> toJson();
 }
 
-class UserOpenedAppEvent extends Event {
-  final String _sessionId;
+class AppOpenedEvent extends Event {
   final DateTime _timestamp;
   final String _environment;
 
-  UserOpenedAppEvent(this._sessionId, this._timestamp, this._environment);
+  AppOpenedEvent(this._timestamp, this._environment);
 
   @override
   Map<String, dynamic> toJson() {
     return {
       'eventTime': _timestamp.toIso8601StringWithZ(),
-      'sessionId': _sessionId,
       'environment': _environment,
     };
   }
 }
 
-class UserOpenedPageEvent extends Event {
+class AppOpenedEventResponse {
+  final String sessionId;
+
+  AppOpenedEventResponse({
+    required this.sessionId,
+  });
+
+  static AppOpenedEventResponse fromJson(Map<String, dynamic> json) {
+    return AppOpenedEventResponse(
+      sessionId: json['sessionId'],
+    );
+  }
+}
+
+class PageOpenedEvent extends Event {
   final String _sessionId;
   final DateTime _timestamp;
   final PageData _pageData;
 
-  UserOpenedPageEvent(this._sessionId, this._timestamp, this._pageData);
+  PageOpenedEvent(this._sessionId, this._timestamp, this._pageData);
 
   @override
   Map<String, dynamic> toJson() {
