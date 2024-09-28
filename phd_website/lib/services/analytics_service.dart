@@ -24,7 +24,7 @@ class AnalyticsService {
     required this.clock,
     required this.environment,
   }) : analyticsUrl = Uri.parse(analyticsUrl) {
-    Future.microtask(_backgroundSessionTask);
+    scheduleMicrotask(_backgroundSessionTask);
   }
 
   Future<void> registerPageOpenedEvent(PageData pageData) async {
