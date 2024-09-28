@@ -150,7 +150,6 @@ class _PHDAppState extends State<PHDApp> {
   void initState() {
     super.initState();
     context.read<AppGlobalState>().bumpNumberOfEntires();
-    context.read<AnalyticsService>().registerAppOpenedEvent();
   }
 
   @override
