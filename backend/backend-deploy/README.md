@@ -14,7 +14,12 @@ Fill it with the following variables:
 - GRAFANA_USER
 - GRAFANA_PASSWORD
 
-#### 2. Prepare soft links to certificate and private key
+#### 2. Run certbot to get certificate
+
+`sudo snap install certbot --classic`
+`sudo certbot obtain -d phdwebsite.duckdns.org`
+
+#### 3. Prepare soft links to certificate and private key
 
 `sudo ln -s <path-to-private-key> privatekey.pem`
 `sudo ln -s <path-to-cert> fullchain.pem`
