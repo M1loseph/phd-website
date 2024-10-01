@@ -30,7 +30,7 @@ jobs:
 
       - name: Connect to VPN
         run: |
-          echo ${{ SUDO_PASSWORD }} | sudo -S sh -c "echo ${{ secrets.VPN_PASSWORD }} | sudo -S openconnect --background -u ${{ secrets.VPN_USER }} --protocol=gp ${{ secrets.VPN_GATEWAY }}"
+          echo ${{ secrets.SUDO_PASSWORD }} | sudo -S sh -c "echo ${{ secrets.VPN_PASSWORD }} | sudo -S openconnect --background -u ${{ secrets.VPN_USER }} --protocol=gp ${{ secrets.VPN_GATEWAY }}"
 
       - name: Replace all files on target machine
         working-directory: phd_website
@@ -38,4 +38,4 @@ jobs:
 
       - name: Disconnect from VPN
         run: |
-          echo ${{ SUDO_PASSWORD }} | sudo -S killall openconnect
+          echo ${{ secrets.SUDO_PASSWORD }} | sudo -S killall openconnect
