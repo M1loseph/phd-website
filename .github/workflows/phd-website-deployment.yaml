@@ -11,7 +11,7 @@ jobs:
 
   deploy:
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -28,6 +28,14 @@ jobs:
           name: web-build-artifact
           path: phd_website/build/web
 
+      - name: Connect to VPN
+        run: |
+          echo ${{ SUDO_PASSWORD }} | sudo -S sh -c "echo ${{ secrets.VPN_PASSWORD }} | sudo -S openconnect --background -u ${{ secrets.VPN_USER }} --protocol=gp ${{ secrets.VPN_GATEWAY }}"
+
       - name: Replace all files on target machine
         working-directory: phd_website
         run: ./scripts/ci/release.sh ${{ secrets.USERNAME }} ${{ secrets.HOST }} ${{ secrets.PATH }}
+
+      - name: Disconnect from VPN
+        run: |
+          echo ${{ SUDO_PASSWORD }} | sudo -S killall openconnect
