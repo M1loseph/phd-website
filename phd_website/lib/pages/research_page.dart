@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:intl/intl.dart';
 import 'package:phd_website/components/adapters/platform_aware_svg_adapter.dart';
 import 'package:phd_website/layouts/page_layout.dart';
 import 'package:phd_website/model/conference_do.dart';
@@ -19,11 +18,22 @@ class ResearchPage extends StatelessWidget {
     final conferences = [
       ConferenceDO(
         conferenceName: locale!
+            .researchPage52ConferenceOnApplicationsOfMathematicsConferenceName,
+        website: 'https://sites.google.com/view/lii-kzm/strona-glowna',
+        talkTitle:
+            locale.researchPage52ConferenceOnApplicationsOfMathematicsTalkTitle,
+        begin: DateTime(2024, DateTime.september, 16),
+        end: DateTime(2024, DateTime.september, 21),
+        location: 'Kościelisko',
+      ),
+      ConferenceDO(
+        conferenceName: locale
             .researchPageXIIForumOfPartialDifferentialEquationsConferenceName,
         website: 'https://sites.google.com/impan.pl/xiiifpde/',
         talkTitle:
             locale.researchPageXIIForumOfPartialDifferentialEquationsTalkTitle,
-        date: DateTime(2024, DateTime.june, 27),
+        begin: DateTime(2024, DateTime.june, 23),
+        end: DateTime(2024, DateTime.june, 29),
         location: 'Będlewo',
       ),
       ConferenceDO(
@@ -32,14 +42,16 @@ class ResearchPage extends StatelessWidget {
         website: 'https://sites.google.com/view/51-kzm/',
         talkTitle:
             locale.researchPage51ConferenceOnApplicationsOfMathematicsTalkTitle,
-        date: DateTime(2023, DateTime.september, 10),
+        begin: DateTime(2023, DateTime.september, 10),
+        end: DateTime(2023, DateTime.september, 16),
         location: 'Kościelisko',
       ),
       ConferenceDO(
         conferenceName: locale.researchPageEcmi2023ConferenceName,
         website: 'https://ecmi2023.org/',
         talkTitle: locale.researchPageEcmi2023TalkTitle,
-        date: DateTime(2023, DateTime.july, 26),
+        begin: DateTime(2023, DateTime.july, 26),
+        end: DateTime(2023, DateTime.july, 30),
         location: 'Wrocław',
       ),
     ];
@@ -122,7 +134,6 @@ class ConferenceWidget extends StatelessWidget {
     final bodyTextStyle = textThemeService.getBodyTextStyle(context);
 
     final locale = AppLocalizations.of(context);
-    final dateFormat = DateFormat.yMMMMd(locale?.localeName);
     return Card(
       surfaceTintColor: Colors.grey[800],
       child: Column(
@@ -155,7 +166,7 @@ class ConferenceWidget extends StatelessWidget {
                       const Icon(Icons.calendar_month_outlined),
                       const SizedBox(width: 10),
                       Text(
-                        dateFormat.format(conference.date),
+                        locale!.researchPageConferenceDate(conference.begin, conference.end),
                         style: bodyTextStyle,
                       ),
                     ],
@@ -170,7 +181,7 @@ class ConferenceWidget extends StatelessWidget {
               padding: const EdgeInsets.all(8.0),
               child: TextButton(
                 child: Text(
-                  locale!.researchPageOrganizerWebsite.toUpperCase(),
+                  locale.researchPageOrganizerWebsite.toUpperCase(),
                   style: bodyTextStyle,
                 ),
                 onPressed: () async {
