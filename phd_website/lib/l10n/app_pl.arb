@@ -17,12 +17,27 @@
     "consultationPageDates": "Poniedziałek 11:15 - 12:15",
     "teachingPageDifferentialEquationsInTechnology": "Równania różniczkowe w technice",
     "teachingPageDifferentialEquationsInTechDescription": "Zasady zaliczenia oraz listy znajdują się na stronie wykładowcy.",
-    "researchPageConferencesSectionTitle": "Konferencje",
+    "researchPageConferencesSectionTitle": "Wystąpienia na konferencjach",
     "researchPageOrganizerWebsite": "Strona konferencji",
+    "researchPageConferenceDate": "{begin} do {end}",
+    "@researchPageConferenceDate": {
+        "placeholders": {
+            "begin": {
+                "type": "DateTime",
+                "format": "yMMMMd"
+            },
+            "end": {
+                "type": "DateTime",
+                "format": "yMMMMd"
+            }
+        }
+    },
     "researchPageEcmi2023ConferenceName": "ECMI 2023",
     "researchPageEcmi2023TalkTitle": "Modeling Trail Running",
     "researchPage51ConferenceOnApplicationsOfMathematicsConferenceName": "51 Konferencja Zastosowań Matematyki",
     "researchPage51ConferenceOnApplicationsOfMathematicsTalkTitle": "Mathematical modelling of trail running",
+    "researchPage52ConferenceOnApplicationsOfMathematicsConferenceName": "52 Konferencja Zastosowań Matematyki",
+    "researchPage52ConferenceOnApplicationsOfMathematicsTalkTitle": "From equations to elevations: optimizing the trail running strategy",
     "researchPageXIIForumOfPartialDifferentialEquationsConferenceName": "XIII Forum Równań Różniczkowych Cząstkowych",
     "researchPageXIIForumOfPartialDifferentialEquationsTalkTitle": "A unified model for blood and lymph flow",
     "footer": "Wszelkie prawa zastrzeżone © {lastBuildYear} wersja {appVersion}",
