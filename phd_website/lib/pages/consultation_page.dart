@@ -5,7 +5,6 @@ import 'package:phd_website/layouts/page_layout.dart';
 import 'package:phd_website/layouts/spaced_list_layout.dart';
 
 class ConsultationPage extends StatelessWidget {
-  static const iconSpace = 10.0;
   const ConsultationPage({super.key});
 
   @override
@@ -17,39 +16,56 @@ class ConsultationPage extends StatelessWidget {
           Center(
             child: SpacedListLayout(
               children: [
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(Icons.home),
-                    const SizedBox(
-                      width: iconSpace,
-                    ),
-                    Flexible(
-                      child: BodyText(
-                        locale!.consultationPagePlace,
-                      ),
-                    ),
-                  ],
+                ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 400),
+                  child: ConsultationEntry(
+                      text:
+                          locale!.consultationPageEmailReminder,
+                      icon: Icons.email),
                 ),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(Icons.calendar_month),
-                    const SizedBox(
-                      width: iconSpace,
-                    ),
-                    Flexible(
-                      child: BodyText(
-                        locale.consultationPageDates,
-                      ),
-                    ),
-                  ],
+                ConsultationEntry(
+                  text: locale.consultationPagePlace,
+                  icon: Icons.home,
+                ),
+                ConsultationEntry(
+                  icon: Icons.calendar_month,
+                  text: locale.consultationPageDates,
                 ),
               ],
             ),
           ),
         ],
       ),
+    );
+  }
+}
+
+class ConsultationEntry extends StatelessWidget {
+  static const iconSpace = 10.0;
+
+  const ConsultationEntry({
+    super.key,
+    required this.text,
+    required this.icon,
+  });
+
+  final IconData icon;
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(icon),
+        const SizedBox(
+          width: iconSpace,
+        ),
+        Flexible(
+          child: BodyText(text),
+        ),
+      ],
     );
   }
 }
