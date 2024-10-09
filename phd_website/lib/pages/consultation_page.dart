@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:phd_website/components/body_text.dart';
-import 'package:phd_website/layouts/page_layout.dart';
+import 'package:phd_website/layouts/scrollable_page_layout.dart';
 import 'package:phd_website/layouts/spaced_list_layout.dart';
 
 class ConsultationPage extends StatelessWidget {
@@ -10,7 +10,7 @@ class ConsultationPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final locale = AppLocalizations.of(context);
-    return PageLayout(
+    return ScrollablePageLayout(
       page: Column(
         children: [
           Center(
