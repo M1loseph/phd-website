@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:phd_website/components/footer.dart';
-import 'package:phd_website/constants.dart';
+import 'package:phd_website/layouts/paper_page_layout.dart';
 
 /// Needs to be applied directly for the page because
 /// of this issue: https://github.com/flutter/flutter/issues/129523
@@ -15,39 +14,22 @@ class ScrollablePageLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (context, constrains) {
-      return ListView(
-        children: [
-          Center(
-            child: Container(
-              constraints: BoxConstraints(
-                minHeight: constrains.maxHeight - Footer.height,
-              ),
-              width: 1000,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.1),
-                    spreadRadius: 5,
-                    blurRadius: 7,
-                    offset: const Offset(0, 3),
-                  ),
-                ],
-              ),
-              child: Padding(
-                padding: EdgeInsets.only(
-                  left: 10,
-                  right: 10,
-                  top: isMobileView(constrains.maxWidth) ? 100 : 150,
-                ),
-                child: page,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return SingleChildScrollView(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight: constraints.maxHeight,
+            ),
+            child: IntrinsicHeight(
+              child: PaperPageLayout(
+                page: page,
+                constraints: constraints,
               ),
             ),
           ),
-          const Footer(),
-        ],
-      );
-    });
+        );
+      },
+    );
   }
 }

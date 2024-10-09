@@ -70,7 +70,7 @@ class ResearchPage extends StatelessWidget {
           for (var conference in conferences)
             ConferenceWidget(conference: conference),
           const SizedBox(
-            height: 20,
+            height: 30,
           )
         ],
       ),
@@ -118,6 +118,7 @@ class ORCiD extends StatelessWidget {
 }
 
 class ConferenceWidget extends StatelessWidget {
+  static const padding = 8.0;
   const ConferenceWidget({
     super.key,
     required this.conference,
@@ -138,43 +139,53 @@ class ConferenceWidget extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          ListTile(
-            title: Text(
-              conference.conferenceName,
-              style: titleStyle,
+          Align(
+            alignment: Alignment.topLeft,
+            child: Padding(
+              padding: const EdgeInsets.all(padding),
+              child: Text(
+                conference.conferenceName,
+                style: titleStyle,
+              ),
             ),
-            subtitle: Padding(
-              padding: const EdgeInsets.only(top: 8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      const Icon(Icons.co_present_outlined),
-                      const SizedBox(width: 10),
-                      Flexible(
-                        child: Text(
-                          '"${conference.talkTitle}"',
-                          style: bodyTextStyle,
-                        ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(
+              top: padding,
+              left: padding,
+              right: padding,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    const Icon(Icons.co_present_outlined),
+                    const SizedBox(width: 10),
+                    Flexible(
+                      child: Text(
+                        '"${conference.talkTitle}"',
+                        style: bodyTextStyle,
                       ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      const Icon(Icons.calendar_month_outlined),
-                      const SizedBox(width: 10),
-                      Text(
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    const Icon(Icons.calendar_month_outlined),
+                    const SizedBox(width: 10),
+                    Flexible(
+                      child: Text(
                         locale!.researchPageConferenceDate(
                           conference.begin,
                           conference.end,
                         ),
                         style: bodyTextStyle,
                       ),
-                    ],
-                  ),
-                ],
-              ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
           Align(
