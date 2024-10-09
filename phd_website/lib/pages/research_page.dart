@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:phd_website/components/adapters/platform_aware_svg_adapter.dart';
-import 'package:phd_website/layouts/page_layout.dart';
+import 'package:phd_website/layouts/scrollable_page_layout.dart';
 import 'package:phd_website/model/conference_do.dart';
 import 'package:phd_website/services/body_text_style_service.dart';
 import 'package:provider/provider.dart';
@@ -56,23 +56,22 @@ class ResearchPage extends StatelessWidget {
       ),
     ];
 
-    return PageLayout(
+    return ScrollablePageLayout(
       page: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Align(
-                alignment: Alignment.topRight,
-                child: ORCiD(),
-              ),
-              SectionLabel(
-                text: locale.researchPageConferencesSectionTitle,
-              ),
-              for (var conference in conferences)
-                ConferenceWidget(conference: conference),
-            ],
+          const Align(
+            alignment: Alignment.topRight,
+            child: ORCiD(),
           ),
+          SectionLabel(
+            text: locale.researchPageConferencesSectionTitle,
+          ),
+          for (var conference in conferences)
+            ConferenceWidget(conference: conference),
+          const SizedBox(
+            height: 20,
+          )
         ],
       ),
     );
@@ -166,7 +165,10 @@ class ConferenceWidget extends StatelessWidget {
                       const Icon(Icons.calendar_month_outlined),
                       const SizedBox(width: 10),
                       Text(
-                        locale!.researchPageConferenceDate(conference.begin, conference.end),
+                        locale!.researchPageConferenceDate(
+                          conference.begin,
+                          conference.end,
+                        ),
                         style: bodyTextStyle,
                       ),
                     ],

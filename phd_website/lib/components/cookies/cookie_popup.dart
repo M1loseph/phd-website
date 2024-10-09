@@ -23,11 +23,19 @@ class CookiePopup extends StatelessWidget {
           final locale = AppLocalizations.of(context);
           return Container(
             width: double.infinity,
+            decoration: BoxDecoration(
+              color: Colors.grey.shade300,
+              boxShadow: [
+                BoxShadow(
+                  blurRadius: 10,
+                  color: Colors.grey.shade300,
+                )
+              ],
+            ),
             padding: const EdgeInsets.symmetric(
               horizontal: 20,
               vertical: 8,
             ),
-            color: Colors.grey.shade300,
             child: ResponsiveLayout(
               desktopLayout: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
