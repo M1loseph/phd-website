@@ -19,14 +19,7 @@ class NavigationLayout extends StatelessWidget {
     return ResponsiveLayout(
       desktopLayout: Stack(
         children: [
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Expanded(
-                child: currentPage,
-              ),
-            ],
-          ),
+          currentPage,
           TopNavigationBar(currentPath: state.fullPath!),
         ],
       ),
