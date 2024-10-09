@@ -19,7 +19,7 @@ if [ -z "${ANALYTICS_SERVER_URL}" ]; then
 fi
 
 if [ -z "${ENVIRONMENT}" ]; then
-  echo "Please provide an analytics sever url (including http/https ) as the second argument."
+  echo "Please provide environment id (pwr_server, github_pages) as the third argument"
   exit 1
 fi
 
