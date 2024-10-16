@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:phd_website/components/clickable_link.dart';
+import 'package:phd_website/components/semester_carousel.dart';
 import 'package:phd_website/layouts/page_layout.dart';
 import 'package:phd_website/services/body_text_style_service.dart';
 import 'package:provider/provider.dart';
@@ -20,6 +21,7 @@ class TeachingPage extends StatelessWidget {
     return PageLayout(
       page: Column(
         children: [
+          const SemesterPicker(),
           ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 800),
             child: ExpansionTile(
