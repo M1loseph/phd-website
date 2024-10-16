@@ -4,7 +4,6 @@ import 'package:phd_website/build_properties/build_properties.dart';
 import 'package:provider/provider.dart';
 
 class Footer extends StatelessWidget {
-  static const height = 40.0;
   const Footer({super.key});
 
   @override
@@ -15,7 +14,7 @@ class Footer extends StatelessWidget {
           color: Colors.grey.shade600,
         );
     return Container(
-      height: height,
+      height: 40,
       color: Colors.grey.shade100,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,

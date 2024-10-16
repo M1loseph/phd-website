@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:phd_website/components/clickable_link.dart';
 import 'package:phd_website/components/semester_carousel.dart';
-import 'package:phd_website/layouts/page_layout.dart';
+import 'package:phd_website/layouts/scrollable_page_layout.dart';
 import 'package:phd_website/services/body_text_style_service.dart';
 import 'package:provider/provider.dart';
 
@@ -18,7 +18,7 @@ class TeachingPage extends StatelessWidget {
     final locale = AppLocalizations.of(context);
     final bodyTextStyleService = context.read<BodyTextStyleService>();
     final bodyTheme = bodyTextStyleService.getBodyTextStyle(context);
-    return PageLayout(
+    return ScrollablePageLayout(
       page: Column(
         children: [
           const SemesterPicker(),

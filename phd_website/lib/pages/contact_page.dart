@@ -5,7 +5,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:phd_website/components/adapters/platform_aware_svg_adapter.dart';
 import 'package:phd_website/components/body_text.dart';
 import 'package:phd_website/components/clickable_link.dart';
-import 'package:phd_website/layouts/page_layout.dart';
+import 'package:phd_website/layouts/scrollable_page_layout.dart';
 import 'package:phd_website/layouts/spaced_list_layout.dart';
 import 'package:phd_website/services/body_text_style_service.dart';
 import 'package:phd_website/services/clipboard_service.dart';
@@ -28,7 +28,7 @@ class ContactPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final bodyTextStyleService = context.read<BodyTextStyleService>();
     final bodyTextTheme = bodyTextStyleService.getBodyTextStyle(context);
-    return PageLayout(
+    return ScrollablePageLayout(
       page: Column(
         children: [
           Center(
