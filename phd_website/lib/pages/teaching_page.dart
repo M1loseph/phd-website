@@ -40,9 +40,9 @@ class _TeachingPageState extends State<TeachingPage> {
     return ScrollablePageLayout(
       page: Center(
         child: FractionallySizedBox(
-          widthFactor:
-              isMobileView(context) ? 1 : 10 / 12,
+          widthFactor: isMobileView(context) ? 1 : 10 / 12,
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SemesterPicker(
                 selectSemesterCallback: (semester) {
@@ -56,57 +56,41 @@ class _TeachingPageState extends State<TeachingPage> {
               ),
               if (selectedSemester ==
                   const Semester(SemesterYear(2023), SemesterType.winter))
-                ExpansionTile(
-                  title: Text(
-                    locale!.teachingPageDifferentialEquationsInTechnology,
-                    style: theme.textTheme.headlineSmall,
-                  ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(20),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            locale
-                                .teachingPageDifferentialEquationsInTechDescription,
-                            style: bodyTheme,
-                          ),
-                          ClickableLink(
-                            url: TeachingPage.differentialEquationsRulesLink,
-                            textStyle: bodyTheme,
-                          ),
-                        ],
-                      ),
+                    Text(
+                      locale!.teachingPageDifferentialEquationsInTechnology,
+                      style: theme.textTheme.headlineSmall,
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Text(
+                      locale.teachingPageDifferentialEquationsInTechDescription,
+                      style: bodyTheme,
+                    ),
+                    ClickableLink(
+                      url: TeachingPage.differentialEquationsRulesLink,
+                      textStyle: bodyTheme,
                     ),
                   ],
                 ),
               if (selectedSemester ==
                   const Semester(SemesterYear(2024), SemesterType.winter))
-                ExpansionTile(
-                  title: Text(
-                    locale!.teachingPageIntroductionToComputerScience,
-                    style: theme.textTheme.headlineSmall,
-                  ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(20),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            locale
-                                .teachingPageDifferentialEquationsInTechDescription,
-                            style: bodyTheme,
-                          ),
-                          ClickableLink(
-                            url: TeachingPage.differentialEquationsRulesLink,
-                            textStyle: bodyTheme,
-                          ),
-                        ],
-                      ),
+                    Text(
+                      locale!.teachingPageIntroductionToComputerScience,
+                      style: theme.textTheme.headlineSmall,
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Text(
+                      locale.teachingPageIntroductionToComputerDescription,
+                      style: bodyTheme,
                     ),
                   ],
                 )
