@@ -10,7 +10,6 @@
     "navigationTeachingPage": "Dydaktyka",
     "navigationResearchPage": "Publikacje",
     "homePageName": "mgr inż. Bogna Jaszczak",
-    "homePageAbout": "Studentka szkoły doktorskiej",
     "homePageDepartment": "Wydział Matematyki, Politechnika Wrocławska",
     "contactPageCopiedPopup": "Skopiowano!",
     "consultationPagePlace": "C19 4.14",
@@ -18,6 +17,7 @@
     "consultationPageEmailReminder": "Proszę o wcześniejsze zawiadomienie mailem o chęci przybycia na konsultacje.",
     "teachingPageDifferentialEquationsInTechnology": "Równania różniczkowe w technice",
     "teachingPageDifferentialEquationsInTechDescription": "Zasady zaliczenia oraz listy znajdują się na stronie wykładowcy.",
+    "teachingPageIntroductionToComputerScience": "Wstęp do informatyki i programowania",
     "researchPageConferencesSectionTitle": "Wystąpienia na konferencjach",
     "researchPageOrganizerWebsite": "Strona konferencji",
     "researchPageConferenceDate": "{begin} do {end}",
@@ -41,15 +41,5 @@
     "researchPage52ConferenceOnApplicationsOfMathematicsTalkTitle": "From equations to elevations: optimizing the trail running strategy",
     "researchPageXIIForumOfPartialDifferentialEquationsConferenceName": "XIII Forum Równań Różniczkowych Cząstkowych",
     "researchPageXIIForumOfPartialDifferentialEquationsTalkTitle": "A unified model for blood and lymph flow",
-    "footer": "Wszelkie prawa zastrzeżone © {lastBuildYear} wersja {appVersion}",
-    "@footer": {
-        "placeholders": {
-            "lastBuildYear": {
-                "type": "int"
-            },
-            "appVersion": {
-                "type": "String"
-            }
-        }
-    }
+    "footer": "Wszelkie prawa zastrzeżone © {lastBuildYear} wersja {appVersion}"
 }

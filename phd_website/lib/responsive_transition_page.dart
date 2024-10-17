@@ -12,13 +12,12 @@ responsiveTransitionPage<T>({
   required String pageName,
   required BuildContext context,
 }) {
-  final width = MediaQuery.of(context).size.width;
   final decoratedChild = PageAnalyticsDecorator(
     pageName: pageName,
     child: child,
   );
 
-  if (isMobileView(width)) {
+  if (isMobileView(context)) {
     return CustomTransitionPage<T>(
       key: key,
       transitionDuration: const Duration(milliseconds: 150),

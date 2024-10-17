@@ -7,8 +7,6 @@ class UnscrollablePageLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (context, constraints) {
-      return PaperPageLayout(page: page, constraints: constraints);
-    });
+    return PaperPageLayout(page: page);
   }
 }

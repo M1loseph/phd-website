@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:phd_website/components/adapters/platform_aware_svg_adapter.dart';
+import 'package:phd_website/constants.dart';
 import 'package:phd_website/layouts/scrollable_page_layout.dart';
 import 'package:phd_website/model/conference_do.dart';
 import 'package:phd_website/services/body_text_style_service.dart';
@@ -57,22 +58,27 @@ class ResearchPage extends StatelessWidget {
     ];
 
     return ScrollablePageLayout(
-      page: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Align(
-            alignment: Alignment.topRight,
-            child: ORCiD(),
+      page: Center(
+        child: FractionallySizedBox(
+          widthFactor: isMobileView(context) ? 1 : 10 / 12,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Align(
+                alignment: Alignment.topRight,
+                child: ORCiD(),
+              ),
+              SectionLabel(
+                text: locale.researchPageConferencesSectionTitle,
+              ),
+              for (var conference in conferences)
+                ConferenceWidget(conference: conference),
+              const SizedBox(
+                height: 30,
+              )
+            ],
           ),
-          SectionLabel(
-            text: locale.researchPageConferencesSectionTitle,
-          ),
-          for (var conference in conferences)
-            ConferenceWidget(conference: conference),
-          const SizedBox(
-            height: 30,
-          )
-        ],
+        ),
       ),
     );
   }
@@ -135,7 +141,6 @@ class ConferenceWidget extends StatelessWidget {
 
     final locale = AppLocalizations.of(context);
     return Card(
-      surfaceTintColor: Colors.grey[800],
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [

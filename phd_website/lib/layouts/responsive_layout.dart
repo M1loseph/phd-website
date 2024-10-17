@@ -12,15 +12,10 @@ class ResponsiveLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (_isMobileView(context)) {
+    if (isMobileView(context)) {
       return _mobileLayout;
     } else {
       return _desktopLayout;
     }
-  }
-
-  bool _isMobileView(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
-    return isMobileView(width);
   }
 }
