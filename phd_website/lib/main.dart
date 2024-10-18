@@ -75,7 +75,7 @@ class _PHDAppState extends State<PHDApp> {
                             state: state,
                             currentPage: child,
                           ),
-                          const CookiePopup()
+                          const CookiePopup(),
                         ],
                       ),
                     ),

@@ -12,7 +12,7 @@ class CookieButtons extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final globalState = context.read<AppGlobalState>();
-    final locale = AppLocalizations.of(context);
+    final locale = AppLocalizations.of(context)!;
     return IntrinsicHeight(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -20,7 +20,7 @@ class CookieButtons extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           CookieBarButton(
-            text: locale!.componentCookiesPopup_AcceptButton,
+            text: locale.componentCookiesPopup_AcceptButton,
             icon: const Icon(
               Icons.check,
               color: Color.fromARGB(255, 0, 157, 5),

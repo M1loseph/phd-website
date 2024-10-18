@@ -8,7 +8,7 @@ class Footer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final locale = AppLocalizations.of(context);
+    final locale = AppLocalizations.of(context)!;
     final appProperties = context.read<BuildProperties>();
     final textStyle = Theme.of(context).textTheme.bodyMedium?.copyWith(
           color: Colors.grey.shade600,
@@ -20,7 +20,7 @@ class Footer extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            locale!.componentFooter_Text(
+            locale.componentFooter_Text(
               appProperties.lastBuildYear,
               appProperties.appVersion,
             ),

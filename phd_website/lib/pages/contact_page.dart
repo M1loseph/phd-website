@@ -136,7 +136,7 @@ class _CopyButtonState extends State<CopyButton> {
   @override
   Widget build(BuildContext context) {
     final clipboardService = context.read<ClipboardService>();
-    final locale = AppLocalizations.of(context);
+    final locale = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.only(left: 8.0),
       child: Stack(
@@ -165,7 +165,7 @@ class _CopyButtonState extends State<CopyButton> {
             child: AnimatedOpacity(
               opacity: _isCopied ? 1.0 : 0.0,
               duration: const Duration(milliseconds: 200),
-              child: Text(locale!.contactPageCopiedPopup),
+              child: Text(locale.pageContact_CopiedPopup),
             ),
           )
         ],

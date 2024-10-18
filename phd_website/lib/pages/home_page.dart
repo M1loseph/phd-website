@@ -14,7 +14,7 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final globalState = context.watch<AppGlobalState>();
-    final locale = AppLocalizations.of(context);
+    final locale = AppLocalizations.of(context)!;
     return UnscrollablePageLayout(
       page: FractionallySizedBox(
         widthFactor: isMobileView(context) ? 8 / 12 : 6 / 12,
@@ -50,13 +50,13 @@ class HomePage extends StatelessWidget {
                 children: [
                   FittedBox(
                     child: Text(
-                      locale!.homePageName,
+                      locale.pageHome_Name,
                       style: Theme.of(context).textTheme.displaySmall,
                     ),
                   ),
                   FittedBox(
                     child: BodyText(
-                      locale.homePageDepartment,
+                      locale.pageHome_Department,
                     ),
                   ),
                 ],

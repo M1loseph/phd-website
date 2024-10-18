@@ -37,7 +37,7 @@ class _TeachingPageState extends State<TeachingPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final locale = AppLocalizations.of(context);
+    final locale = AppLocalizations.of(context)!;
     final bodyTextStyleService = context.read<BodyTextStyleService>();
     final bodyTheme = bodyTextStyleService.getBodyTextStyle(context);
     return ScrollablePageLayout(
@@ -63,14 +63,14 @@ class _TeachingPageState extends State<TeachingPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      locale!.teachingPageDifferentialEquationsInTechnology,
+                      locale.pageTeaching_DifferentialEquationsInTechnology,
                       style: theme.textTheme.headlineSmall,
                     ),
                     const SizedBox(
                       height: 20,
                     ),
                     Text(
-                      locale.teachingPageDifferentialEquationsInTechDescription,
+                      locale.pageTeaching_DifferentialEquationsInTechDescription,
                       style: bodyTheme,
                     ),
                     ClickableLink(
@@ -85,14 +85,14 @@ class _TeachingPageState extends State<TeachingPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      locale!.teachingPageIntroductionToComputerScience,
+                      locale.pageTeaching_IntroductionToComputerScience,
                       style: theme.textTheme.headlineSmall,
                     ),
                     const SizedBox(
                       height: 20,
                     ),
                     Text(
-                      locale.teachingPageIntroductionToComputerDescription,
+                      locale.pageTeaching_IntroductionToComputerDescription,
                       style: bodyTheme,
                     ),
                   ],

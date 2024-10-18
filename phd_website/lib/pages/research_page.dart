@@ -14,43 +14,43 @@ class ResearchPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final locale = AppLocalizations.of(context);
+    final locale = AppLocalizations.of(context)!;
 
     final conferences = [
       ConferenceDO(
-        conferenceName: locale!
-            .researchPage52ConferenceOnApplicationsOfMathematicsConferenceName,
+        conferenceName: locale
+            .pageResearch_52ConferenceOnApplicationsOfMathematicsConferenceName,
         website: 'https://sites.google.com/view/lii-kzm/strona-glowna',
         talkTitle:
-            locale.researchPage52ConferenceOnApplicationsOfMathematicsTalkTitle,
+            locale.pageResearch_52ConferenceOnApplicationsOfMathematicsTalkTitle,
         begin: DateTime(2024, DateTime.september, 16),
         end: DateTime(2024, DateTime.september, 21),
         location: 'Kościelisko',
       ),
       ConferenceDO(
         conferenceName: locale
-            .researchPageXIIForumOfPartialDifferentialEquationsConferenceName,
+            .pageResearch_XIIForumOfPartialDifferentialEquationsConferenceName,
         website: 'https://sites.google.com/impan.pl/xiiifpde/',
         talkTitle:
-            locale.researchPageXIIForumOfPartialDifferentialEquationsTalkTitle,
+            locale.pageResearch_XIIForumOfPartialDifferentialEquationsTalkTitle,
         begin: DateTime(2024, DateTime.june, 23),
         end: DateTime(2024, DateTime.june, 29),
         location: 'Będlewo',
       ),
       ConferenceDO(
         conferenceName: locale
-            .researchPage51ConferenceOnApplicationsOfMathematicsConferenceName,
+            .pageResearch_51ConferenceOnApplicationsOfMathematicsConferenceName,
         website: 'https://sites.google.com/view/51-kzm/',
         talkTitle:
-            locale.researchPage51ConferenceOnApplicationsOfMathematicsTalkTitle,
+            locale.pageResearch_51ConferenceOnApplicationsOfMathematicsTalkTitle,
         begin: DateTime(2023, DateTime.september, 10),
         end: DateTime(2023, DateTime.september, 16),
         location: 'Kościelisko',
       ),
       ConferenceDO(
-        conferenceName: locale.researchPageEcmi2023ConferenceName,
+        conferenceName: locale.pageResearch_Ecmi2023ConferenceName,
         website: 'https://ecmi2023.org/',
-        talkTitle: locale.researchPageEcmi2023TalkTitle,
+        talkTitle: locale.pageResearch_Ecmi2023TalkTitle,
         begin: DateTime(2023, DateTime.july, 26),
         end: DateTime(2023, DateTime.july, 30),
         location: 'Wrocław',
@@ -69,7 +69,7 @@ class ResearchPage extends StatelessWidget {
                 child: ORCiD(),
               ),
               SectionLabel(
-                text: locale.researchPageConferencesSectionTitle,
+                text: locale.pageResearch_ConferencesSectionTitle,
               ),
               for (var conference in conferences)
                 ConferenceWidget(conference: conference),
@@ -139,7 +139,7 @@ class ConferenceWidget extends StatelessWidget {
     final textThemeService = context.read<BodyTextStyleService>();
     final bodyTextStyle = textThemeService.getBodyTextStyle(context);
 
-    final locale = AppLocalizations.of(context);
+    final locale = AppLocalizations.of(context)!;
     return Card(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -181,7 +181,7 @@ class ConferenceWidget extends StatelessWidget {
                     const SizedBox(width: 10),
                     Flexible(
                       child: Text(
-                        locale!.researchPageConferenceDate(
+                        locale.pageResearch_ConferenceDate(
                           conference.begin,
                           conference.end,
                         ),
@@ -199,7 +199,7 @@ class ConferenceWidget extends StatelessWidget {
               padding: const EdgeInsets.all(8.0),
               child: TextButton(
                 child: Text(
-                  locale.researchPageOrganizerWebsite.toUpperCase(),
+                  locale.pageResearch_OrganizerWebsite.toUpperCase(),
                   style: bodyTextStyle,
                 ),
                 onPressed: () async {

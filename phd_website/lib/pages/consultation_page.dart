@@ -10,7 +10,7 @@ class ConsultationPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final locale = AppLocalizations.of(context);
+    final locale = AppLocalizations.of(context)!;
     return ScrollablePageLayout(
       page: Column(
         children: [
@@ -22,16 +22,16 @@ class ConsultationPage extends StatelessWidget {
               child: SpacedListLayout(
                 children: [
                   ConsultationEntry(
-                    text: locale!.consultationPageEmailReminder,
+                    text: locale.pageConsultation_EmailReminder,
                     icon: Icons.email,
                   ),
                   ConsultationEntry(
-                    text: locale.consultationPagePlace,
+                    text: locale.pageConsultation_Place,
                     icon: Icons.home,
                   ),
                   ConsultationEntry(
                     icon: Icons.calendar_month,
-                    text: locale.consultationPageDates,
+                    text: locale.pageConsultation_Dates,
                   ),
                 ],
               ),

@@ -20,7 +20,7 @@ class CookiePopup extends StatelessWidget {
               cookiesAcknowledged.data != CookiesApproval.awaitingApproval) {
             return const SizedBox.shrink();
           }
-          final locale = AppLocalizations.of(context);
+          final locale = AppLocalizations.of(context)!;
           return Container(
             width: double.infinity,
             decoration: BoxDecoration(
@@ -49,7 +49,7 @@ class CookiePopup extends StatelessWidget {
                   ),
                   Flexible(
                     child: BodyText(
-                      locale!.componentCookiesPopup_Message,
+                      locale.componentCookiesPopup_Message,
                     ),
                   ),
                   const SizedBox(
