@@ -9,7 +9,7 @@ class PlatformAwareImageAdapter extends PlatformAwareImage {
     super.key,
     required this.path,
     this.height,
-  }) : super();
+  });
 
   @override
   Widget build(BuildContext context) {

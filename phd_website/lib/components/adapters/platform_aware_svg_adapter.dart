@@ -14,7 +14,7 @@ class PlatformAwareSvgAdapter extends PlatformAwareImage {
     this.height,
     this.width,
     this.colorFilter,
-  }) : super();
+  });
 
   @override
   Widget build(BuildContext context) {
