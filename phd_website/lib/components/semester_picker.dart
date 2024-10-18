@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:phd_website/clock/clock.dart';
 
 class SemesterPicker extends StatefulWidget {
@@ -36,6 +37,7 @@ class _SemesterPickerState extends State<SemesterPicker> {
 
   @override
   Widget build(BuildContext context) {
+    final locale = AppLocalizations.of(context)!;
     final semestersAsYears = numberOfSemesters ~/ 2 + 2;
     return Row(
       mainAxisSize: MainAxisSize.max,
@@ -50,7 +52,6 @@ class _SemesterPickerState extends State<SemesterPicker> {
                 label: '${semesterYear.firstYear} / ${semesterYear.secondYear}',
               );
             }),
-            label: const Text('Year'),
             initialSelection: currentSemester.year,
             menuHeight: 300,
             // https://github.com/flutter/flutter/issues/137514#issuecomment-1784709841
@@ -68,23 +69,21 @@ class _SemesterPickerState extends State<SemesterPicker> {
         ),
         Expanded(
           child: DropdownMenu<SemesterType>(
-            dropdownMenuEntries: const [
-              DropdownMenuEntry(
-                value: SemesterType.winter,
-                label: 'Winter',
-              ),
-              DropdownMenuEntry(
-                value: SemesterType.summer,
-                label: 'Summer',
-              )
-            ],
+            key: UniqueKey(),
+            dropdownMenuEntries:
+                [SemesterType.winter, SemesterType.summer].map((type) {
+              return DropdownMenuEntry(
+                value: type,
+                label:
+                    locale.componentSemesterPicker_semesterTypeName(type.name),
+              );
+            }).toList(),
             onSelected: (type) {
               setState(() {
                 selectedSemesterType = type;
               });
               checkIfBothValuesAreSelected();
             },
-            label: const Text('Season'),
             initialSelection: currentSemester.type,
             expandedInsets: EdgeInsets.zero,
           ),

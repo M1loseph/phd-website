@@ -20,7 +20,7 @@ class Footer extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            locale!.footer(
+            locale!.componentFooter_Text(
               appProperties.lastBuildYear,
               appProperties.appVersion,
             ),

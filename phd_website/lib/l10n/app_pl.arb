@@ -1,9 +1,6 @@
 {
     "@@locale": "pl",
     "appTitle": "Bogna Jaszczak",
-    "cookiesPopupMessage": "Strona wykorzystuje ciasteczka w celu dostarczenia jej podstawowych funkcjonalności takich jak zapisywanie preferencji językowych.",
-    "cookiesPopupAcceptButton": "Akceptuję",
-    "cookiesPopupRejectButton": "Odrzucam zbędne",
     "navigationHomePage": "Strona główna",
     "navigationContactPage": "Kontakt",
     "navigationConsultationPage": "Konsultacje",
@@ -42,5 +39,9 @@
     "researchPage52ConferenceOnApplicationsOfMathematicsTalkTitle": "From equations to elevations: optimizing the trail running strategy",
     "researchPageXIIForumOfPartialDifferentialEquationsConferenceName": "XIII Forum Równań Różniczkowych Cząstkowych",
     "researchPageXIIForumOfPartialDifferentialEquationsTalkTitle": "A unified model for blood and lymph flow",
-    "footer": "Wszelkie prawa zastrzeżone © {lastBuildYear} wersja {appVersion}"
+    "componentCookiesPopup_Message": "Strona wykorzystuje ciasteczka w celu dostarczenia jej podstawowych funkcjonalności takich jak zapisywanie preferencji językowych.",
+    "componentCookiesPopup_AcceptButton": "Akceptuję",
+    "componentCookiesPopup_RejectButton": "Odrzucam zbędne",
+    "componentFooter_Text": "Wszelkie prawa zastrzeżone © {lastBuildYear} wersja {appVersion}",
+    "componentSemesterPicker_semesterTypeName": "{type, select, winter{Zimowy} summer{Letni} other{}}"
 }

@@ -49,7 +49,7 @@ class CookiePopup extends StatelessWidget {
                   ),
                   Flexible(
                     child: BodyText(
-                      locale!.cookiesPopupMessage,
+                      locale!.componentCookiesPopup_Message,
                     ),
                   ),
                   const SizedBox(
@@ -72,7 +72,7 @@ class CookiePopup extends StatelessWidget {
                           color: Colors.brown,
                         ),
                       ),
-                      Flexible(child: BodyText(locale.cookiesPopupMessage)),
+                      Flexible(child: BodyText(locale.componentCookiesPopup_Message)),
                     ],
                   ),
                   const SizedBox(

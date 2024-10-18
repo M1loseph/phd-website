@@ -2,12 +2,6 @@
     "@@locale": "en",
     "appTitle": "Bogna Jaszczak",
     "@appTitle": {},
-    "cookiesPopupMessage": "This site uses cookies to provide it's main functionalities such as saving language preferences.",
-    "@cookiesPopupMessage": {},
-    "cookiesPopupAcceptButton": "Accept all",
-    "@cookiesPopupAcceptButton": {},
-    "cookiesPopupRejectButton": "Reject non essential",
-    "@cookiesPopupRejectButton": {},
     "navigationHomePage": "Home",
     "@navigationHomePage": {},
     "navigationContactPage": "Contact",
@@ -71,8 +65,14 @@
     "@researchPageXIIForumOfPartialDifferentialEquationsConferenceName": {},
     "researchPageXIIForumOfPartialDifferentialEquationsTalkTitle": "A unified model for blood and lymph flow",
     "@researchPageXIIForumOfPartialDifferentialEquationsTalkTitle": {},
-    "footer": "Copyright © {lastBuildYear} version {appVersion}",
-    "@footer": {
+    "componentCookiesPopup_Message": "This site uses cookies to provide it's main functionalities such as saving language preferences.",
+    "@componentCookiesPopup_Message": {},
+    "componentCookiesPopup_AcceptButton": "Accept all",
+    "@componentCookiesPopup_AcceptButton": {},
+    "componentCookiesPopup_RejectButton": "Reject non essential",
+    "@componentCookiesPopup_RejectButton": {},
+    "componentFooter_Text": "Copyright © {lastBuildYear} version {appVersion}",
+    "@componentFooter_Text": {
         "placeholders": {
             "lastBuildYear": {
                 "type": "int"
@@ -80,6 +80,12 @@
             "appVersion": {
                 "type": "String"
             }
+        }
+    },
+    "componentSemesterPicker_semesterTypeName": "{type, select, winter{Winter} summer{Summer} other{}}",
+    "@componentSemesterPicker_semesterTypeName": {
+        "placeholders": {
+            "type": {}
         }
     }
 }
