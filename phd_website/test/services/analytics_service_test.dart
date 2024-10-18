@@ -3,19 +3,12 @@ import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:phd_website/clock/clock.dart';
 import 'package:phd_website/services/analytics_events.dart';
 import 'package:phd_website/services/analytics_service.dart';
 
-class HttpClientMock extends Mock implements Client {}
+import '../mock/fixed_clock.dart';
 
-class FixedClock implements Clock {
-  static final fixedDate = DateTime.parse('2020-10-10T10:10:10Z');
-  @override
-  DateTime now() {
-    return fixedDate;
-  }
-}
+class HttpClientMock extends Mock implements Client {}
 
 void main() {
   test(
@@ -61,7 +54,7 @@ void main() {
           headers: {'Content-Type': 'application/json'},
           body: json.encode(PageOpenedEvent(
             'abc123',
-            FixedClock.fixedDate,
+            FixedClock.defaultFixedDate,
             PageData(
               pageName: 'myPageName',
             ),

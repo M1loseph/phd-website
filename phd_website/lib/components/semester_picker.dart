@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:phd_website/clock/clock.dart';
+import 'package:phd_website/model/semester.dart';
+import 'package:phd_website/model/semester_type.dart';
+import 'package:phd_website/model/semester_year.dart';
 
 class SemesterPicker extends StatefulWidget {
   final void Function(Semester?) selectSemesterCallback;
@@ -49,7 +52,7 @@ class _SemesterPickerState extends State<SemesterPicker> {
               final semesterYear = SemesterYear(year);
               return DropdownMenuEntry(
                 value: semesterYear,
-                label: '${semesterYear.firstYear} / ${semesterYear.secondYear}',
+                label: '${semesterYear.firstYear}/${semesterYear.secondYear}',
               );
             }),
             initialSelection: currentSemester.year,
@@ -104,76 +107,4 @@ class _SemesterPickerState extends State<SemesterPicker> {
       ),
     );
   }
-}
-
-// TODO: write tests
-class SemesterYear {
-  final int firstYear;
-
-  const SemesterYear(this.firstYear);
-
-  int get secondYear => firstYear + 1;
-
-  @override
-  bool operator ==(Object other) {
-    if (other is! SemesterYear) {
-      return false;
-    }
-    return firstYear == other.firstYear;
-  }
-
-  @override
-  int get hashCode => firstYear.hashCode;
-}
-
-class Semester {
-  final SemesterYear year;
-  final SemesterType type;
-
-  const Semester(
-    this.year,
-    this.type,
-  );
-
-  static Semester currentSemester(Clock clock) {
-    final now = clock.now();
-    final isBeforeOctober = now.month < DateTime.october;
-    final isBeforeMarch = now.month < DateTime.march;
-    final firstYear = isBeforeOctober ? now.year - 1 : now.year;
-    final semesterType = !isBeforeMarch && isBeforeOctober
-        ? SemesterType.summer
-        : SemesterType.winter;
-    return Semester(
-      SemesterYear(firstYear),
-      semesterType,
-    );
-  }
-
-  int countSemestersBetween(Semester other) {
-    final first = year.firstYear * 2 + (type == SemesterType.winter ? 0 : 1);
-    final second =
-        other.year.firstYear * 2 + (other.type == SemesterType.winter ? 0 : 1);
-    return (first - second).abs();
-  }
-
-  @override
-  bool operator ==(Object other) {
-    if (other is! Semester) {
-      return false;
-    }
-    return type == other.type && year == other.year;
-  }
-
-  @override
-  String toString() {
-    return '${year.firstYear}/${year.secondYear} - ${type.name}';
-  }
-
-  @override
-  int get hashCode => Object.hash(year, type);
-}
-
-enum SemesterType {
-  winter,
-  summer,
 }

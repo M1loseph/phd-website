@@ -5,6 +5,9 @@ import 'package:phd_website/components/clickable_link.dart';
 import 'package:phd_website/components/semester_picker.dart';
 import 'package:phd_website/constants.dart';
 import 'package:phd_website/layouts/scrollable_page_layout.dart';
+import 'package:phd_website/model/semester.dart';
+import 'package:phd_website/model/semester_type.dart';
+import 'package:phd_website/model/semester_year.dart';
 import 'package:phd_website/services/body_text_style_service.dart';
 import 'package:provider/provider.dart';
 
