@@ -26,7 +26,7 @@ class TeachingPage extends StatefulWidget {
 }
 
 class _TeachingPageState extends State<TeachingPage> {
-  Semester? selectedSemester;
+  late Semester selectedSemester;
 
   @override
   void initState() {
@@ -53,6 +53,7 @@ class _TeachingPageState extends State<TeachingPage> {
                     selectedSemester = semester;
                   });
                 },
+                currentSemester: selectedSemester,
               ),
               const SizedBox(
                 height: 50,

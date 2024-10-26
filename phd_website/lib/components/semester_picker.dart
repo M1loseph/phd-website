@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:phd_website/clock/clock.dart';
 import 'package:phd_website/model/semester.dart';
 import 'package:phd_website/model/semester_type.dart';
 import 'package:phd_website/model/semester_year.dart';
 
 class SemesterPicker extends StatefulWidget {
-  final void Function(Semester?) selectSemesterCallback;
+  final void Function(Semester) selectSemesterCallback;
+  final Semester currentSemester;
 
   const SemesterPicker({
     super.key,
     required this.selectSemesterCallback,
+    required this.currentSemester,
   });
 
   @override
@@ -18,30 +19,32 @@ class SemesterPicker extends StatefulWidget {
 }
 
 class _SemesterPickerState extends State<SemesterPicker> {
+  final controller = TextEditingController();
   static const firstYear = Semester(
     SemesterYear(2023),
     SemesterType.winter,
   );
 
-  late final Semester currentSemester;
   late final int numberOfSemesters;
 
-  SemesterYear? selectedSemesterYear;
-  SemesterType? selectedSemesterType;
+  late SemesterYear selectedSemesterYear;
+  late SemesterType selectedSemesterType;
 
   @override
   void initState() {
-    currentSemester = Semester.currentSemester(Clock());
-    selectedSemesterYear = currentSemester.year;
-    selectedSemesterType = currentSemester.type;
-    numberOfSemesters = firstYear.countSemestersBetween(currentSemester);
+    selectedSemesterYear = widget.currentSemester.year;
+    selectedSemesterType = widget.currentSemester.type;
+    numberOfSemesters = firstYear.countSemestersBetween(widget.currentSemester);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     final locale = AppLocalizations.of(context)!;
+    controller.text = locale
+        .componentSemesterPicker_semesterTypeName(selectedSemesterType.name);
     final semestersAsYears = numberOfSemesters ~/ 2 + 2;
+
     return Row(
       mainAxisSize: MainAxisSize.max,
       children: [
@@ -55,11 +58,14 @@ class _SemesterPickerState extends State<SemesterPicker> {
                 label: '${semesterYear.firstYear}/${semesterYear.secondYear}',
               );
             }),
-            initialSelection: currentSemester.year,
+            initialSelection: widget.currentSemester.year,
             menuHeight: 300,
             // https://github.com/flutter/flutter/issues/137514#issuecomment-1784709841
             expandedInsets: EdgeInsets.zero,
             onSelected: (year) {
+              if (year == null) {
+                return;
+              }
               setState(() {
                 selectedSemesterYear = year;
               });
@@ -72,7 +78,7 @@ class _SemesterPickerState extends State<SemesterPicker> {
         ),
         Expanded(
           child: DropdownMenu<SemesterType>(
-            key: UniqueKey(),
+            controller: controller,
             dropdownMenuEntries:
                 [SemesterType.winter, SemesterType.summer].map((type) {
               return DropdownMenuEntry(
@@ -82,12 +88,15 @@ class _SemesterPickerState extends State<SemesterPicker> {
               );
             }).toList(),
             onSelected: (type) {
+              if (type == null) {
+                return;
+              }
               setState(() {
                 selectedSemesterType = type;
               });
               checkIfBothValuesAreSelected();
             },
-            initialSelection: currentSemester.type,
+            initialSelection: widget.currentSemester.type,
             expandedInsets: EdgeInsets.zero,
           ),
         )
@@ -96,14 +105,10 @@ class _SemesterPickerState extends State<SemesterPicker> {
   }
 
   void checkIfBothValuesAreSelected() {
-    if (selectedSemesterType == null || selectedSemesterType == null) {
-      widget.selectSemesterCallback(null);
-      return;
-    }
     widget.selectSemesterCallback(
       Semester(
-        selectedSemesterYear!,
-        selectedSemesterType!,
+        selectedSemesterYear,
+        selectedSemesterType,
       ),
     );
   }
