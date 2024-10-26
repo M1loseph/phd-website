@@ -1,12 +1,11 @@
-#!/usr/bin/env bash
 # Creates a release build for web. 
 # This script should be run in the root of flutter project.
 
 set -e
 
-DEPLOYMENT_ENDPOINT=$1
-ANALYTICS_SERVER_URL=$2
-ENVIRONMENT=$3
+DEPLOYMENT_ENDPOINT="${1}"
+ANALYTICS_SERVER_URL="${2}"
+ENVIRONMENT="${3}"
 
 if [ -z "${DEPLOYMENT_ENDPOINT}" ]; then
   echo "Please provide a deployment endpoint as the first argument."
@@ -31,6 +30,9 @@ dart run build_runner clean
 dart run build_runner build --delete-conflicting-outputs
 
 flutter test
+
+# https://stackoverflow.com/questions/7250130/how-to-stop-mingw-and-msys-from-mangling-path-names-given-at-the-command-line
+export MSYS_NO_PATHCONV=1
 
 # Fix for icons caching issue
 # https://github.com/flutter/flutter/issues/136585#issuecomment-2354612183
