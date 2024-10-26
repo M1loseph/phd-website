@@ -49,6 +49,14 @@
     "@pageResearch_XIIForumOfPartialDifferentialEquationsConferenceName": {},
     "pageResearch_PublicationsSectionTitle": "Publications",
     "@pageResearch_PublicationsSectionTitle": {},
+    "pageResearch_PublicationCoauthorsLabel": "Coauthors: {coauthors}",
+    "@pageResearch_PublicationCoauthorsLabel": {
+        "placeholders": {
+            "coauthors": {
+                "type": "String"
+            }
+        }
+    },
     "componentNavigation_HomePage": "Home",
     "@componentNavigation_HomePage": {},
     "componentNavigation_ContactPage": "Contact",

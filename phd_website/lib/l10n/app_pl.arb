@@ -19,6 +19,7 @@
     "pageResearch_52ConferenceOnApplicationsOfMathematicsConferenceName": "52. Konferencja Zastosowań Matematyki",
     "pageResearch_XIIForumOfPartialDifferentialEquationsConferenceName": "XIII Forum Równań Różniczkowych Cząstkowych",
     "pageResearch_PublicationsSectionTitle": "Publikacje",
+    "pageResearch_PublicationCoauthorsLabel": "Współautorzy: {coauthors}",
     "componentNavigation_HomePage": "Strona główna",
     "componentNavigation_ContactPage": "Kontakt",
     "componentNavigation_ConsultationPage": "Konsultacje",

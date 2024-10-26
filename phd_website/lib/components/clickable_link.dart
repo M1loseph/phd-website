@@ -3,17 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 InlineSpan clickableInlineSpanLinkFactory({
-  required String url,
+  required Uri uri,
   required ThemeData theme,
   TextStyle? textStyle,
 }) {
   return TextSpan(
-    text: url,
+    text: uri.toString(),
     mouseCursor: SystemMouseCursors.click,
     recognizer: TapGestureRecognizer()
       ..onTap = () async {
-        final parsedUrl = Uri.parse(url);
-        await launchUrl(parsedUrl);
+        await launchUrl(uri);
       },
     style: textStyle?.copyWith(
       color: theme.colorScheme.primary,
@@ -23,14 +22,30 @@ InlineSpan clickableInlineSpanLinkFactory({
 }
 
 class ClickableLink extends StatelessWidget {
-  final String url;
+  final Uri uri;
   final TextStyle? textStyle;
-  const ClickableLink({super.key, required this.url, this.textStyle});
+
+  const ClickableLink({
+    super.key,
+    required this.uri,
+    this.textStyle,
+  });
+
+  ClickableLink.fromString({
+    super.key,
+    required String uri,
+    this.textStyle,
+  }) : uri = Uri.parse(uri);
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Text.rich(clickableInlineSpanLinkFactory(
-        url: url, theme: theme, textStyle: textStyle));
+    return Text.rich(
+      clickableInlineSpanLinkFactory(
+        uri: uri,
+        theme: theme,
+        textStyle: textStyle,
+      ),
+    );
   }
 }
