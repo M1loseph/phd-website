@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:intl/intl.dart';
 import 'package:phd_website/components/adapters/platform_aware_svg_adapter.dart';
+import 'package:phd_website/components/clickable_link.dart';
 import 'package:phd_website/constants.dart';
 import 'package:phd_website/layouts/scrollable_page_layout.dart';
 import 'package:phd_website/model/conference_do.dart';
@@ -22,7 +24,7 @@ class ResearchPage extends StatelessWidget {
             .pageResearch_52ConferenceOnApplicationsOfMathematicsConferenceName,
         website: 'https://sites.google.com/view/lii-kzm/strona-glowna',
         talkTitle:
-            locale.pageResearch_52ConferenceOnApplicationsOfMathematicsTalkTitle,
+            'From equations to elevations: optimizing the trail running strategy',
         begin: DateTime(2024, DateTime.september, 16),
         end: DateTime(2024, DateTime.september, 21),
         location: 'Kościelisko',
@@ -32,7 +34,7 @@ class ResearchPage extends StatelessWidget {
             .pageResearch_XIIForumOfPartialDifferentialEquationsConferenceName,
         website: 'https://sites.google.com/impan.pl/xiiifpde/',
         talkTitle:
-            locale.pageResearch_XIIForumOfPartialDifferentialEquationsTalkTitle,
+            'pageResearch_XIIForumOfPartialDifferentialEquationsTalkTitle',
         begin: DateTime(2024, DateTime.june, 23),
         end: DateTime(2024, DateTime.june, 29),
         location: 'Będlewo',
@@ -41,8 +43,7 @@ class ResearchPage extends StatelessWidget {
         conferenceName: locale
             .pageResearch_51ConferenceOnApplicationsOfMathematicsConferenceName,
         website: 'https://sites.google.com/view/51-kzm/',
-        talkTitle:
-            locale.pageResearch_51ConferenceOnApplicationsOfMathematicsTalkTitle,
+        talkTitle: 'Mathematical modelling of trail running',
         begin: DateTime(2023, DateTime.september, 10),
         end: DateTime(2023, DateTime.september, 16),
         location: 'Kościelisko',
@@ -50,7 +51,7 @@ class ResearchPage extends StatelessWidget {
       ConferenceDO(
         conferenceName: locale.pageResearch_Ecmi2023ConferenceName,
         website: 'https://ecmi2023.org/',
-        talkTitle: locale.pageResearch_Ecmi2023TalkTitle,
+        talkTitle: 'Modeling Trail Running',
         begin: DateTime(2023, DateTime.july, 26),
         end: DateTime(2023, DateTime.july, 30),
         location: 'Wrocław',
@@ -68,6 +69,16 @@ class ResearchPage extends StatelessWidget {
                 alignment: Alignment.topRight,
                 child: ORCiD(),
               ),
+              SectionLabel(
+                text: locale.pageResearch_PublicationsSectionTitle,
+              ),
+              PublicationWidget(
+                title:
+                    'Optimal strategy for trail running with nutrition and fatigue factors',
+                link: 'https://arxiv.org/abs/2401.02919',
+                submission: DateTime(2024, 1, 5),
+              ),
+              const SizedBox(height: 30,),
               SectionLabel(
                 text: locale.pageResearch_ConferencesSectionTitle,
               ),
@@ -118,6 +129,83 @@ class ORCiD extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+// TODO: try to remove duplications across PublicationWidget and ConferenceWidget
+class PublicationWidget extends StatelessWidget {
+  static const padding = 8.0;
+
+  const PublicationWidget({
+    super.key,
+    required this.title,
+    required this.link,
+    required this.submission,
+  });
+
+  final String title;
+  final String link;
+  final DateTime submission;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final locale = AppLocalizations.of(context)!;
+    final formatter = DateFormat('yMMMMd', locale.localeName);
+
+    final titleStyle = theme.textTheme.headlineSmall;
+    final textThemeService = context.read<BodyTextStyleService>();
+    final bodyTextStyle = textThemeService.getBodyTextStyle(context);
+
+    return Card(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Align(
+            alignment: Alignment.topLeft,
+            child: Padding(
+              padding: const EdgeInsets.all(padding),
+              child: Text(
+                '"$title"',
+                style: titleStyle,
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(padding),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    const Icon(Icons.link),
+                    const SizedBox(width: 10),
+                    Flexible(
+                      child: ClickableLink(
+                        url: link,
+                        textStyle: bodyTextStyle,
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    const Icon(Icons.calendar_month_outlined),
+                    const SizedBox(width: 10),
+                    Flexible(
+                      child: Text(
+                        formatter.format(submission),
+                        style: bodyTextStyle,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -196,7 +284,7 @@ class ConferenceWidget extends StatelessWidget {
           Align(
             alignment: Alignment.centerRight,
             child: Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(padding),
               child: TextButton(
                 child: Text(
                   locale.pageResearch_OrganizerWebsite.toUpperCase(),
