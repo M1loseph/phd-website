@@ -1,26 +1,33 @@
 {
     "@@locale": "en",
     "appTitle": "Bogna Jaszczak",
-    "cookiesPopupMessage": "This site uses cookies to provide it's main functionalities such as saving language preferences.",
-    "cookiesPopupAcceptButton": "Accept all",
-    "cookiesPopupRejectButton": "Reject non essential",
-    "navigationHomePage": "Home",
-    "navigationContactPage": "Contact",
-    "navigationConsultationPage": "Consultation",
-    "navigationTeachingPage": "Teaching",
-    "navigationResearchPage": "Research",
-    "homePageName": "M.Sc. Bogna Jaszczak",
-    "homePageDepartment": "Department of Applied Mathematics,\nWrocław University of Science and Technology",
-    "contactPageCopiedPopup": "Copied!",
-    "consultationPagePlace": "C19 4.14",
-    "consultationPageEmailReminder": "Please send me an email prior to coming.",
-    "consultationPageDates": "Tuesday 13:30 - 14:30",
-    "teachingPageDifferentialEquationsInTechnology": "Differential equations in technology",
-    "teachingPageDifferentialEquationsInTechDescription": "Rules and lists are available on lecturer's website.",
-    "researchPageConferencesSectionTitle": "Conference talks",
-    "researchPageOrganizerWebsite": "Conference website",
-    "researchPageConferenceDate": "{begin} to {end}",
-    "@researchPageConferenceDate": {
+    "@appTitle": {},
+    "pageHome_Name": "M.Sc. Bogna Jaszczak",
+    "@pageHome_Name": {},
+    "pageHome_Department": "Department of Applied Mathematics,\nWrocław University of Science and Technology",
+    "@pageHome_Department": {},
+    "pageContact_CopiedPopup": "Copied!",
+    "@pageContact_CopiedPopup": {},
+    "pageConsultation_Place": "C19 4.14",
+    "@pageConsultation_Place": {},
+    "pageConsultation_EmailReminder": "Please send me an email prior to coming.",
+    "@pageConsultation_EmailReminder": {},
+    "pageConsultation_Dates": "Tuesday 13:30 - 14:30",
+    "@pageConsultation_Dates": {},
+    "pageTeaching_DifferentialEquationsInTechnology": "Differential equations in technology",
+    "@pageTeaching_DifferentialEquationsInTechnology": {},
+    "pageTeaching_DifferentialEquationsInTechDescription": "Rules and lists are available on lecturer's website.",
+    "@pageTeaching_DifferentialEquationsInTechDescription": {},
+    "pageTeaching_IntroductionToComputerScience": "Introduction to computer science and programming",
+    "@pageTeaching_IntroductionToComputerScience": {},
+    "pageTeaching_IntroductionToComputerDescription": "All materials and information can be found on ePortal.",
+    "@pageTeaching_IntroductionToComputerDescription": {},
+    "pageResearch_ConferencesSectionTitle": "Conference talks",
+    "@pageResearch_ConferencesSectionTitle": {},
+    "pageResearch_OrganizerWebsite": "Conference website",
+    "@pageResearch_OrganizerWebsite": {},
+    "pageResearch_ConferenceDate": "{begin} to {end}",
+    "@pageResearch_ConferenceDate": {
         "placeholders": {
             "begin": {
                 "type": "DateTime",
@@ -32,16 +39,40 @@
             }
         }
     },
-    "researchPageEcmi2023ConferenceName": "ECMI 2023",
-    "researchPageEcmi2023TalkTitle": "Modeling Trail Running",
-    "researchPage51ConferenceOnApplicationsOfMathematicsConferenceName": "51st Conference on Applications of Mathematics",
-    "researchPage51ConferenceOnApplicationsOfMathematicsTalkTitle": "Mathematical modelling of trail running",
-    "researchPage52ConferenceOnApplicationsOfMathematicsConferenceName": "52nd Conference on Applications of Mathematics",
-    "researchPage52ConferenceOnApplicationsOfMathematicsTalkTitle": "From equations to elevations: optimizing the trail running strategy",
-    "researchPageXIIForumOfPartialDifferentialEquationsConferenceName": "XIII Forum of Partial Differential Equations",
-    "researchPageXIIForumOfPartialDifferentialEquationsTalkTitle": "A unified model for blood and lymph flow",
-    "footer": "Copyright © {lastBuildYear} version {appVersion}",
-    "@footer": {
+    "pageResearch_Ecmi2023ConferenceName": "ECMI 2023",
+    "@pageResearch_Ecmi2023ConferenceName": {},
+    "pageResearch_Ecmi2023TalkTitle": "Modeling Trail Running",
+    "@pageResearch_Ecmi2023TalkTitle": {},
+    "pageResearch_51ConferenceOnApplicationsOfMathematicsConferenceName": "51st Conference on Applications of Mathematics",
+    "@pageResearch_51ConferenceOnApplicationsOfMathematicsConferenceName": {},
+    "pageResearch_51ConferenceOnApplicationsOfMathematicsTalkTitle": "Mathematical modelling of trail running",
+    "@pageResearch_51ConferenceOnApplicationsOfMathematicsTalkTitle": {},
+    "pageResearch_52ConferenceOnApplicationsOfMathematicsConferenceName": "52nd Conference on Applications of Mathematics",
+    "@pageResearch_52ConferenceOnApplicationsOfMathematicsConferenceName": {},
+    "pageResearch_52ConferenceOnApplicationsOfMathematicsTalkTitle": "From equations to elevations: optimizing the trail running strategy",
+    "@pageResearch_52ConferenceOnApplicationsOfMathematicsTalkTitle": {},
+    "pageResearch_XIIForumOfPartialDifferentialEquationsConferenceName": "XIII Forum of Partial Differential Equations",
+    "@pageResearch_XIIForumOfPartialDifferentialEquationsConferenceName": {},
+    "pageResearch_XIIForumOfPartialDifferentialEquationsTalkTitle": "A unified model for blood and lymph flow",
+    "@pageResearch_XIIForumOfPartialDifferentialEquationsTalkTitle": {},
+    "componentNavigation_HomePage": "Home",
+    "@componentNavigation_HomePage": {},
+    "componentNavigation_ContactPage": "Contact",
+    "@componentNavigation_ContactPage": {},
+    "componentNavigation_ConsultationPage": "Consultation",
+    "@componentNavigation_ConsultationPage": {},
+    "componentNavigation_TeachingPage": "Teaching",
+    "@componentNavigation_TeachingPage": {},
+    "componentNavigation_ResearchPage": "Research",
+    "@componentNavigation_ResearchPage": {},
+    "componentCookiesPopup_Message": "This site uses cookies to provide it's main functionalities such as saving language preferences.",
+    "@componentCookiesPopup_Message": {},
+    "componentCookiesPopup_AcceptButton": "Accept all",
+    "@componentCookiesPopup_AcceptButton": {},
+    "componentCookiesPopup_RejectButton": "Reject non essential",
+    "@componentCookiesPopup_RejectButton": {},
+    "componentFooter_Text": "Copyright © {lastBuildYear} version {appVersion}",
+    "@componentFooter_Text": {
         "placeholders": {
             "lastBuildYear": {
                 "type": "int"
@@ -49,6 +80,12 @@
             "appVersion": {
                 "type": "String"
             }
+        }
+    },
+    "componentSemesterPicker_semesterTypeName": "{type, select, winter{Winter} summer{Summer} other{}}",
+    "@componentSemesterPicker_semesterTypeName": {
+        "placeholders": {
+            "type": {}
         }
     }
 }

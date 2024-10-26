@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:phd_website/components/adapters/platform_aware_widget.dart';
+import 'package:phd_website/components/adapters/platform_aware_image.dart';
 
-class PlatformAwareSvgAdapter extends PlatformAwareWidget {
+class PlatformAwareSvgAdapter extends PlatformAwareImage {
   final String path;
   final double? height;
   final double? width;

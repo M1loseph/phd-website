@@ -75,7 +75,7 @@ class _PHDAppState extends State<PHDApp> {
                             state: state,
                             currentPage: child,
                           ),
-                          const CookiePopup()
+                          const CookiePopup(),
                         ],
                       ),
                     ),
@@ -125,7 +125,9 @@ class _PHDAppState extends State<PHDApp> {
               return responsiveTransitionPage(
                 key: state.pageKey,
                 pageName: 'teaching',
-                child: const TeachingPage(),
+                child: TeachingPage(
+                  clock: Clock(),
+                ),
                 context: context,
               );
             },

@@ -5,6 +5,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:phd_website/components/adapters/platform_aware_svg_adapter.dart';
 import 'package:phd_website/components/body_text.dart';
 import 'package:phd_website/components/clickable_link.dart';
+import 'package:phd_website/constants.dart';
 import 'package:phd_website/layouts/scrollable_page_layout.dart';
 import 'package:phd_website/layouts/spaced_list_layout.dart';
 import 'package:phd_website/services/body_text_style_service.dart';
@@ -32,8 +33,10 @@ class ContactPage extends StatelessWidget {
       page: Column(
         children: [
           Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 500),
+            child: FractionallySizedBox(
+              widthFactor: isMobileView(context)
+                  ? (8 / 12)
+                  : (6 / 12),
               child: SpacedListLayout(
                 children: [
                   const Row(
@@ -48,7 +51,10 @@ class ContactPage extends StatelessWidget {
                       Flexible(
                         child: BodyText(email),
                       ),
-                      CopyButton(copyValue: email, iconSize: iconSize),
+                      CopyButton(
+                        copyValue: email,
+                        iconSize: iconSize - 5,
+                      ),
                     ],
                   ),
                   Row(
@@ -123,14 +129,14 @@ class _CopyButtonState extends State<CopyButton> {
 
   @override
   void dispose() {
-    super.dispose();
     _timer?.cancel();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final clipboardService = context.read<ClipboardService>();
-    final locale = AppLocalizations.of(context);
+    final locale = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.only(left: 8.0),
       child: Stack(
@@ -151,14 +157,15 @@ class _CopyButtonState extends State<CopyButton> {
                 });
               });
             },
-            iconSize: widget.iconSize - 5,
+            iconSize: widget.iconSize,
+            visualDensity: VisualDensity.compact,
           ),
           Transform.translate(
             offset: const Offset(40, 0),
             child: AnimatedOpacity(
               opacity: _isCopied ? 1.0 : 0.0,
               duration: const Duration(milliseconds: 200),
-              child: Text(locale!.contactPageCopiedPopup),
+              child: Text(locale.pageContact_CopiedPopup),
             ),
           )
         ],

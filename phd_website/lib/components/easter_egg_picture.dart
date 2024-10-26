@@ -19,6 +19,8 @@ class EasterEggPicture extends StatelessWidget {
   Widget build(BuildContext context) {
     final calculatedPath =
         currentValue % easterEggThreshold == 0 ? easterEggPath : path;
-    return PlatformAwareImageAdapter(path: calculatedPath);
+    return PlatformAwareImageAdapter(
+      path: calculatedPath,
+    );
   }
 }

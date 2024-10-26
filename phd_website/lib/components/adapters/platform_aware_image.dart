@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-abstract class PlatformAwareWidget extends StatelessWidget {
-  const PlatformAwareWidget({super.key});
+abstract class PlatformAwareImage extends StatelessWidget {
+  const PlatformAwareImage({super.key});
 
   @protected
   String getActualPath(String path) {

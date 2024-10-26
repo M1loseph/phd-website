@@ -3,6 +3,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:phd_website/components/adapters/platform_aware_image_adapter.dart';
 import 'package:phd_website/components/body_text.dart';
 import 'package:phd_website/components/easter_egg_picture.dart';
+import 'package:phd_website/constants.dart';
 import 'package:phd_website/layouts/unscrollable_page_layout.dart';
 import 'package:phd_website/state/app_global_state.dart';
 import 'package:provider/provider.dart';
@@ -13,15 +14,15 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final globalState = context.watch<AppGlobalState>();
-    final locale = AppLocalizations.of(context);
+    final locale = AppLocalizations.of(context)!;
     return UnscrollablePageLayout(
-      page: Column(
-        children: [
-          Flexible(
-            child: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: ConstrainedBox(
-                constraints: BoxConstraints.loose(const Size(400, 400)),
+      page: FractionallySizedBox(
+        widthFactor: isMobileView(context) ? 8 / 12 : 6 / 12,
+        child: Column(
+          children: [
+            Flexible(
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 20.0),
                 child: ClipOval(
                   child: FutureBuilder(
                       future: globalState.getNumberOfEntires(),
@@ -42,27 +43,27 @@ class HomePage extends StatelessWidget {
                 ),
               ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(bottom: 20.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                FittedBox(
-                  child: Text(
-                    locale!.homePageName,
-                    style: Theme.of(context).textTheme.displaySmall,
+            Padding(
+              padding: const EdgeInsets.only(bottom: 20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  FittedBox(
+                    child: Text(
+                      locale.pageHome_Name,
+                      style: Theme.of(context).textTheme.displaySmall,
+                    ),
                   ),
-                ),
-                FittedBox(
-                  child: BodyText(
-                    locale.homePageDepartment,
+                  FittedBox(
+                    child: BodyText(
+                      locale.pageHome_Department,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

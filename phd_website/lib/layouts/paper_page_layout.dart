@@ -6,10 +6,8 @@ class PaperPageLayout extends StatelessWidget {
   const PaperPageLayout({
     super.key,
     required this.page,
-    required this.constraints,
   });
 
-  final BoxConstraints constraints;
   final Widget page;
 
   @override
@@ -35,7 +33,7 @@ class PaperPageLayout extends StatelessWidget {
                 padding: EdgeInsets.only(
                   left: 10,
                   right: 10,
-                  top: isMobileView(constraints.maxWidth) ? 100 : 150,
+                  top: isMobileView(context) ? 100 : 150,
                 ),
                 child: page,
               ),

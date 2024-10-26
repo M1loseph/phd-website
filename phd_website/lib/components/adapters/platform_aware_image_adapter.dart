@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:phd_website/components/adapters/platform_aware_widget.dart';
+import 'package:phd_website/components/adapters/platform_aware_image.dart';
 
-class PlatformAwareImageAdapter extends PlatformAwareWidget {
+class PlatformAwareImageAdapter extends PlatformAwareImage {
   final String path;
   final double? height;
 

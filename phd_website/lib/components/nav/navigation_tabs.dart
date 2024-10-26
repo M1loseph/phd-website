@@ -36,17 +36,17 @@ class NavigationTabs extends StatelessWidget {
   }
 
   List<Widget> _sectionNavigations(BuildContext context) {
-    final locale = AppLocalizations.of(context);
+    final locale = AppLocalizations.of(context)!;
     final destinations = [
-      _NavigationDestination(name: locale!.navigationHomePage, path: '/'),
+      _NavigationDestination(name: locale.componentNavigation_HomePage, path: '/'),
       _NavigationDestination(
-          name: locale.navigationContactPage, path: '/contact'),
+          name: locale.componentNavigation_ContactPage, path: '/contact'),
       _NavigationDestination(
-          name: locale.navigationConsultationPage, path: '/consultation'),
+          name: locale.componentNavigation_ConsultationPage, path: '/consultation'),
       _NavigationDestination(
-          name: locale.navigationTeachingPage, path: '/teaching'),
+          name: locale.componentNavigation_TeachingPage, path: '/teaching'),
       _NavigationDestination(
-          name: locale.navigationResearchPage, path: '/research'),
+          name: locale.componentNavigation_ResearchPage, path: '/research'),
     ];
     return List.generate(destinations.length, (index) {
       return SectionNavigation(

@@ -24,7 +24,6 @@ class ScrollablePageLayout extends StatelessWidget {
             child: IntrinsicHeight(
               child: PaperPageLayout(
                 page: page,
-                constraints: constraints,
               ),
             ),
           ),
