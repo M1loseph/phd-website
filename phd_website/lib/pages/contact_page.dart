@@ -19,9 +19,10 @@ class ContactPage extends StatelessWidget {
   static const stravaLogoPath = 'images/strava_logo.svg';
 
   static const email = 'bogna.jaszczak@pwr.edu.pl';
-  static const stravaLink = 'https://www.strava.com/athletes/74296734';
-  static const linkedInLink =
-      'https://www.linkedin.com/in/bogna-jaszczak-228aab1b4/';
+  static final stravaLink =
+      Uri.parse('https://www.strava.com/athletes/74296734');
+  static final linkedInLink =
+      Uri.parse('https://www.linkedin.com/in/bogna-jaszczak-228aab1b4/');
 
   const ContactPage({super.key});
 
@@ -34,9 +35,7 @@ class ContactPage extends StatelessWidget {
         children: [
           Center(
             child: FractionallySizedBox(
-              widthFactor: isMobileView(context)
-                  ? (8 / 12)
-                  : (6 / 12),
+              widthFactor: isMobileView(context) ? (8 / 12) : (6 / 12),
               child: SpacedListLayout(
                 children: [
                   const Row(
@@ -72,7 +71,7 @@ class ContactPage extends StatelessWidget {
                       ),
                       Expanded(
                         child: ClickableLink(
-                          url: linkedInLink,
+                          uri: linkedInLink,
                           textStyle: bodyTextTheme,
                         ),
                       ),
@@ -93,7 +92,7 @@ class ContactPage extends StatelessWidget {
                       ),
                       Expanded(
                         child: ClickableLink(
-                          url: stravaLink,
+                          uri: stravaLink,
                           textStyle: bodyTextTheme,
                         ),
                       ),

@@ -1,4 +1,4 @@
-class ConferenceDO {
+class Conference {
   final String conferenceName;
   final Uri website;
   final String talkTitle;
@@ -6,7 +6,7 @@ class ConferenceDO {
   final DateTime end;
   final String location;
 
-  ConferenceDO({
+  Conference({
     required this.conferenceName,
     required String website,
     required this.talkTitle,

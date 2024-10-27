@@ -12,8 +12,8 @@ import 'package:phd_website/services/body_text_style_service.dart';
 import 'package:provider/provider.dart';
 
 class TeachingPage extends StatefulWidget {
-  static const differentialEquationsRulesLink =
-      'https://prac.im.pwr.edu.pl/~plociniczak/doku.php?id=ode';
+  static final differentialEquationsRulesLink =
+      Uri.parse('https://prac.im.pwr.edu.pl/~plociniczak/doku.php?id=ode');
   final Clock clock;
 
   const TeachingPage({
@@ -71,11 +71,12 @@ class _TeachingPageState extends State<TeachingPage> {
                       height: 20,
                     ),
                     Text(
-                      locale.pageTeaching_DifferentialEquationsInTechDescription,
+                      locale
+                          .pageTeaching_DifferentialEquationsInTechDescription,
                       style: bodyTheme,
                     ),
                     ClickableLink(
-                      url: TeachingPage.differentialEquationsRulesLink,
+                      uri: TeachingPage.differentialEquationsRulesLink,
                       textStyle: bodyTheme,
                     ),
                   ],

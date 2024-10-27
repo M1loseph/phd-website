@@ -1,10 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:intl/intl.dart';
 import 'package:phd_website/components/adapters/platform_aware_svg_adapter.dart';
+import 'package:phd_website/components/clickable_link.dart';
 import 'package:phd_website/constants.dart';
 import 'package:phd_website/layouts/scrollable_page_layout.dart';
-import 'package:phd_website/model/conference_do.dart';
+import 'package:phd_website/model/conference.dart';
+import 'package:phd_website/model/publication.dart';
 import 'package:phd_website/services/body_text_style_service.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -17,43 +20,51 @@ class ResearchPage extends StatelessWidget {
     final locale = AppLocalizations.of(context)!;
 
     final conferences = [
-      ConferenceDO(
+      Conference(
         conferenceName: locale
             .pageResearch_52ConferenceOnApplicationsOfMathematicsConferenceName,
         website: 'https://sites.google.com/view/lii-kzm/strona-glowna',
         talkTitle:
-            locale.pageResearch_52ConferenceOnApplicationsOfMathematicsTalkTitle,
+            'From equations to elevations: optimizing the trail running strategy',
         begin: DateTime(2024, DateTime.september, 16),
         end: DateTime(2024, DateTime.september, 21),
         location: 'Kościelisko',
       ),
-      ConferenceDO(
+      Conference(
         conferenceName: locale
             .pageResearch_XIIForumOfPartialDifferentialEquationsConferenceName,
         website: 'https://sites.google.com/impan.pl/xiiifpde/',
-        talkTitle:
-            locale.pageResearch_XIIForumOfPartialDifferentialEquationsTalkTitle,
+        talkTitle: 'A unified model for blood and lymph flow',
         begin: DateTime(2024, DateTime.june, 23),
         end: DateTime(2024, DateTime.june, 29),
         location: 'Będlewo',
       ),
-      ConferenceDO(
+      Conference(
         conferenceName: locale
             .pageResearch_51ConferenceOnApplicationsOfMathematicsConferenceName,
         website: 'https://sites.google.com/view/51-kzm/',
-        talkTitle:
-            locale.pageResearch_51ConferenceOnApplicationsOfMathematicsTalkTitle,
+        talkTitle: 'Mathematical modelling of trail running',
         begin: DateTime(2023, DateTime.september, 10),
         end: DateTime(2023, DateTime.september, 16),
         location: 'Kościelisko',
       ),
-      ConferenceDO(
+      Conference(
         conferenceName: locale.pageResearch_Ecmi2023ConferenceName,
         website: 'https://ecmi2023.org/',
-        talkTitle: locale.pageResearch_Ecmi2023TalkTitle,
+        talkTitle: 'Modeling Trail Running',
         begin: DateTime(2023, DateTime.july, 26),
         end: DateTime(2023, DateTime.july, 30),
         location: 'Wrocław',
+      ),
+    ];
+
+    final publications = [
+      Publication(
+        title:
+            'Optimal strategy for trail running with nutrition and fatigue factors',
+        archiveUri: 'https://arxiv.org/abs/2401.02919',
+        publicationDate: DateTime(2024, 1, 5),
+        coauthors: ['Łukasz Płociniczak'],
       ),
     ];
 
@@ -67,6 +78,16 @@ class ResearchPage extends StatelessWidget {
               const Align(
                 alignment: Alignment.topRight,
                 child: ORCiD(),
+              ),
+              SectionLabel(
+                text: locale.pageResearch_PublicationsSectionTitle,
+              ),
+              for (var publication in publications)
+                PublicationWidget(
+                  publication: publication,
+                ),
+              const SizedBox(
+                height: 30,
               ),
               SectionLabel(
                 text: locale.pageResearch_ConferencesSectionTitle,
@@ -85,7 +106,8 @@ class ResearchPage extends StatelessWidget {
 }
 
 class ORCiD extends StatelessWidget {
-  static const _orcidUrl = 'https://orcid.org/0009-0008-3835-9170';
+  static final _orcidUrl = Uri.parse('https://orcid.org/0009-0008-3835-9170');
+
   const ORCiD({
     super.key,
   });
@@ -106,7 +128,7 @@ class ORCiD extends StatelessWidget {
                 ),
                 hoverColor: Colors.transparent,
                 onPressed: () async {
-                  await launchUrl(Uri.parse(_orcidUrl));
+                  await launchUrl(_orcidUrl);
                 },
               ),
             ),
@@ -123,14 +145,89 @@ class ORCiD extends StatelessWidget {
   }
 }
 
+// TODO: try to remove duplications across PublicationWidget and ConferenceWidget
+class PublicationWidget extends StatelessWidget {
+  static const padding = 8.0;
+
+  final Publication publication;
+
+  const PublicationWidget({
+    super.key,
+    required this.publication,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final locale = AppLocalizations.of(context)!;
+    final formatter = DateFormat('yMMMMd', locale.localeName);
+
+    final titleStyle = theme.textTheme.headlineSmall;
+    final textThemeService = context.read<BodyTextStyleService>();
+    final bodyTextStyle = textThemeService.getBodyTextStyle(context);
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(padding),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              '"${publication.title}"',
+              style: titleStyle,
+            ),
+            const SizedBox(
+              height: padding,
+            ),
+            Text(
+              locale.pageResearch_PublicationCoauthorsLabel(
+                publication.coauthors.join(', '),
+              ),
+            ),
+            const SizedBox(
+              height: padding * 2,
+            ),
+            Row(
+              children: [
+                const Icon(Icons.link),
+                const SizedBox(width: 10),
+                Flexible(
+                  child: ClickableLink(
+                    uri: publication.archiveUri,
+                    textStyle: bodyTextStyle,
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                const Icon(Icons.calendar_month_outlined),
+                const SizedBox(width: 10),
+                Flexible(
+                  child: Text(
+                    formatter.format(publication.publicationDate),
+                    style: bodyTextStyle,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class ConferenceWidget extends StatelessWidget {
   static const padding = 8.0;
+
+  final Conference conference;
+
   const ConferenceWidget({
     super.key,
     required this.conference,
   });
-
-  final ConferenceDO conference;
 
   @override
   Widget build(BuildContext context) {
@@ -141,62 +238,48 @@ class ConferenceWidget extends StatelessWidget {
 
     final locale = AppLocalizations.of(context)!;
     return Card(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Align(
-            alignment: Alignment.topLeft,
-            child: Padding(
-              padding: const EdgeInsets.all(padding),
-              child: Text(
-                conference.conferenceName,
-                style: titleStyle,
-              ),
+      child: Padding(
+        padding: const EdgeInsets.all(padding),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              conference.conferenceName,
+              style: titleStyle,
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(
-              top: padding,
-              left: padding,
-              right: padding,
+            const SizedBox(
+              height: padding * 2,
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            Row(
               children: [
-                Row(
-                  children: [
-                    const Icon(Icons.co_present_outlined),
-                    const SizedBox(width: 10),
-                    Flexible(
-                      child: Text(
-                        '"${conference.talkTitle}"',
-                        style: bodyTextStyle,
-                      ),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    const Icon(Icons.calendar_month_outlined),
-                    const SizedBox(width: 10),
-                    Flexible(
-                      child: Text(
-                        locale.pageResearch_ConferenceDate(
-                          conference.begin,
-                          conference.end,
-                        ),
-                        style: bodyTextStyle,
-                      ),
-                    ),
-                  ],
+                const Icon(Icons.co_present_outlined),
+                const SizedBox(width: 10),
+                Flexible(
+                  child: Text(
+                    '"${conference.talkTitle}"',
+                    style: bodyTextStyle,
+                  ),
                 ),
               ],
             ),
-          ),
-          Align(
-            alignment: Alignment.centerRight,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
+            Row(
+              children: [
+                const Icon(Icons.calendar_month_outlined),
+                const SizedBox(width: 10),
+                Flexible(
+                  child: Text(
+                    locale.pageResearch_ConferenceDate(
+                      conference.begin,
+                      conference.end,
+                    ),
+                    style: bodyTextStyle,
+                  ),
+                ),
+              ],
+            ),
+            Align(
+              alignment: Alignment.centerRight,
               child: TextButton(
                 child: Text(
                   locale.pageResearch_OrganizerWebsite.toUpperCase(),
@@ -206,9 +289,9 @@ class ConferenceWidget extends StatelessWidget {
                   await launchUrl(conference.website);
                 },
               ),
-            ),
-          )
-        ],
+            )
+          ],
+        ),
       ),
     );
   }
