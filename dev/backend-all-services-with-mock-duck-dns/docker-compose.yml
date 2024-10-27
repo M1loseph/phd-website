@@ -34,7 +34,7 @@ services:
       WEB_CORS_ALLOWED_ORIGINS_0: "*"
   ddns-runner:
     build:
-      context: "../../backend/ddns-runner/ddns-runner"
+      context: "../../ddns-runner"
       dockerfile: Dockerfile
       args:
         ADDITIONAL_PACKAGES: procps
@@ -68,7 +68,7 @@ services:
       retries: 5
   duck-dns-server-mock:
     build:
-      context: "../../backend/ddns-runner/duck-dns-server-mock"
+      context: "../../duck-dns-server-mock"
       dockerfile: Dockerfile
     init: true
   prometheus:
@@ -89,7 +89,7 @@ services:
       - GF_SECURITY_ADMIN_USER=user
       - GF_SECURITY_ADMIN_PASSWORD=password
     volumes:
-      - "../../backend/backend-deploy/grafana/prometheus-provisioning.yaml:/etc/grafana/provisioning/datasources/promethus-provisioning.yaml"
-      - "../../backend/backend-deploy/grafana/dashboards-provisioning.yaml:/etc/grafana/provisioning/dashboards/dashboards-provisioning.yaml"
-      - "../../backend/backend-deploy/grafana/DDNS-Runner.json:/var/lib/grafana/dashboards/DDNS-Runner.json"
-      - "../../backend/backend-deploy/grafana/Analytics-Server.json:/var/lib/grafana/dashboards/Analytics-Server.json"
+      - "../../backend-deploy/grafana/prometheus-provisioning.yaml:/etc/grafana/provisioning/datasources/promethus-provisioning.yaml"
+      - "../../backend-deploy/grafana/dashboards-provisioning.yaml:/etc/grafana/provisioning/dashboards/dashboards-provisioning.yaml"
+      - "../../backend-deploy/grafana/DDNS-Runner.json:/var/lib/grafana/dashboards/DDNS-Runner.json"
+      - "../../backend-deploy/grafana/Analytics-Server.json:/var/lib/grafana/dashboards/Analytics-Server.json"
