@@ -11,7 +11,7 @@ const httpCreated = 201;
 
 // TODO: maybe try not to do heavy lifting in constructor - just for the sake of not doing it :)
 class AnalyticsService {
-  final Logger logger = Logger(loggingClass: AnalyticsService);
+  final Logger logger = Logger(AnalyticsService);
   final Uri analyticsUrl;
   final Client httpClient;
   final Clock clock;

@@ -1,15 +1,17 @@
-
-
 import 'package:flutter/foundation.dart';
 
 class Logger {
   final Type loggingClass;
 
-  Logger({required this.loggingClass});
+  Logger(this.loggingClass);
 
   void debug(String message) {
-    if(kDebugMode) {
-      debugPrint('[${loggingClass.toString()}] [${DateTime.now()}] $message');
-    }
+    debugPrint(
+        '[DEBUG] [${loggingClass.toString()}] [${DateTime.now()}] $message');
+  }
+
+  void error(String message) {
+    debugPrint(
+        '[ERROR] [${loggingClass.toString()}] [${DateTime.now()}] $message');
   }
 }

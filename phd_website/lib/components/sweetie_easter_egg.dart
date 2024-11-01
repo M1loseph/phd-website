@@ -25,7 +25,7 @@ class SweetieEasterEggState extends State<SweetieEasterEgg> {
       'https://youtube.com/embed/UTLFbVB8ctc?start=48';
   static const magicLetterCombination = 'sweetie';
 
-  final Logger logger = Logger(loggingClass: SweetieEasterEggState);
+  final Logger logger = Logger(SweetieEasterEggState);
   late final FocusNode sweetieKeyboardFocusNode;
   late final FocusNode escapeFocusNode;
 
