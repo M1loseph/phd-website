@@ -2,10 +2,12 @@ name: Continuous Integration
 on:
   pull_request:
     branches: [master]
-    paths: [phd_website/**]
+    paths: 
+      - 'phd_website/**'
   push:
     branches: [master]
-    paths: [phd_website/**]
+    paths: 
+      - 'phd_website/**'
   workflow_call:
 
 jobs:
