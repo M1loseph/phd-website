@@ -16,7 +16,8 @@ class GitVersionSourceRunner implements VersionSourceRunner {
     final processResult = await Process.run('git', [
       'describe',
       '--tags',
-      '--match="phdwebsite/**"',
+      '--match',
+      'phdwebsite/**',
     ]);
     if (processResult.exitCode != 0) {
       throw Exception(
