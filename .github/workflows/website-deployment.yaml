@@ -1,4 +1,4 @@
-name: PHD Website Deployment
+name: Website Deployment
 on:
   push:
     tags:

@@ -40,7 +40,7 @@ class AnalyticsService(
             EnvironmentDto.GITHUB_PAGES -> Environment.GITHUB_PAGES
           },
       )
-    logger.info("Saving event: {}", entity)
+    logger.info("Saving AppOpenedEvent event: {}", entity)
     appOpenedEventRepository.save(entity).awaitSingle()
     return sessionId
   }
@@ -67,7 +67,7 @@ class AnalyticsService(
         insertedAt = serverClock.instant(),
         sessionId = SessionId(createPageOpenedEventDto.sessionId),
       )
-    logger.info("Saving event: {}", entity)
+    logger.info("Saving PageOpenedEvent event: {}", entity)
     return pageOpenedEventRepository.save(entity).awaitSingle()
   }
 

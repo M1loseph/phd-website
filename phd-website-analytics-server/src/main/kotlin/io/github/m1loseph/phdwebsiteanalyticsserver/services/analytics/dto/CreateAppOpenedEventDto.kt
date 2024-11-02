@@ -14,4 +14,5 @@ enum class EnvironmentDto {
 data class CreateAppOpenedEventDto(
   @param:JsonProperty("eventTime") val eventTime: Instant,
   @param:JsonProperty("environment") val environment: EnvironmentDto,
+  @param:JsonProperty("appVersion") val appVersion: String?,
 )
