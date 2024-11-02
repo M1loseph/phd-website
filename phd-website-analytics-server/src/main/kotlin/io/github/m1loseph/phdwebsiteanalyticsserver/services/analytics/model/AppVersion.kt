@@ -4,22 +4,24 @@ import org.slf4j.LoggerFactory
 
 class InvalidVersionException(message: String) : RuntimeException(message)
 
-data class AppVersion(val major: Int,
-                      val minor: Int,
-                      val commitsAheadOfTag: Int? = null,
-                      val commitHash: String? = null,
-                      val rawVersion: String
+data class AppVersion(
+  val major: Int,
+  val minor: Int,
+  val commitsAheadOfTag: Int? = null,
+  val commitHash: String? = null,
+  val rawVersion: String,
 ) {
   companion object {
     private val logger = LoggerFactory.getLogger(AppVersion::class.java)
 
+    // TODO: benchmark it
     // TODO: write a version with splitting and compare performance
     fun parse(version: String): AppVersion {
       if (version.isEmpty()) {
         logger.error("Version string is empty")
         throw InvalidVersionException("Version is empty")
       }
-      if (version.length > 50) {
+      if (version.length > 60) {
         logger.error("Version is too long")
         throw InvalidVersionException("Version is too long. Length: ${version.length}")
       }
@@ -78,22 +80,28 @@ data class AppVersion(val major: Int,
               previousSectionEnd = i
               continue
             }
-            throw InvalidVersionException("TODO")
+            throw InvalidVersionException("Unable to parse commits count")
           }
 
           ParsingStep.HASH -> {
             hash = version.substring(previousSectionEnd + 1, version.length)
+            if (hash.length > 40) {
+              throw InvalidVersionException("Version hash is too long: $version")
+            }
+            for (letter: Char in hash) {
+              if (letter.isDigit() || letter !in 'a'..'f') {
+                throw InvalidVersionException("Version hash contains invalid hex characters: $version")
+              }
+            }
             parsingStep = ParsingStep.END
           }
 
-          ParsingStep.END -> {
-            break
-          }
+          ParsingStep.END -> break
         }
       }
 
       if (parsingStep != ParsingStep.END) {
-        throw InvalidVersionException("TODO")
+        throw InvalidVersionException("Unable to parse version: $version")
       }
 
       return AppVersion(major!!, minor!!, commitsAheadOfTag, hash, version)
@@ -102,5 +110,9 @@ data class AppVersion(val major: Int,
 }
 
 enum class ParsingStep {
-  MAJOR, MINOR, COMMITS_COUNT, HASH, END
+  MAJOR,
+  MINOR,
+  COMMITS_COUNT,
+  HASH,
+  END,
 }
