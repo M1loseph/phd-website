@@ -67,7 +67,7 @@ tasks.withType<Test> {
 
 jib {
   from {
-    image = "openjdk:21-slim-bookworm"
+    image = "eclipse-temurin:21-jre-noble"
     platforms {
       platform {
         os = "linux"
