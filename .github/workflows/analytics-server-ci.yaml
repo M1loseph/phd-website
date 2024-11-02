@@ -18,6 +18,9 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
+      - name: Print java version
+        run: java -version
+
       - name: Run gradle build
         working-directory: 'phd-website-analytics-server/'
         run: ./gradlew build

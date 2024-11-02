@@ -42,7 +42,7 @@ dependencies {
   }
   testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test")
   testImplementation("io.projectreactor:reactor-test")
-  testImplementation("org.testcontainers:junit-jupiter:1.19.7")
+  testImplementation("org.testcontainers:junit-jupiter:1.20.3")
   testImplementation("org.mockito.kotlin:mockito-kotlin:5.2.1")
 }
 
