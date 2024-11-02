@@ -6,6 +6,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:phd_website/services/analytics_events.dart';
 import 'package:phd_website/services/analytics_service.dart';
 
+import '../mock/fixed_build_properties.dart';
 import '../mock/fixed_clock.dart';
 
 class HttpClientMock extends Mock implements Client {}
@@ -22,8 +23,8 @@ void main() {
       () => httpClientMock.post(
         Uri.parse('https://some.server/api/v1/analytics/appOpened'),
         headers: {'Content-Type': 'application/json'},
-        body: json
-            .encode(AppOpenedEvent(fixedClock.now(), 'unit-tests').toJson()),
+        body: json.encode(
+            AppOpenedEvent(fixedClock.now(), 'unit-tests', '1.1').toJson()),
       ),
     ).thenAnswer((_) async => Response('{"sessionId": "abc123"}', 201));
 
@@ -42,6 +43,7 @@ void main() {
       httpClient: httpClientMock,
       clock: fixedClock,
       environment: 'unit-tests',
+      buildProperties: FixedBuildProperties(),
     );
 
     analyticsService.registerPageOpenedEvent(PageData(pageName: 'myPageName'));

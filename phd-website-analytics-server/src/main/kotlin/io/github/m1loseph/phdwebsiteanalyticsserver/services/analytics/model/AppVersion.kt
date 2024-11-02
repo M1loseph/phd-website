@@ -84,15 +84,22 @@ data class AppVersion(
           }
 
           ParsingStep.HASH -> {
-            hash = version.substring(previousSectionEnd + 1, version.length)
-            if (hash.length > 40) {
+            val hashValue = version.substring(previousSectionEnd + 1, version.length)
+            if (hashValue.length > 40) {
               throw InvalidVersionException("Version hash is too long: $version")
             }
-            for (letter: Char in hash) {
-              if (letter.isDigit() || letter !in 'a'..'f') {
+            if (hashValue.length <= 1) {
+              throw InvalidVersionException("Version hash is too short: $version")
+            }
+            for ((j, letter) in hashValue.withIndex()) {
+              if (j == 0 && letter != 'g') {
+                throw InvalidVersionException("Version hash should start with g: $version")
+              }
+              if (j > 0 && !letter.isDigit() && letter !in 'a'..'f') {
                 throw InvalidVersionException("Version hash contains invalid hex characters: $version")
               }
             }
+            hash = hashValue.substring(1)
             parsingStep = ParsingStep.END
           }
 

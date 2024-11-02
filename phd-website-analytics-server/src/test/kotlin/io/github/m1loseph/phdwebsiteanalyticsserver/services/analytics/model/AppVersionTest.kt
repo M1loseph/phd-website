@@ -34,20 +34,22 @@ class AppVersionTest {
 
   @Test
   fun shouldParseVersionWithCommitsCountAndCommitHash() {
-    val version = AppVersion.parse("11.22-2-abdefghijk")
+    val version = AppVersion.parse("11.22-2-gabdef1123")
     assertThat(version).isEqualTo(
       AppVersion(
         major = 11,
         minor = 22,
         commitsAheadOfTag = 2,
-        commitHash = "abdefghijk",
-        rawVersion = "11.22-2-abdefghijk",
+        commitHash = "abdef1123",
+        rawVersion = "11.22-2-gabdef1123",
       ),
     )
   }
 
   @ParameterizedTest
-  @ValueSource(strings = ["11.", "", "a", "12.a", "9-", "1.-", "1.1--abcd", "9.9-1-", "10.10-1-12345678u"])
+  @ValueSource(
+    strings = ["11.", "", "a", "12.a", "9-", "1.-", "1.1--abcd", "9.9-1-", "9.9-1-g", "10.10-1-g12345678u", "12.12-1-0bd1235876"],
+  )
   fun whenInvalidVersionIsProvided_thenShouldFailParsingWithAnAppropriateException(invalidString: String) {
     Assertions.setMaxStackTraceElementsDisplayed(50)
     assertThatThrownBy { AppVersion.parse(invalidString) }

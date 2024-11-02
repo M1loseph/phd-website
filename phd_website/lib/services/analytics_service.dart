@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart';
+import 'package:phd_website/build_properties/build_properties.dart';
 import 'package:phd_website/clock/clock.dart';
 import 'package:phd_website/logger/logger.dart';
 import 'package:phd_website/services/analytics_events.dart';
@@ -16,6 +17,7 @@ class AnalyticsService {
   final Client httpClient;
   final Clock clock;
   final String environment;
+  final BuildProperties buildProperties;
   final StreamController<(PageData, DateTime)> eventQueue = StreamController();
 
   AnalyticsService({
@@ -23,6 +25,7 @@ class AnalyticsService {
     required this.httpClient,
     required this.clock,
     required this.environment,
+    required this.buildProperties,
   }) : analyticsUrl = Uri.parse(analyticsUrl) {
     scheduleMicrotask(_backgroundSessionTask);
   }
@@ -35,7 +38,8 @@ class AnalyticsService {
     String? sessionId;
     while (sessionId == null) {
       try {
-        final event = AppOpenedEvent(clock.now(), environment);
+        final event = AppOpenedEvent(
+            clock.now(), environment, buildProperties.appVersion);
         final response = await httpClient.post(
           analyticsUrl.replace(path: 'api/v1/analytics/appOpened'),
           headers: {'Content-Type': 'application/json'},

@@ -23,20 +23,28 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
+  final buildProperties = GitBuildProperties();
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(
         create: (_) => AppGlobalState(SharedPreferences.getInstance()),
       ),
-      Provider(create: (_) => BodyTextStyleService()),
-      Provider<BuildProperties>(create: (_) => GitBuildProperties()),
-      Provider(create: (_) => ClipboardService()),
+      Provider(
+        create: (_) => BodyTextStyleService(),
+      ),
+      Provider<BuildProperties>.value(
+        value: GitBuildProperties(),
+      ),
+      Provider(
+        create: (_) => ClipboardService(),
+      ),
       Provider(
         create: (_) => AnalyticsService(
           analyticsUrl: const String.fromEnvironment('ANALYTICS_SERVER_URL'),
           environment: const String.fromEnvironment('ENVIRONMENT'),
           httpClient: Client(),
           clock: Clock(),
+          buildProperties: buildProperties,
         ),
       ),
     ],
