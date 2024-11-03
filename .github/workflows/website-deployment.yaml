@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    uses: ./.github/workflows/phd-website-ci.yaml
+    uses: ./.github/workflows/website-ci.yaml
     secrets: inherit
 
   deploy:
