@@ -20,7 +20,6 @@ import java.util.UUID
 @ActiveProfiles("test")
 @AutoConfigureWebTestClient
 class AnalyticsControllerIntegrationTest : RedisAndMongoFixture() {
-
   @Autowired
   lateinit var webTestClient: WebTestClient
 
