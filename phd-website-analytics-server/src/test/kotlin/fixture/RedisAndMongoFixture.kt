@@ -1,6 +1,5 @@
 package fixture
 
-import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
@@ -37,11 +36,10 @@ abstract class RedisAndMongoFixture {
         "mongosh",
         "mongodb://test:test@localhost:27017/analytics-server-db?authSource=admin",
         "--eval",
-        "db.dropDatabase()"
+        "db.dropDatabase()",
       )
       redis.execInContainer("redis-cli", "flushall")
     }
-
 
     @JvmStatic
     @DynamicPropertySource

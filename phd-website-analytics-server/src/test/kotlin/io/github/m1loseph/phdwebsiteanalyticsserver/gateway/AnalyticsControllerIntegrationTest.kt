@@ -12,19 +12,14 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.SpringBootTest.UseMainMethod
 import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.DynamicPropertyRegistry
-import org.springframework.test.context.DynamicPropertySource
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.reactive.server.expectBody
-import org.testcontainers.containers.GenericContainer
-import org.testcontainers.junit.jupiter.Container
-import org.testcontainers.utility.DockerImageName
 import java.util.UUID
 
 @SpringBootTest(useMainMethod = UseMainMethod.ALWAYS)
 @ActiveProfiles("test")
 @AutoConfigureWebTestClient
-class AnalyticsControllerIntegrationTest : RedisAndMongoFixture(){
+class AnalyticsControllerIntegrationTest : RedisAndMongoFixture() {
 
   @Autowired
   lateinit var webTestClient: WebTestClient
