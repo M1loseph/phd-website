@@ -24,6 +24,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   final buildProperties = GitBuildProperties();
+  final clock = Clock();
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(
@@ -33,17 +34,20 @@ void main() {
         create: (_) => BodyTextStyleService(),
       ),
       Provider<BuildProperties>.value(
-        value: GitBuildProperties(),
+        value: buildProperties,
       ),
       Provider(
         create: (_) => ClipboardService(),
+      ),
+      Provider.value(
+        value: clock,
       ),
       Provider(
         create: (_) => AnalyticsService(
           analyticsUrl: const String.fromEnvironment('ANALYTICS_SERVER_URL'),
           environment: const String.fromEnvironment('ENVIRONMENT'),
           httpClient: Client(),
-          clock: Clock(),
+          clock: clock,
           buildProperties: buildProperties,
         ),
       ),
@@ -133,9 +137,7 @@ class _PHDAppState extends State<PHDApp> {
               return responsiveTransitionPage(
                 key: state.pageKey,
                 pageName: 'teaching',
-                child: TeachingPage(
-                  clock: Clock(),
-                ),
+                child: TeachingPage(),
                 context: context,
               );
             },

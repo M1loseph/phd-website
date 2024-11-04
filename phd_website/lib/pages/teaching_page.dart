@@ -14,11 +14,9 @@ import 'package:provider/provider.dart';
 class TeachingPage extends StatefulWidget {
   static final differentialEquationsRulesLink =
       Uri.parse('https://prac.im.pwr.edu.pl/~plociniczak/doku.php?id=ode');
-  final Clock clock;
 
   const TeachingPage({
     super.key,
-    required this.clock,
   });
 
   @override
@@ -30,7 +28,8 @@ class _TeachingPageState extends State<TeachingPage> {
 
   @override
   void initState() {
-    selectedSemester = Semester.currentSemester(widget.clock);
+    final clock = context.read<Clock>();
+    selectedSemester = Semester.currentSemester(clock);
     super.initState();
   }
 
