@@ -1,0 +1,32 @@
+name: Analytics Server Continuous Integration
+on:
+  pull_request:
+    branches: [master]
+    paths: 
+      - 'phd-website-analytics-server/**'
+  push:
+    branches: [master]
+    paths: 
+      - 'phd-website-analytics-server/**'
+  workflow_call:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Print java version
+        run: java -version
+
+      - name: Run gradle build
+        working-directory: 'phd-website-analytics-server/'
+        run: ./gradlew build

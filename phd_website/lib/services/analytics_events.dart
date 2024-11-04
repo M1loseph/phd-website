@@ -11,14 +11,20 @@ abstract class Event {
 class AppOpenedEvent extends Event {
   final DateTime _timestamp;
   final String _environment;
+  final String _appVersion;
 
-  AppOpenedEvent(this._timestamp, this._environment);
+  AppOpenedEvent(
+    this._timestamp,
+    this._environment,
+    this._appVersion,
+  );
 
   @override
   Map<String, dynamic> toJson() {
     return {
       'eventTime': _timestamp.toIso8601StringWithZ(),
       'environment': _environment,
+      'appVersion': _appVersion,
     };
   }
 }

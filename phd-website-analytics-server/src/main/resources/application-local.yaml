@@ -10,3 +10,11 @@ web:
     mapping: '/**'
     allowed_origins:
       - '*'
+logging:
+  level:
+    org:
+      springframework:
+        data:
+          mongodb:
+            core:
+              ReactiveMongoTemplate: DEBUG

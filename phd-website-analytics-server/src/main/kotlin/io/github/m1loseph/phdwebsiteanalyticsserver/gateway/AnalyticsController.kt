@@ -5,6 +5,7 @@ import io.github.m1loseph.phdwebsiteanalyticsserver.services.analytics.SessionNo
 import io.github.m1loseph.phdwebsiteanalyticsserver.services.analytics.dto.AppOpenedEventResponse
 import io.github.m1loseph.phdwebsiteanalyticsserver.services.analytics.dto.CreateAppOpenedEventDto
 import io.github.m1loseph.phdwebsiteanalyticsserver.services.analytics.dto.CreatePageOpenedEventDto
+import io.github.m1loseph.phdwebsiteanalyticsserver.services.analytics.model.InvalidVersionException
 import io.github.m1loseph.phdwebsiteanalyticsserver.services.analytics.model.UserAgentName
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
+// TODO: introduce some error class?
 @RestController
 @RequestMapping("/api/v1/analytics")
 class AnalyticsController(private val analyticsService: AnalyticsService) {
@@ -47,7 +49,11 @@ class AnalyticsController(private val analyticsService: AnalyticsService) {
 
   @ExceptionHandler(SessionNotFoundException::class)
   fun handleSessionNotFoundException(): ResponseEntity<Void> {
-    // TODO: introduce some error class?
+    return ResponseEntity.badRequest().build()
+  }
+
+  @ExceptionHandler(InvalidVersionException::class)
+  fun handleInvalidVersionFormatException(): ResponseEntity<Void> {
     return ResponseEntity.badRequest().build()
   }
 }

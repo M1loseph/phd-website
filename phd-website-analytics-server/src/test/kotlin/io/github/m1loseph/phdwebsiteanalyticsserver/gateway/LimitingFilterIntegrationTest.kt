@@ -10,12 +10,15 @@ import org.springframework.boot.test.context.SpringBootTest.UseMainMethod
 import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.reactive.server.WebTestClient
+import org.testcontainers.junit.jupiter.Testcontainers
 
+@Testcontainers
 @SpringBootTest(useMainMethod = UseMainMethod.ALWAYS)
 @AutoConfigureWebTestClient
 @ActiveProfiles("test")
 class LimitingFilterIntegrationTest : RedisAndMongoFixture() {
-  @Autowired lateinit var webTestClient: WebTestClient
+  @Autowired
+  lateinit var webTestClient: WebTestClient
 
   @Test
   fun whenCalledTooManyTimes_thenShouldRejectNextRequest() {

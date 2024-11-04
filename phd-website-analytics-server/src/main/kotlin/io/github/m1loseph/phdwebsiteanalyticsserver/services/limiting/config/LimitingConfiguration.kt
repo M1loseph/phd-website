@@ -24,7 +24,8 @@ import java.time.Duration
 @Configuration
 @EnableConfigurationProperties(LimitingConfiguration::class)
 class LimitingBeanFactory(private val limitingConfiguration: LimitingConfiguration) {
-  @Bean fun jedisPool(): JedisPool = JedisPool(limitingConfiguration.redisUrl)
+  @Bean(destroyMethod = "close")
+  fun jedisPool(): JedisPool = JedisPool(limitingConfiguration.redisUrl)
 
   @Bean fun leakyBucketFactory(): TokenBucketFactory = TokenBucketFactory(Clock.systemUTC())
 

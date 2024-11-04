@@ -5,6 +5,7 @@ import io.github.m1loseph.phdwebsiteanalyticsserver.services.analytics.dto.Creat
 import io.github.m1loseph.phdwebsiteanalyticsserver.services.analytics.dto.EnvironmentDto
 import io.github.m1loseph.phdwebsiteanalyticsserver.services.analytics.dto.PageNameDto
 import io.github.m1loseph.phdwebsiteanalyticsserver.services.analytics.model.AppOpenedEvent
+import io.github.m1loseph.phdwebsiteanalyticsserver.services.analytics.model.AppVersion
 import io.github.m1loseph.phdwebsiteanalyticsserver.services.analytics.model.Environment
 import io.github.m1loseph.phdwebsiteanalyticsserver.services.analytics.model.PageName
 import io.github.m1loseph.phdwebsiteanalyticsserver.services.analytics.model.PageOpenedEvent
@@ -28,6 +29,12 @@ class AnalyticsService(
     userAgent: UserAgentName?,
   ): SessionId {
     val sessionId = SessionId(UUID.randomUUID())
+    val appVersion =
+      if (createAppOpenedEventDto.appVersion == null) {
+        null
+      } else {
+        AppVersion.parse(createAppOpenedEventDto.appVersion)
+      }
     val entity =
       AppOpenedEvent(
         eventTime = createAppOpenedEventDto.eventTime,
@@ -39,8 +46,9 @@ class AnalyticsService(
             EnvironmentDto.PWR_SERVER -> Environment.PWR_SERVER
             EnvironmentDto.GITHUB_PAGES -> Environment.GITHUB_PAGES
           },
+        appVersion = appVersion,
       )
-    logger.info("Saving event: {}", entity)
+    logger.info("Saving AppOpenedEvent event: {}", entity)
     appOpenedEventRepository.save(entity).awaitSingle()
     return sessionId
   }
@@ -67,7 +75,7 @@ class AnalyticsService(
         insertedAt = serverClock.instant(),
         sessionId = SessionId(createPageOpenedEventDto.sessionId),
       )
-    logger.info("Saving event: {}", entity)
+    logger.info("Saving PageOpenedEvent event: {}", entity)
     return pageOpenedEventRepository.save(entity).awaitSingle()
   }
 

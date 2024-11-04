@@ -10,16 +10,27 @@ abstract class VersionSourceRunner {
 
 class GitVersionSourceRunner implements VersionSourceRunner {
   static const appNameSeparator = '/';
+
   @override
   FutureOr<String> getGitVersion() async {
-    return Process.run('git', ['describe', '--tags']).then((processResult) {
-      final version = (processResult.stdout as String).trim();
-      final partsIndex = version.indexOf(appNameSeparator);
-      if (partsIndex == -1) {
-        return version;
-      }
-      return version.substring(partsIndex + 1);
-    });
+    final processResult = await Process.run('git', [
+      'describe',
+      '--tags',
+      '--match',
+      'phdwebsite/**',
+    ]);
+    if (processResult.exitCode != 0) {
+      throw Exception(
+          'Error occurred when running git. Exit code: ${processResult.exitCode}. Stderr: ${processResult.stderr}');
+    }
+    final version = (processResult.stdout as String).trim();
+    final partsIndex = version.indexOf(appNameSeparator);
+    if (version.isEmpty ||
+        !version.startsWith('phdwebsite') ||
+        partsIndex == -1) {
+      throw Exception('Unexpected version format: $version');
+    }
+    return version.substring(partsIndex + 1);
   }
 }
 

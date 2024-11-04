@@ -2,6 +2,7 @@ package io.github.m1loseph.phdwebsiteanalyticsserver.services.analytics.model
 
 import org.bson.types.ObjectId
 import org.springframework.data.annotation.Id
+import org.springframework.data.mongodb.core.index.Indexed
 import org.springframework.data.mongodb.core.mapping.Document
 import java.time.Instant
 
@@ -19,7 +20,7 @@ data class PageOpenedEvent(
   val eventTime: Instant,
   val pageName: PageName,
   val insertedAt: Instant,
-  // TODO: add indexing
+  @Indexed
   val sessionId: SessionId,
 )
 
