@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import java.io.ByteArrayOutputStream
 
 plugins {
   id("org.springframework.boot") version "3.2.2"
@@ -59,11 +60,12 @@ spotless {
   }
 }
 
-// TODO: write a dependOn for jib tasks and build tasks on spotless
-
 tasks.withType<Test> {
   useJUnitPlatform()
 }
+
+tasks["bootJar"].dependsOn("calculateVersion")
+tasks["jib"].dependsOn("calculateVersion")
 
 jib {
   from {
@@ -85,5 +87,16 @@ jib {
   }
   container {
     ports = listOf("8080")
+  }
+}
+
+tasks.register<Exec>("calculateVersion") {
+  commandLine("git", "describe", "--tags", "--match", "analytics-server/**")
+  standardOutput = ByteArrayOutputStream()
+  doLast {
+    val gitResult = standardOutput.toString().trim()
+    val actualVersion = gitResult.split("/", limit=2)[1]
+    version = actualVersion
+    println("Project version is $version")
   }
 }

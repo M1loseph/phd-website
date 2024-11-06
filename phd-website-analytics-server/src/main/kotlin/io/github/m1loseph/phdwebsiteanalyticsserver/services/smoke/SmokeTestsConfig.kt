@@ -35,6 +35,8 @@ class SmokeTestsConfig(private val meterRegistry: MeterRegistry) {
     return SmokeTestsService(jedisPool, mongodbClient, dataBaseName)
   }
 
+  // TODO: it breaks the tests
+  // @Bean(name = ["smokeTestsMongoClient"], destroyMethod = "close")
   fun mongoClient(connectionString: ConnectionString): MongoClient {
     val customTagsForConnectionPool =
       MongoConnectionPoolConnectionNameTagsProvider(TEST_CONNECTION_NAME)
