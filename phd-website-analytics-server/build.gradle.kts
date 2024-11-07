@@ -13,6 +13,7 @@ plugins {
 }
 
 group = "io.github.m1loseph"
+version = calculateVersion()
 
 java {
   sourceCompatibility = JavaVersion.VERSION_21
@@ -64,9 +65,6 @@ tasks.withType<Test> {
   useJUnitPlatform()
 }
 
-tasks["bootJar"].dependsOn("calculateVersion")
-tasks["jib"].dependsOn("calculateVersion")
-
 jib {
   from {
     image = "eclipse-temurin:21-jre-noble"
@@ -90,13 +88,19 @@ jib {
   }
 }
 
-tasks.register<Exec>("calculateVersion") {
-  commandLine("git", "describe", "--tags", "--match", "analytics-server/**")
-  standardOutput = ByteArrayOutputStream()
-  doLast {
-    val gitResult = standardOutput.toString().trim()
-    val actualVersion = gitResult.split("/", limit=2)[1]
-    version = actualVersion
-    println("Project version is $version")
+fun calculateVersion(): String {
+  val process = ProcessBuilder("git", "describe", "--tags", "--match", "analytics-server/**")
+    .start()
+  if (!process.waitFor(10, TimeUnit.SECONDS)) {
+    throw Exception("It took more than 10 seconds for git command to complete")
   }
+  val exitCode = process.exitValue()
+  if (exitCode != 0) {
+    val stderr = String(process.errorStream.readAllBytes()).trim()
+    throw Exception("Git exit code is different than 0. Stderr output: $stderr")
+  }
+  val gitResult = String(process.inputStream.readAllBytes()).trim()
+  val actualVersion = gitResult.split("/", limit = 2)[1]
+  println("Project version is $actualVersion")
+  return actualVersion
 }
