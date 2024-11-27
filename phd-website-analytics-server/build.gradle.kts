@@ -31,6 +31,7 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-actuator")
   implementation("org.springframework.boot:spring-boot-starter-data-mongodb-reactive")
   implementation("io.micrometer:micrometer-registry-prometheus")
+  implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
 
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
   implementation("jakarta.validation:jakarta.validation-api")

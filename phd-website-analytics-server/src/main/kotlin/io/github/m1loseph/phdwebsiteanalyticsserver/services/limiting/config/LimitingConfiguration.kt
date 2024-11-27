@@ -22,7 +22,6 @@ import java.time.Clock
 import java.time.Duration
 
 @Configuration
-@EnableConfigurationProperties(LimitingConfiguration::class)
 class LimitingBeanFactory(private val limitingConfiguration: LimitingConfiguration) {
   @Bean(destroyMethod = "close")
   fun jedisPool(): JedisPool = JedisPool(limitingConfiguration.redisUrl)

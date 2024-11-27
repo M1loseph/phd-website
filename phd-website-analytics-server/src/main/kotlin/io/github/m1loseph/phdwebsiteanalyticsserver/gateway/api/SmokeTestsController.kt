@@ -1,4 +1,4 @@
-package io.github.m1loseph.phdwebsiteanalyticsserver.gateway
+package io.github.m1loseph.phdwebsiteanalyticsserver.gateway.api
 
 import io.github.m1loseph.phdwebsiteanalyticsserver.services.smoke.SmokeTestResult
 import io.github.m1loseph.phdwebsiteanalyticsserver.services.smoke.SmokeTestsService

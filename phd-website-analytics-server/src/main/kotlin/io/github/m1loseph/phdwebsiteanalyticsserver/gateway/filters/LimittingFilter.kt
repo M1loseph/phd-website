@@ -1,4 +1,4 @@
-package io.github.m1loseph.phdwebsiteanalyticsserver.gateway
+package io.github.m1loseph.phdwebsiteanalyticsserver.gateway.filters
 
 import io.github.m1loseph.phdwebsiteanalyticsserver.services.limiting.impl.IpAddressBucketId
 import io.github.m1loseph.phdwebsiteanalyticsserver.services.limiting.impl.LimitingService
@@ -32,46 +32,44 @@ class LimitingFilter(private val limitingService: LimitingService, meterRegistry
     chain: WebFilterChain,
   ): Mono<Void> {
     val request = exchange.request
-    val requestMethod = request.method
-    if (HttpMethod.OPTIONS != requestMethod) {
-      val xForwardedForHeaderValue = request.headers["X-Forwarded-For"]?.firstOrNull()
-      if (xForwardedForHeaderValue == null) {
-        logger.warn("Rejected request because there was no X-Forwarded-For header")
-        rejectedNoXForwardedFor.increment()
-        exchange.response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR)
-        return Mono.empty()
-      }
-      val requestIp = IpAddressBucketId(xForwardedForHeaderValue)
-      val checks =
-        listOf(
-          {
-            runBlocking {
-              incrementOnFail(
-                rejectedTooManyRequestsSingleIp,
-                limitingService.incrementUsageForIpAddress(requestIp),
-              )
-            }
-          },
-          {
-            runBlocking {
-              incrementOnFail(rejectedTooManyRequestsGlobal, limitingService.incrementGlobalUsage())
-            }
-          },
-        )
-      for (check in checks) {
-        when (val checkResult = check()) {
-          is TokenDeniedResult -> {
-            logger.warn("Reject request because the bucket was drained")
-            val remainingTime = checkResult.remainingTime.seconds
-            val response = exchange.response
-            response.setStatusCode(TOO_MANY_REQUESTS)
-            response.headers["Retry-After"] = remainingTime.toString()
-            return Mono.empty()
+    // TODO: https://docs.spring.io/spring-security/reference/features/exploits/http.html#http-proxy-server
+    val xForwardedForHeaderValue = request.headers["X-Forwarded-For"]?.firstOrNull()
+    if (xForwardedForHeaderValue == null) {
+      logger.warn("Rejected request because there was no X-Forwarded-For header")
+      rejectedNoXForwardedFor.increment()
+      exchange.response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR)
+      return Mono.empty()
+    }
+    val requestIp = IpAddressBucketId(xForwardedForHeaderValue)
+    val checks =
+      listOf(
+        {
+          runBlocking {
+            incrementOnFail(
+              rejectedTooManyRequestsSingleIp,
+              limitingService.incrementUsageForIpAddress(requestIp),
+            )
           }
+        },
+        {
+          runBlocking {
+            incrementOnFail(rejectedTooManyRequestsGlobal, limitingService.incrementGlobalUsage())
+          }
+        },
+      )
+    for (check in checks) {
+      when (val checkResult = check()) {
+        is TokenDeniedResult -> {
+          logger.warn("Reject request because the bucket was drained")
+          val remainingTime = checkResult.remainingTime.seconds
+          val response = exchange.response
+          response.setStatusCode(TOO_MANY_REQUESTS)
+          response.headers["Retry-After"] = remainingTime.toString()
+          return Mono.empty()
+        }
 
-          TokenAcquiredResult -> {
-            continue
-          }
+        TokenAcquiredResult -> {
+          continue
         }
       }
     }
