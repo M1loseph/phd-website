@@ -1,4 +1,9 @@
 use regex::Regex;
+use lazy_static::lazy_static;
+
+lazy_static! {
+    static ref CORRECT_ENV_VARIABLE_REGEX: Regex = Regex::new("[a-zA-Z_]+[a-zA-Z0-9_]*").unwrap();
+}
 
 pub fn read_env_file() {
     if let Ok(file_content) = std::fs::read_to_string(".env") {
@@ -17,6 +22,5 @@ pub fn read_env_file() {
 }
 
 fn is_valid_env_variable_name(env_variable_name: &str) -> bool {
-    let correct_env_variable_name = Regex::new("[a-zA-Z_]+[a-zA-Z0-9_]*").unwrap();
-    correct_env_variable_name.is_match(env_variable_name)
+    CORRECT_ENV_VARIABLE_REGEX.is_match(env_variable_name)
 }

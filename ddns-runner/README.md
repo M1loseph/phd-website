@@ -17,6 +17,11 @@ Optional configuration:
 
 ### Running locally
 
+First make sure to install packages required by this project. These are:
+- rust (via [this link](https://www.rust-lang.org/learn/get-started))
+- libssl-dev (via `sudo apt install libssl-dev`)
+- build-essential (via `sudo apt install build-essential`)
+
 #### With actual Duck DNS
 
 Set the environments variables as described in [Running on production](#running-on-production) and run the app using `cargo run` command.
@@ -37,4 +42,5 @@ You can access prometheus metrics on `/internal/status/prometheus` endpoint. Bel
 ### Building the docker image
 
 `docker build -t <image-name> . `
+
 `docker push <image-name>`
