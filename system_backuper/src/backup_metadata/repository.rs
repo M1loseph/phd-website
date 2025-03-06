@@ -1,0 +1,55 @@
+use core::fmt;
+use std::error::Error as StdError;
+
+use super::model::{Backup, BackupId, BackupMetadata};
+
+#[derive(Debug)]
+pub enum RepositoryError {
+    IdAlreadyExists { id: u64 },
+    External { cause: Box<dyn StdError> },
+}
+
+impl RepositoryError {
+    pub fn new(cause: impl StdError + 'static) -> Self {
+        Self::External { cause: Box::new(cause) }
+    }
+}
+
+impl StdError for RepositoryError {
+    fn source(&self) -> Option<&(dyn StdError + 'static)> {
+        match self {
+            RepositoryError::IdAlreadyExists { id: _ } => None,
+            RepositoryError::External { cause } => Some(cause.as_ref()),
+        }
+    }
+}
+
+impl fmt::Display for RepositoryError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            RepositoryError::IdAlreadyExists { id } => write!(f, "Id {id} is already in use."),
+            RepositoryError::External { cause } => {
+                write!(f, "RepositoryError[External[cause={:?}]]", cause)
+            }
+        }
+    }
+}
+
+pub type RepositoryResult<T> = std::result::Result<T, RepositoryError>;
+
+pub trait BackupMetadataRepository: Send + Sync {
+    fn save(&self, backup_metadata: &BackupMetadata) -> RepositoryResult<()>;
+
+    fn find_by_id(&self, id: BackupId) -> RepositoryResult<Option<BackupMetadata>>;
+
+    fn find_all(&self) -> RepositoryResult<Vec<BackupMetadata>>;
+}
+
+pub trait BackupRepository: Send + Sync {
+    fn save(&self, backup_metadata: &BackupMetadata, blob: Backup) -> RepositoryResult<()>;
+
+    fn find_by_metadata(
+        &self,
+        backup_metadata: &BackupMetadata,
+    ) -> RepositoryResult<Option<Backup>>;
+}
