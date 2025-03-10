@@ -1,10 +1,11 @@
 use crate::backup_metadata::BackupTarget;
 use chrono::Local;
 use log::error;
-use std::fs;
+use std::error::Error as StdError;
 use std::fs::File;
 use std::io::{ErrorKind, Write};
 use std::path::{Path, PathBuf};
+use std::{fmt, fs};
 
 static MONGODB_LOCK_FILE: &str = "mongodb.lock";
 static POSTGRES_LOCK_FILE: &str = "postgres.lock";
@@ -23,17 +24,50 @@ pub enum LockError {
     UnexpectedError(std::io::Error),
 }
 
+impl fmt::Display for LockError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            LockError::InvalidLocksDirectory { path, cause: _ } => writeln!(
+                f,
+                "Failed to create directory to store locks: {}",
+                path.display()
+            ),
+            LockError::LockAlreadyExists(path) => writeln!(
+                f,
+                "Lock on the given path already exists: {}",
+                path.display()
+            ),
+            LockError::UnexpectedError(_) => {
+                writeln!(f, "Unexpected error ocurred when creating a lock")
+            }
+        }
+    }
+}
+
+impl StdError for LockError {
+    fn source(&self) -> Option<&(dyn StdError + 'static)> {
+        match self {
+            LockError::InvalidLocksDirectory { path: _, cause } => Some(cause),
+            LockError::LockAlreadyExists(_) => None,
+            LockError::UnexpectedError(error) => Some(error),
+        }
+    }
+}
+
 impl LockManager {
     pub fn new(locks_directory: String) -> Result<Self, LockError> {
         let locks_directory = Path::new(&locks_directory).to_path_buf();
-        fs::create_dir_all(&locks_directory)?;
+        fs::create_dir_all(&locks_directory).map_err(|err| LockError::InvalidLocksDirectory {
+            path: locks_directory.clone(),
+            cause: err,
+        })?;
         Ok(Self { locks_directory })
     }
 
     pub fn lock(&self, backup_target: BackupTarget) -> Result<Lock, LockError> {
         let lock_file_name = match backup_target {
-            BackupTarget::MONGODB => MONGODB_LOCK_FILE,
-            BackupTarget::POSTGRES => POSTGRES_LOCK_FILE,
+            BackupTarget::MongoDB => MONGODB_LOCK_FILE,
+            BackupTarget::Postgres => POSTGRES_LOCK_FILE,
         };
         let lock_file_path = self.locks_directory.join(lock_file_name);
         let lock_creation_time = Local::now();

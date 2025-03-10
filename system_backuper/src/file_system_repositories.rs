@@ -4,7 +4,7 @@ use std::{
     io::{ErrorKind, Write},
     path::Path,
     str::FromStr,
-    sync::Mutex,
+    sync::{Mutex, MutexGuard},
 };
 
 use crate::backup_metadata::{
@@ -57,9 +57,14 @@ impl SQLiteBackupMetadataRepository {
         })
     }
 
-    fn get_pool(&self) -> &Mutex<Connection> {
+    fn get_pool_connection(&self) -> MutexGuard<Connection> {
+        // Unwrapping here seems ok. It is said on reddit and rust forum that accessing poisoned data should
+        // lead to panick.
+        //
+        // https://users.rust-lang.org/t/should-i-unwrap-a-mutex-lock/61519
+        // https://www.reddit.com/r/rust/comments/xy2rkl/whats_the_best_way_to_avoid_an_unwrap_of_a_mutex/
         let index = rand::random::<u32>() % self.connection_pool.len() as u32;
-        &self.connection_pool[&index]
+        self.connection_pool[&index].lock().unwrap()
     }
 }
 
@@ -69,7 +74,7 @@ impl BackupMetadataRepository for SQLiteBackupMetadataRepository {
             INSERT INTO backup_metadata(backup_id, host, created_at, backup_size_bytes, backup_target, backup_type)
             VALUES (?1, ?2, ?3, ?4, ?5, ?6)
         ";
-        let connection = self.get_pool().lock().unwrap();
+        let connection = self.get_pool_connection();
         let mut statement = connection.prepare(query)?;
 
         let query_result = statement.execute(params![
@@ -98,7 +103,7 @@ impl BackupMetadataRepository for SQLiteBackupMetadataRepository {
             FROM "backup_metadata"
             WHERE "backup_id" = ?1
         "#;
-        let connection = self.get_pool().lock().unwrap();
+        let connection = self.get_pool_connection();
         let mut statement = connection.prepare(query)?;
         let mut query_result = statement.query(params![id])?;
         let backup_metadata = query_result
@@ -115,10 +120,21 @@ impl BackupMetadataRepository for SQLiteBackupMetadataRepository {
             SELECT "backup_id", "host", "created_at", "backup_size_bytes", "backup_target", "backup_type"
             FROM "backup_metadata"
         "#;
-        let connection = self.get_pool().lock().unwrap();
+        let connection = self.get_pool_connection();
         let mut connection = connection.prepare(query)?;
         let rows = connection.query([])?;
         rows.and_then(|row| BackupMetadata::try_from(row)).collect()
+    }
+
+    fn delete_by_id(&self, id: BackupId) -> RepositoryResult<bool> {
+        let query = r#"
+            DELETE FROM "backup_metadata"
+            WHERE "id" = ?1
+        "#;
+        let connection = self.get_pool_connection();
+        let mut statement = connection.prepare(query)?;
+        let affected_rows = statement.execute(params![id])?;
+        return Ok(affected_rows == 1);
     }
 }
 
@@ -141,8 +157,8 @@ impl FileSystemBackupRepository {
 
     fn backup_directory(&self, backup_target: &BackupTarget) -> &str {
         match backup_target {
-            BackupTarget::MONGODB => MONGODB_DIR,
-            BackupTarget::POSTGRES => todo!(),
+            BackupTarget::MongoDB => MONGODB_DIR,
+            BackupTarget::Postgres => POSTGRES_DIR,
         }
     }
 }

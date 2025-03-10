@@ -16,16 +16,16 @@ impl RandomId for BackupId {
     }
 }
 
-#[derive(Display, EnumString, IntoStaticStr)]
+#[derive(Display, Debug, EnumString, IntoStaticStr)]
 pub enum BackupTarget {
-    MONGODB,
-    POSTGRES,
+    MongoDB,
+    Postgres,
 }
 
-#[derive(EnumString, IntoStaticStr)]
+#[derive(Debug, EnumString, IntoStaticStr)]
 pub enum BackupType {
-    MANUAL,
-    SCHEDULED,
+    Manual,
+    Scheduled,
 }
 
 pub struct BackupMetadata {

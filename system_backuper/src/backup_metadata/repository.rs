@@ -6,12 +6,12 @@ use super::model::{Backup, BackupId, BackupMetadata};
 #[derive(Debug)]
 pub enum RepositoryError {
     IdAlreadyExists { id: u64 },
-    External { cause: Box<dyn StdError> },
+    Unknown { cause: Box<dyn StdError> },
 }
 
 impl RepositoryError {
     pub fn new(cause: impl StdError + 'static) -> Self {
-        Self::External { cause: Box::new(cause) }
+        Self::Unknown { cause: Box::new(cause) }
     }
 }
 
@@ -19,7 +19,7 @@ impl StdError for RepositoryError {
     fn source(&self) -> Option<&(dyn StdError + 'static)> {
         match self {
             RepositoryError::IdAlreadyExists { id: _ } => None,
-            RepositoryError::External { cause } => Some(cause.as_ref()),
+            RepositoryError::Unknown { cause } => Some(cause.as_ref()),
         }
     }
 }
@@ -28,7 +28,7 @@ impl fmt::Display for RepositoryError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             RepositoryError::IdAlreadyExists { id } => write!(f, "Id {id} is already in use."),
-            RepositoryError::External { cause } => {
+            RepositoryError::Unknown { cause } => {
                 write!(f, "RepositoryError[External[cause={:?}]]", cause)
             }
         }
@@ -41,6 +41,8 @@ pub trait BackupMetadataRepository: Send + Sync {
     fn save(&self, backup_metadata: &BackupMetadata) -> RepositoryResult<()>;
 
     fn find_by_id(&self, id: BackupId) -> RepositoryResult<Option<BackupMetadata>>;
+
+    fn delete_by_id(&self, id: BackupId) -> RepositoryResult<bool>;
 
     fn find_all(&self) -> RepositoryResult<Vec<BackupMetadata>>;
 }

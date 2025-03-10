@@ -1,27 +1,21 @@
-use crate::{backup_metadata::BackupMetadata, mongodb::MongoDBBackuppingService};
+use crate::{
+    backup_metadata::BackupMetadata,
+    mongodb::{BackupError, MongoDBBackuppingService},
+};
+use crate::backup_metadata;
 use chrono::{DateTime, FixedOffset};
 use iron::{
-    modifiers::Header,
     headers::ContentType,
     mime::{Mime, SubLevel, TopLevel},
+    modifiers::Header,
     prelude::*,
     status::{self, Status},
     Handler,
 };
-use log::warn;
+use log::{info, warn};
 use router::Router;
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 use std::sync::Arc;
-
-#[derive(Serialize, Deserialize)]
-struct ArchiveBackupResponse {
-    backup_id: u64,
-    host: String,
-    created_at: DateTime<FixedOffset>,
-    backup_size_bytes: u64,
-    backup_target: &'static str,
-    backup_type: &'static str,
-}
 
 impl From<BackupMetadata> for ArchiveBackupResponse {
     fn from(value: BackupMetadata) -> Self {
@@ -36,24 +30,6 @@ impl From<BackupMetadata> for ArchiveBackupResponse {
     }
 }
 
-pub struct MongoDBFullBackupEndpoint {
-    backupping_service: Arc<MongoDBBackuppingService>,
-}
-
-impl MongoDBFullBackupEndpoint {
-    pub fn new(backupping_service: Arc<MongoDBBackuppingService>) -> Self {
-        Self { backupping_service }
-    }
-}
-
-impl Handler for MongoDBFullBackupEndpoint {
-    fn handle(&self, _: &mut Request) -> IronResult<Response> {
-        // TODO: handle unwrap like a champ
-        let mongo_backup = self.backupping_service.create_mongodb_backup().unwrap();
-        let response = ArchiveBackupResponse::from(mongo_backup);
-        Ok(json_response(status::Ok, response))
-    }
-}
 
 pub struct MongoDBReadAllBackups {
     backupping_service: Arc<MongoDBBackuppingService>,
@@ -106,19 +82,4 @@ impl Handler for MongoRestoreBackupEndpoint {
         };
         Ok(Response::with(status::Ok))
     }
-}
-
-fn json_response<T>(status: Status, response_body: T) -> Response
-where
-    T: Sized + Serialize,
-{
-    let response_body = serde_json::to_string(&response_body).unwrap();
-
-    let header = Header(ContentType(Mime(
-        TopLevel::Application,
-        SubLevel::Json,
-        vec![],
-    )));
-
-    Response::with((status, response_body, header))
 }
