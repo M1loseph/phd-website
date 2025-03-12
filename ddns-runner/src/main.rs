@@ -1,5 +1,4 @@
 mod config;
-mod dotenv;
 mod duck_dns_client;
 mod migrations;
 mod prometheus_handler;
