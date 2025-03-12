@@ -8,7 +8,6 @@ use iron::{
     Response,
 };
 use serde::Serialize;
-use std::error::Error as StdError;
 
 #[derive(Serialize)]
 pub struct ArchiveBackupResponse {
@@ -67,15 +66,17 @@ impl From<backup_metadata::BackupTarget> for BackupTarget {
     }
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Debug)]
 pub enum ErrorCode {
     #[serde(rename = "BACKUP_TARGET_LOCKED")]
     BackupTargetLocked,
     #[serde(rename = "INTERNAL_ERROR")]
     InternalError,
+    #[serde(rename = "BACKUP_NOT_FOUND")]
+    BackupNotFound,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Debug)]
 pub struct ApiError {
     pub error_code: ErrorCode,
     pub message: String,

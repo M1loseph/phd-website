@@ -62,6 +62,7 @@ fn main() {
         mongodb_restore_backup_endpoint,
         "restoreMongoDBBackup",
     );
+
     Iron::new(router)
         .http(format!("0.0.0.0:{}", app_config.server_port))
         .unwrap();

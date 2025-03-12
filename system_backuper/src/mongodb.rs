@@ -59,14 +59,20 @@ impl BackupError {
 impl fmt::Display for BackupError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            BackupError::InitializationError(_, _) => write!(f, "Failed to initialize."),
+            BackupError::InitializationError(user_message, _) => write!(f, "{}", user_message),
             BackupError::BackupTargetLocked(backup_target) => write!(
                 f,
                 "Backup target {} is undergoing another operation. Retry later.",
                 backup_target
             ),
             BackupError::BackupDoesNotExist(id) => write!(f, "Did not find backup with id {}.", id),
-            BackupError::Unknown(_, _) => write!(f, "An unexpected error ocurred."),
+            BackupError::Unknown(err_message, _) => {
+                write!(f, "An unexpected error ocurred.")?;
+                if let Some(err_message) = err_message {
+                    write!(f, " {}", err_message)?;
+                }
+                Ok(())
+            }
         }
     }
 }
@@ -209,7 +215,7 @@ impl MongoDBBackuppingService {
         Ok(backups)
     }
 
-    pub fn restore_backup(&self, backup_id: u64) -> BackupResult<()> {
+    pub fn restore_backup(&self, backup_id: u64, drop: bool) -> BackupResult<()> {
         let _lock = self.lock_manager.lock(BackupTarget::MongoDB)?;
 
         let backup_metada = self
@@ -225,14 +231,18 @@ impl MongoDBBackuppingService {
                     format!("There is metadata for backup with id {backup_id}, but there is no backup binary.")
                 )
             })?;
+        let mut args = vec![
+            "--config",
+            &self.mongodump_config_file_path,
+            "--gzip",
+            "--archive",
+        ];
+        if drop {
+            args.push("--drop");
+        }
 
-        let mut child = Command::new("mongodump")
-            .args([
-                "--config",
-                &self.mongodump_config_file_path,
-                "--gzip",
-                "--archive",
-            ])
+        let mut child = Command::new("mongorestore")
+            .args(args)
             .stdin(Stdio::piped())
             .stdout(Stdio::piped())
             .spawn()

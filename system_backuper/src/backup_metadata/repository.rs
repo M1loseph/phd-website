@@ -1,17 +1,25 @@
 use core::fmt;
-use std::error::Error as StdError;
+use std::{error::Error as StdError, fmt::Debug};
 
 use super::model::{Backup, BackupId, BackupMetadata};
+use crate::errorstack::to_error_stack;
 
-#[derive(Debug)]
 pub enum RepositoryError {
     IdAlreadyExists { id: u64 },
     Unknown { cause: Box<dyn StdError> },
 }
 
+impl Debug for RepositoryError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        to_error_stack(f, self)
+    }
+}
+
 impl RepositoryError {
     pub fn new(cause: impl StdError + 'static) -> Self {
-        Self::Unknown { cause: Box::new(cause) }
+        Self::Unknown {
+            cause: Box::new(cause),
+        }
     }
 }
 

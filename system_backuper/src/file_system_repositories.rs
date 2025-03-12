@@ -1,5 +1,6 @@
 use std::{
     collections::HashMap,
+    fs,
     fs::File,
     io::{ErrorKind, Write},
     path::Path,
@@ -41,6 +42,12 @@ pub struct SQLiteBackupMetadataRepository {
 
 impl SQLiteBackupMetadataRepository {
     pub fn new(sqlite_path: String, connection_pool: u32) -> RepositoryResult<Self> {
+        let sqlite_path = Path::new(&sqlite_path);
+        if let Some(parent) = sqlite_path.parent() {
+            fs::create_dir_all(parent).map_err(|err| RepositoryError::Unknown {
+                cause: Box::new(err),
+            })?;
+        }
         let connections = (0..connection_pool)
             .into_iter()
             .map(|_| Connection::open(&sqlite_path).map_err(|e| RepositoryError::from(e)))
@@ -70,10 +77,10 @@ impl SQLiteBackupMetadataRepository {
 
 impl BackupMetadataRepository for SQLiteBackupMetadataRepository {
     fn save(&self, backup_metadata: &BackupMetadata) -> RepositoryResult<()> {
-        let query = r"
-            INSERT INTO backup_metadata(backup_id, host, created_at, backup_size_bytes, backup_target, backup_type)
+        let query = r#"
+            INSERT INTO "backup_metadata"("backup_id", "host", "created_at", "backup_size_bytes", "backup_target", "backup_type")
             VALUES (?1, ?2, ?3, ?4, ?5, ?6)
-        ";
+        "#;
         let connection = self.get_pool_connection();
         let mut statement = connection.prepare(query)?;
 
@@ -105,7 +112,7 @@ impl BackupMetadataRepository for SQLiteBackupMetadataRepository {
         "#;
         let connection = self.get_pool_connection();
         let mut statement = connection.prepare(query)?;
-        let mut query_result = statement.query(params![id])?;
+        let mut query_result = statement.query(params![id.to_string()])?;
         let backup_metadata = query_result
             .next()?
             .map(|row| BackupMetadata::try_from(row));
@@ -129,11 +136,11 @@ impl BackupMetadataRepository for SQLiteBackupMetadataRepository {
     fn delete_by_id(&self, id: BackupId) -> RepositoryResult<bool> {
         let query = r#"
             DELETE FROM "backup_metadata"
-            WHERE "id" = ?1
+            WHERE "backup_id" = ?1
         "#;
         let connection = self.get_pool_connection();
         let mut statement = connection.prepare(query)?;
-        let affected_rows = statement.execute(params![id])?;
+        let affected_rows = statement.execute(params![id.to_string()])?;
         return Ok(affected_rows == 1);
     }
 }
@@ -174,6 +181,10 @@ impl BackupRepository for FileSystemBackupRepository {
             backup_metadata.backup_target, output_dir
         );
 
+        if let Some(parent) = output_dir.parent() {
+            fs::create_dir_all(parent)?;
+        }
+
         let mut output_file = File::create(output_dir)?;
         output_file.write_all(&backup)?;
         output_file.flush()?;
@@ -188,7 +199,7 @@ impl BackupRepository for FileSystemBackupRepository {
             .join(self.backup_directory(&backup_location.backup_target))
             .join(self.generate_file_name(&backup_location));
 
-        info!("Loading backupup from file {:?}...", path);
+        info!("Loading backup from file {:?}...", path);
         match std::fs::read(path) {
             Ok(file_content) => Ok(Some(file_content)),
             Err(err) => {
