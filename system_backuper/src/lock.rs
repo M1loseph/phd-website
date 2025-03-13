@@ -2,6 +2,7 @@ use crate::backup_metadata::BackupTarget;
 use chrono::Local;
 use log::error;
 use std::error::Error as StdError;
+use std::fmt::Display;
 use std::fs::File;
 use std::io::{ErrorKind, Write};
 use std::path::{Path, PathBuf};
@@ -24,7 +25,7 @@ pub enum LockError {
     UnexpectedError(std::io::Error),
 }
 
-impl fmt::Display for LockError {
+impl Display for LockError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             LockError::InvalidLocksDirectory { path, cause: _ } => writeln!(

@@ -1,4 +1,4 @@
-use core::fmt;
+use std::fmt::Display;
 use std::{error::Error as StdError, fmt::Debug};
 
 use super::model::{Backup, BackupId, BackupMetadata};
@@ -32,7 +32,7 @@ impl StdError for RepositoryError {
     }
 }
 
-impl fmt::Display for RepositoryError {
+impl Display for RepositoryError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             RepositoryError::IdAlreadyExists { id } => write!(f, "Id {id} is already in use."),

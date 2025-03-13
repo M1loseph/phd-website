@@ -4,6 +4,7 @@ use iron::{prelude::*, status, Handler};
 use log::{error, info};
 
 use crate::{
+    backup_metadata::BackupType,
     endpoints::api::{ApiError, ErrorCode},
     mongodb::{BackupError, MongoDBBackuppingService},
 };
@@ -22,7 +23,10 @@ impl MongoDBCreateBackupEndpoint {
 
 impl Handler for MongoDBCreateBackupEndpoint {
     fn handle(&self, _: &mut Request) -> IronResult<Response> {
-        match self.backupping_service.create_mongodb_backup() {
+        match self
+            .backupping_service
+            .create_mongodb_backup(BackupType::Manual)
+        {
             Ok(backup) => {
                 let response = ArchiveBackupResponse::from(backup);
                 Ok(json_response(status::Ok, response))
@@ -38,7 +42,8 @@ impl Handler for MongoDBCreateBackupEndpoint {
                 }
                 _ => {
                     error!(
-                        "Abandoning mongodb backup - an unknown error has occurred\n{:?}", err
+                        "Abandoning mongodb backup - an unknown error has occurred\n{:?}",
+                        err
                     );
                     let response = ApiError {
                         error_code: ErrorCode::InternalError,
