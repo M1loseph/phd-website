@@ -6,5 +6,6 @@ CREATE TABLE "backup_metadata" (
 	"created_at" TEXT NOT NULL,
 	"backup_size_bytes" TEXT NOT NULL,
 	"backup_target" TEXT NOT NULL,
-	"backup_type" TEXT NOT NULL
+	"backup_type" TEXT NOT NULL,
+	"backup_format" TEXT NOT NULL
 )

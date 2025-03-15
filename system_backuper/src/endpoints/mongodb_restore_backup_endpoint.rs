@@ -6,7 +6,7 @@ use std::sync::Arc;
 
 use crate::{
     endpoints::api::{json_response, ApiError, ErrorCode},
-    mongodb::{BackupError, MongoDBBackuppingService},
+    services::{BackupRestoreError, MongoDBBackuppingService},
 };
 
 pub struct MongoRestoreBackupEndpoint {
@@ -42,27 +42,25 @@ impl Handler for MongoRestoreBackupEndpoint {
             }
         };
         let drop = match query_params.find(&["drop"]) {
-            Some(value) => {
-                match value {
-                    params::Value::String(drop) => {
-                        let drop = drop == "true";
-                        if drop {
-                            warn!(
-                                r#""drop" parameter is present and set to true - restoring backup will perform drop operation"#
-                            )
-                        }
-                        drop
+            Some(value) => match value {
+                params::Value::String(drop) => {
+                    let drop = drop == "true";
+                    if drop {
+                        warn!(
+                            r#""drop" parameter is present and set to true - restoring backup will perform drop operation"#
+                        )
                     }
-                    _ => false,
+                    drop
                 }
-            }
+                _ => false,
+            },
             None => false,
         };
         info!("Starting backup procedure. Backup ID = {backup_id}");
         match self.backupping_service.restore_backup(backup_id, drop) {
             Ok(()) => Ok(Response::with(status::Ok)),
             Err(err) => match &err {
-                BackupError::BackupTargetLocked(backup_target) => {
+                BackupRestoreError::BackupTargetLocked(backup_target) => {
                     warn!("Backup target {} is locked", backup_target);
                     let response_body = ApiError {
                         error_code: ErrorCode::BackupTargetLocked,
@@ -70,7 +68,7 @@ impl Handler for MongoRestoreBackupEndpoint {
                     };
                     Ok(json_response(status::Locked, response_body))
                 }
-                BackupError::BackupDoesNotExist(_) => {
+                BackupRestoreError::BackupDoesNotExist(_) => {
                     warn!("Backup doeos not exist. Backup ID = {}", backup_id);
                     let response_body = ApiError {
                         error_code: ErrorCode::BackupNotFound,

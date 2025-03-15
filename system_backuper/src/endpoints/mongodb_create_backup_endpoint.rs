@@ -5,7 +5,7 @@ use log::{error, info};
 
 use crate::{
     endpoints::api::{ApiError, ErrorCode},
-    mongodb::{BackupError, MongoDBBackuppingService},
+    services::{BackupCreateError, MongoDBBackuppingService},
 };
 
 use super::api::{json_response, ArchiveBackupResponse};
@@ -28,7 +28,7 @@ impl Handler for MongoDBCreateBackupEndpoint {
                 Ok(json_response(status::Ok, response))
             }
             Err(err) => match err {
-                BackupError::BackupTargetLocked(_) => {
+                BackupCreateError::BackupTargetLocked(_) => {
                     info!("Abandoning mongodb backup - the target is locked");
                     let response = ApiError {
                         error_code: ErrorCode::BackupTargetLocked,
@@ -36,9 +36,9 @@ impl Handler for MongoDBCreateBackupEndpoint {
                     };
                     Ok(json_response(status::Locked, response))
                 }
-                _ => {
+                BackupCreateError::Unknown(_) => {
                     error!(
-                        "Abandoning mongodb backup - an unknown error has occurred\n{:?}", err
+                        "Abandoning mongodb backup. Error:\n{:?}", err
                     );
                     let response = ApiError {
                         error_code: ErrorCode::InternalError,

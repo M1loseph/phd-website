@@ -1,3 +1,4 @@
+use std::fmt::Display;
 use std::process::Output;
 use std::result::Result;
 use std::str;
@@ -8,7 +9,7 @@ pub struct ProcessOutputError(Output);
 
 impl StdError for ProcessOutputError {}
 
-impl fmt::Display for ProcessOutputError {
+impl Display for ProcessOutputError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let std_err_human_readable = match str::from_utf8(&self.0.stderr) {
             Ok(output) => output,

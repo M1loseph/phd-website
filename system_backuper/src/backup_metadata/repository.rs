@@ -1,7 +1,7 @@
 use core::fmt;
 use std::{error::Error as StdError, fmt::Debug};
 
-use super::model::{Backup, BackupId, BackupMetadata};
+use super::{model::{Backup, BackupId, BackupMetadata}, BackupTarget};
 use crate::errorstack::to_error_stack;
 
 pub enum RepositoryError {
@@ -16,7 +16,7 @@ impl Debug for RepositoryError {
 }
 
 impl RepositoryError {
-    pub fn new(cause: impl StdError + 'static) -> Self {
+    pub fn new_unknown(cause: impl StdError + 'static) -> Self {
         Self::Unknown {
             cause: Box::new(cause),
         }
@@ -37,7 +37,7 @@ impl fmt::Display for RepositoryError {
         match self {
             RepositoryError::IdAlreadyExists { id } => write!(f, "Id {id} is already in use."),
             RepositoryError::Unknown { cause } => {
-                write!(f, "RepositoryError[External[cause={:?}]]", cause)
+                write!(f, "An unknown error has occurred.")
             }
         }
     }
@@ -52,7 +52,7 @@ pub trait BackupMetadataRepository: Send + Sync {
 
     fn delete_by_id(&self, id: BackupId) -> RepositoryResult<bool>;
 
-    fn find_all(&self) -> RepositoryResult<Vec<BackupMetadata>>;
+    fn find_by_backup_target(&self, backup_target: BackupTarget) -> RepositoryResult<Vec<BackupMetadata>>;
 }
 
 pub trait BackupRepository: Send + Sync {

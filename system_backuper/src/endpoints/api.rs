@@ -17,6 +17,7 @@ pub struct ArchiveBackupResponse {
     pub backup_size_bytes: u64,
     pub backup_target: BackupTarget,
     pub backup_type: BackupType,
+    pub backup_format: BackupFormat,
 }
 
 impl From<BackupMetadata> for ArchiveBackupResponse {
@@ -28,6 +29,7 @@ impl From<BackupMetadata> for ArchiveBackupResponse {
             backup_size_bytes: value.backup_size_bytes,
             backup_target: value.backup_target.into(),
             backup_type: value.backup_type.into(),
+            backup_format: value.backup_format.into(),
         }
     }
 }
@@ -95,4 +97,21 @@ where
     )));
 
     Response::with((status, response_body, header))
+}
+
+#[derive(Serialize, Debug)]
+pub enum BackupFormat {
+    #[serde(rename = "TAR_GZ")]
+    TarGz,
+    #[serde(rename = "ARCHIVE_GZ")]
+    ArchiveGz,
+}
+
+impl From<backup_metadata::BackupFormat> for BackupFormat {
+    fn from(value: backup_metadata::BackupFormat) -> Self {
+        match value {
+            backup_metadata::BackupFormat::ArchiveGz => Self::ArchiveGz,
+            backup_metadata::BackupFormat::TarGz => Self::TarGz,
+        }
+    }
 }

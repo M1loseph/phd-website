@@ -3,8 +3,7 @@ mod backup_metadata;
 mod endpoints;
 mod file_system_repositories;
 mod lock;
-mod mongodb;
-mod postgres;
+mod services;
 mod errorstack;
 mod process;
 
@@ -14,7 +13,7 @@ use endpoints::{MongoDBCreateBackupEndpoint, MongoDBReadAllBackups, MongoRestore
 use file_system_repositories::{FileSystemBackupRepository, SQLiteBackupMetadataRepository};
 use iron::Iron;
 use lock::LockManager;
-use mongodb::MongoDBBackuppingService;
+use services::MongoDBBackuppingService;
 use router::Router;
 use std::sync::Arc;
 

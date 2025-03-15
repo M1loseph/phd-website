@@ -1,6 +1,6 @@
 use chrono::{DateTime, FixedOffset};
-use strum::{Display, EnumString, IntoStaticStr};
 use rand;
+use strum::Display;
 
 pub type BackupId = u64;
 
@@ -16,16 +16,22 @@ impl RandomId for BackupId {
     }
 }
 
-#[derive(Display, Debug, EnumString, IntoStaticStr)]
+#[derive(Display, Debug)]
 pub enum BackupTarget {
     MongoDB,
     Postgres,
 }
 
-#[derive(Debug, EnumString, IntoStaticStr)]
+#[derive(Display, Debug)]
 pub enum BackupType {
     Manual,
     Scheduled,
+}
+
+#[derive(Display, Debug, PartialEq)]
+pub enum BackupFormat {
+    ArchiveGz,
+    TarGz,
 }
 
 pub struct BackupMetadata {
@@ -35,4 +41,5 @@ pub struct BackupMetadata {
     pub backup_size_bytes: u64,
     pub backup_target: BackupTarget,
     pub backup_type: BackupType,
+    pub backup_format: BackupFormat,
 }
