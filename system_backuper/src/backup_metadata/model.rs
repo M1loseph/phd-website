@@ -22,7 +22,7 @@ pub enum BackupTarget {
     Postgres,
 }
 
-#[derive(Display, Debug)]
+#[derive(Display, Clone, Debug)]
 pub enum BackupType {
     Manual,
     Scheduled,

@@ -64,7 +64,7 @@ impl MongoDBBackuppingService {
         Ok(mongodump_config_file_path.to_str().unwrap().to_string())
     }
 
-    pub fn create_mongodb_backup(&self) -> Result<BackupMetadata, BackupCreateError> {
+    pub fn create_mongodb_backup(&self, backup_type: BackupType) -> Result<BackupMetadata, BackupCreateError> {
         info!("Starting backing up mongo at {}", Local::now());
 
         let _lock = self.lock_manager.lock(BackupTarget::MongoDB)?;
@@ -92,7 +92,7 @@ impl MongoDBBackuppingService {
                     created_at: Local::now().fixed_offset(),
                     backup_size_bytes: blob_size,
                     backup_target: BackupTarget::MongoDB,
-                    backup_type: BackupType::Manual,
+                    backup_type: backup_type.clone(),
                     backup_format: BackupFormat::ArchiveGz,
                 };
 
@@ -140,9 +140,9 @@ impl MongoDBBackuppingService {
             return Err(BackupRestoreError::UnsupportedFormat(backup_metada.backup_format));
         }
 
-        if backup_metada.backup_target != BackupTarget::MongoDB {
-            return Err(BackupRestoreError::UnsupportedFormat(backup_metada.backup_format));
-        }
+        // if backup_metada.backup_target != BackupTarget::MongoDB {
+        //     return Err(BackupRestoreError::UnsupportedFormat(backup_metada.backup_format));
+        // }
 
         let backup = self
             .backup_repository

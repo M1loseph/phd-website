@@ -6,6 +6,7 @@ pub struct AppConfig {
     pub db_path: String,
     pub db_connection_pool_size: u32,
     pub server_port: u32,
+    pub cyclic_backup_mongodb_cron: String,
 }
 
 impl AppConfig {
@@ -31,6 +32,10 @@ impl AppConfig {
             env::read_int_or_default(&Self::to_env_variable_name("DB_CONNECTION_POOL_SIZE"), 3);
         let server_port =
             env::read_int_or_default(&Self::to_env_variable_name("SERVER_PORT"), 2000);
+        let cyclic_backup_mongodb_cron = env::read_or_default(
+            &Self::to_env_variable_name("CYCLIC_BACKUP_MONGODB_CRON"),
+            "0 0 4 * * * *",
+        );
 
         Self {
             mongodump_config_file_path,
@@ -40,6 +45,7 @@ impl AppConfig {
             db_path,
             db_connection_pool_size,
             server_port,
+            cyclic_backup_mongodb_cron,
         }
     }
 

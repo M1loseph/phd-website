@@ -4,6 +4,7 @@ use iron::{prelude::*, status, Handler};
 use log::{error, info};
 
 use crate::{
+    backup_metadata::BackupType,
     endpoints::api::{ApiError, ErrorCode},
     services::{BackupCreateError, MongoDBBackuppingService},
 };
@@ -22,7 +23,10 @@ impl MongoDBCreateBackupEndpoint {
 
 impl Handler for MongoDBCreateBackupEndpoint {
     fn handle(&self, _: &mut Request) -> IronResult<Response> {
-        match self.backupping_service.create_mongodb_backup() {
+        match self
+            .backupping_service
+            .create_mongodb_backup(BackupType::Manual)
+        {
             Ok(backup) => {
                 let response = ArchiveBackupResponse::from(backup);
                 Ok(json_response(status::Ok, response))
