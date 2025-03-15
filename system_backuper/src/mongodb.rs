@@ -8,7 +8,7 @@ use crate::process::IntoResult;
 use chrono::Local;
 use log::info;
 use std::error::Error as StdError;
-use std::fmt::Debug;
+use std::fmt::{Debug, Display};
 use std::io::Write;
 use std::path::Path;
 use std::process::{Command, Stdio};
@@ -56,7 +56,7 @@ impl BackupError {
     }
 }
 
-impl fmt::Display for BackupError {
+impl Display for BackupError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             BackupError::InitializationError(user_message, _) => write!(f, "{}", user_message),
@@ -151,7 +151,7 @@ impl MongoDBBackuppingService {
         Ok(mongodump_config_file_path.to_str().unwrap().to_string())
     }
 
-    pub fn create_mongodb_backup(&self) -> BackupResult<BackupMetadata> {
+    pub fn create_mongodb_backup(&self, backup_type: BackupType) -> BackupResult<BackupMetadata> {
         info!("Starting backing up mongo at {}", Local::now());
 
         let _lock = self.lock_manager.lock(BackupTarget::MongoDB)?;
@@ -180,7 +180,7 @@ impl MongoDBBackuppingService {
                     created_at: Local::now().fixed_offset(),
                     backup_size_bytes: blob_size,
                     backup_target: BackupTarget::MongoDB,
-                    backup_type: BackupType::Manual,
+                    backup_type: backup_type.clone(),
                 };
 
                 match self.backup_metadata_repository.save(&backup_metadata) {
