@@ -15,11 +15,14 @@ use crate::model::{
 };
 use crate::{errorstack::to_error_stack, model::BackupTarget};
 use log::info;
+use rusqlite::Error as RustqliteError;
 use rusqlite::{params, Connection, ErrorCode, Row};
 
 static ARCHIVE_EXTENSION: &str = "gz";
 static MONGODB_DIR: &str = "mongodb";
 static POSTGRES_DIR: &str = "postgres";
+static PRIMARY_KEY_CONSTRAINT_VIOLATION_ERROR_MESSAGE: &str =
+    "UNIQUE constraint failed: backup_metadata.backup_id";
 
 pub struct EnumNotFoundError(String);
 
@@ -119,9 +122,9 @@ impl BackupMetadataRepository for SQLiteBackupMetadataRepository {
             backup_metadata.backup_format.to_sql(),
         ]);
         query_result.map(|_| ()).map_err(|err| {
-            if let Some(code) = err.sqlite_error_code() {
-                // TODO: error is handled like shit
-                if code == ErrorCode::ConstraintViolation {
+            if let RustqliteError::SqliteFailure(err, message) = &err {
+                let message = message.as_deref();
+                if err.code == ErrorCode::ConstraintViolation && message == Some(PRIMARY_KEY_CONSTRAINT_VIOLATION_ERROR_MESSAGE) {
                     return RepositoryError::IdAlreadyExists {
                         id: backup_metadata.backup_id,
                     };

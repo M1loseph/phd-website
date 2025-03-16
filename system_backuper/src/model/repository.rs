@@ -1,7 +1,7 @@
 use std::fmt::Display;
 use std::{error::Error as StdError, fmt::Debug};
 
-use super::{Backup, BackupId, BackupMetadata, BackupTargetKind};
+use super::{Backup, BackupId, BackupMetadata};
 use crate::errorstack::to_error_stack;
 
 pub enum RepositoryError {

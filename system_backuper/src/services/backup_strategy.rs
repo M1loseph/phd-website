@@ -3,8 +3,6 @@ use std::path::Path;
 use std::process::Stdio;
 use std::{fs, process::Command};
 
-use crate::model::{BackupMetadataRepository, BackupRepository};
-
 use crate::process::IntoResult;
 use crate::{model::Backup, process::ProcessOutputError};
 use std::error::Error as StdError;

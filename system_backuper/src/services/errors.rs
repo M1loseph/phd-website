@@ -1,53 +1,11 @@
 use crate::{
     errorstack::to_error_stack,
-    model::{BackupFormat, BackupId, BackupTargetKind},
+    model::{BackupId, BackupTargetKind},
 };
 use std::{
     error::Error as StdError,
     fmt::{self, Debug, Display},
 };
-
-pub enum MongoDBBackuppingServiceInitializationError {
-    InvalidMonogoDBUri(String, Box<dyn StdError>),
-    FailedToCreateConfigurationFile(Box<dyn StdError>),
-}
-
-impl StdError for MongoDBBackuppingServiceInitializationError {
-    fn source(&self) -> Option<&(dyn StdError + 'static)> {
-        match self {
-            MongoDBBackuppingServiceInitializationError::InvalidMonogoDBUri(_, error) => {
-                Some(error.as_ref())
-            }
-            MongoDBBackuppingServiceInitializationError::FailedToCreateConfigurationFile(error) => {
-                Some(error.as_ref())
-            }
-        }
-    }
-}
-
-impl Debug for MongoDBBackuppingServiceInitializationError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        to_error_stack(f, self)
-    }
-}
-
-impl Display for MongoDBBackuppingServiceInitializationError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            MongoDBBackuppingServiceInitializationError::InvalidMonogoDBUri(uri, _) => {
-                write!(f, "Failed to parse MongoDB URI {}", uri)
-            }
-            MongoDBBackuppingServiceInitializationError::FailedToCreateConfigurationFile(_) => {
-                write!(f, "Failed to create configuration file")
-            }
-        }
-    }
-}
-
-pub enum PorstgresBackuppingServiceInitializationError {
-    InvalidMonogoDBUri(String, Box<dyn StdError>),
-    FailedToCreateConfigurationFile(Box<dyn StdError>),
-}
 
 pub enum BackupCreateError {
     BackupTargetLocked(String),
