@@ -1,6 +1,6 @@
 use crate::lock::{LockError, LockManager};
 use crate::model::{
-    BackupFormat, BackupId, BackupMetadata, BackupMetadataRepository, BackupRepository,
+    BackupId, BackupMetadata, BackupMetadataRepository, BackupRepository,
     BackupTarget, BackupTargetKind, BackupType, ConfiguredBackupTarget, RandomId, RepositoryError,
 };
 use chrono::Local;
@@ -10,7 +10,6 @@ use std::sync::Arc;
 
 use super::backup_strategy::{
     BackupStrategy, MongoDBCompressedBackupStrategy, PostgresCompressedBackupStrategy,
-    StrategyError,
 };
 use super::errors::{BackupCreateError, BackupFindError, BackupRestoreError};
 
@@ -62,7 +61,7 @@ impl BackuppingService {
 
         let strategy = self.pick_strategy_by_target_kind(&backup_target.target_kind);
 
-        let blob = strategy.create_backup(&backup_target.connection_string)?;
+        let (blob, backup_format) = strategy.create_backup(&backup_target.connection_string)?;
         let blob_size = blob.len() as u64;
 
         let backup_metadata: BackupMetadata = (|| -> Result<BackupMetadata, BackupCreateError> {
@@ -77,7 +76,7 @@ impl BackuppingService {
                         kind: backup_target.target_kind.clone(),
                     },
                     backup_type: backup_type.clone(),
-                    backup_format: BackupFormat::ArchiveGz,
+                    backup_format: backup_format.clone(),
                 };
 
                 match self.backup_metadata_repository.save(&backup_metadata) {
@@ -208,14 +207,14 @@ impl From<std::io::Error> for BackupRestoreError {
     }
 }
 
-impl From<StrategyError> for BackupRestoreError {
-    fn from(value: StrategyError) -> Self {
-        Self::Unknown(Box::new(value))
+impl From<anyhow::Error> for BackupRestoreError {
+    fn from(value: anyhow::Error) -> Self {
+        Self::Unknown(value.into())
     }
 }
 
-impl From<StrategyError> for BackupCreateError {
-    fn from(value: StrategyError) -> Self {
-        Self::Unknown(Box::new(value))
+impl From<anyhow::Error> for BackupCreateError {
+    fn from(value: anyhow::Error) -> Self {
+        Self::Unknown(value.into())
     }
 }

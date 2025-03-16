@@ -18,7 +18,6 @@ use log::info;
 use rusqlite::Error as RustqliteError;
 use rusqlite::{params, Connection, ErrorCode, Row};
 
-static ARCHIVE_EXTENSION: &str = "gz";
 static MONGODB_DIR: &str = "mongodb";
 static POSTGRES_DIR: &str = "postgres";
 static PRIMARY_KEY_CONSTRAINT_VIOLATION_ERROR_MESSAGE: &str =
@@ -186,7 +185,11 @@ impl FileSystemBackupRepository {
 
     fn to_file_name(&self, backup_metadata: &BackupMetadata) -> String {
         let id = backup_metadata.backup_id.to_string();
-        format!("{id}.{ARCHIVE_EXTENSION}")
+        let file_extension = match backup_metadata.backup_format {
+            BackupFormat::ArchiveGz => "gz",
+            BackupFormat::TarGz => "tar.gz",
+        };
+        format!("{id}.{file_extension}")
     }
 
     fn backup_directory(&self, backup_target: &BackupTargetKind) -> &str {

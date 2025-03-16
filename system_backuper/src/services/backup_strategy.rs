@@ -1,43 +1,19 @@
-use crate::errorstack::to_error_stack;
 use std::path::Path;
 use std::process::Stdio;
 use std::{fs, process::Command};
 
+use crate::model::{Backup, BackupFormat};
 use crate::process::IntoResult;
-use crate::{model::Backup, process::ProcessOutputError};
-use std::error::Error as StdError;
-use std::fmt::{Debug, Display};
-use std::io::{Error as IOError, Write};
-
-pub struct StrategyError(Box<dyn StdError>);
-
-impl StdError for StrategyError {
-    fn cause(&self) -> Option<&dyn StdError> {
-        Some(self.0.as_ref())
-    }
-}
-
-impl Display for StrategyError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "An internal error has occurred.")
-    }
-}
-
-impl Debug for StrategyError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        to_error_stack(f, self)
-    }
-}
+use anyhow::{anyhow, Result};
+use flate2::write::{GzEncoder, GzDecoder};
+use flate2::Compression;
+use std::io::Write;
+use url::Url;
 
 pub trait BackupStrategy: Send + Sync {
-    fn create_backup(&self, connection_string: &str) -> Result<Backup, StrategyError>;
+    fn create_backup(&self, connection_string: &str) -> Result<(Backup, BackupFormat)>;
 
-    fn restore_backup(
-        &self,
-        connection_string: &str,
-        drop: bool,
-        backup: Backup,
-    ) -> Result<(), StrategyError>;
+    fn restore_backup(&self, connection_string: &str, drop: bool, backup: Backup) -> Result<()>;
 }
 
 static FILE_NAME_CHARACTERS: u32 = 16;
@@ -57,14 +33,14 @@ impl Drop for ConfigFileRAII {
 }
 
 impl MongoDBCompressedBackupStrategy {
-    pub fn new(mongodump_config_file_folder: String) -> Result<Self, StrategyError> {
+    pub fn new(mongodump_config_file_folder: String) -> Result<Self> {
         fs::create_dir_all(&mongodump_config_file_folder)?;
         Ok(MongoDBCompressedBackupStrategy {
             mongodump_config_file_folder,
         })
     }
 
-    fn create_config_file(&self, connection_string: &str) -> Result<ConfigFileRAII, StrategyError> {
+    fn create_config_file(&self, connection_string: &str) -> Result<ConfigFileRAII> {
         let file_name = self.random_file_name();
         let mongodump_config_file_path =
             Path::new(&self.mongodump_config_file_folder).join(file_name);
@@ -88,22 +64,18 @@ impl MongoDBCompressedBackupStrategy {
 }
 
 impl BackupStrategy for MongoDBCompressedBackupStrategy {
-    fn create_backup(&self, connection_string: &str) -> Result<Backup, StrategyError> {
+    fn create_backup(&self, connection_string: &str) -> Result<(Backup, BackupFormat)> {
         let config_file = self.create_config_file(connection_string)?;
         let output = Command::new("mongodump")
             .args(["--config", &config_file.path, "--gzip", "--archive"])
+            .stderr(Stdio::piped())
             .output()?
             .into_result()?;
         let blob = output.stdout;
-        Ok(blob)
+        Ok((blob, BackupFormat::ArchiveGz))
     }
 
-    fn restore_backup(
-        &self,
-        connection_string: &str,
-        drop: bool,
-        backup: Backup,
-    ) -> Result<(), StrategyError> {
+    fn restore_backup(&self, connection_string: &str, drop: bool, backup: Backup) -> Result<()> {
         let config_file = self.create_config_file(connection_string)?;
         let mut args = vec!["--config", &config_file.path, "--gzip", "--archive"];
         if drop {
@@ -113,6 +85,7 @@ impl BackupStrategy for MongoDBCompressedBackupStrategy {
         let mut child = Command::new("mongorestore")
             .args(args)
             .stdin(Stdio::piped())
+            .stderr(Stdio::piped())
             .spawn()?;
 
         child.stdin.take().unwrap().write_all(&backup)?;
@@ -122,7 +95,7 @@ impl BackupStrategy for MongoDBCompressedBackupStrategy {
     }
 }
 
-struct PgAdminOptions {
+struct PostgresOptions {
     password: String,
     username: String,
     port: u32,
@@ -136,48 +109,92 @@ impl PostgresCompressedBackupStrategy {
     pub fn new() -> Self {
         Self {}
     }
+
+    fn parse_connection_string(&self, connection_string: &str) -> Result<PostgresOptions> {
+        let url = Url::parse(connection_string)?;
+        let password = url.password().ok_or(anyhow!(
+            "Missing password in the postgres connection string"
+        ))?;
+        let username = url.username();
+        let port = url
+            .port()
+            .ok_or(anyhow!("Missing port in the postgres connection string"))?;
+        let host = url
+            .host_str()
+            .ok_or(anyhow!("Missing host in the postgres connection string"))?;
+        let database = url.path().strip_prefix("/").ok_or(anyhow!(
+            "Missing database name in the postgres connection string"
+        ))?;
+
+        Ok(PostgresOptions {
+            password: password.to_string(),
+            username: username.to_string(),
+            port: port.into(),
+            host: host.to_string(),
+            database: database.to_string(),
+        })
+    }
 }
 
 impl BackupStrategy for PostgresCompressedBackupStrategy {
-    fn create_backup(&self, connection_string: &str) -> Result<Backup, StrategyError> {
-        todo!();
-        // TODO: capture tar output, gzip it and save to file
-        Command::new("pg_dump")
+    fn create_backup(&self, connection_string: &str) -> Result<(Backup, BackupFormat)> {
+        let pg_dump_options = self.parse_connection_string(connection_string)?;
+
+        let process_output = Command::new("pg_dump")
             .args([
-                "-U",
-                "admin",
-                "-p",
-                "5432",
-                "-h",
-                "localhost",
+                "--username",
+                &pg_dump_options.username,
+                "--port",
+                &pg_dump_options.port.to_string(),
+                "--host",
+                &pg_dump_options.host,
                 "--format",
-                "t",
-                "admin",
+                "tar",
+                &pg_dump_options.database,
             ])
-            .env("PGPASSWORD", "admin")
-            .status()
-            .unwrap();
-        fs::rename("local/backup.tar.gz", "local/backup-final.tar.gz").unwrap();
+            .env("PGPASSWORD", &pg_dump_options.password)
+            .stderr(Stdio::piped())
+            .output()?
+            .into_result()?;
+
+        let database_dump = process_output.stdout;
+        let mut encoder = GzEncoder::new(Vec::new(), Compression::best());
+        encoder.write_all(database_dump.as_slice())?;
+        let compressed_dump = encoder.finish()?;
+        Ok((compressed_dump, BackupFormat::TarGz))
     }
 
-    fn restore_backup(
-        &self,
-        connection_string: &str,
-        drop: bool,
-        backup: Backup,
-    ) -> Result<(), StrategyError> {
-        todo!()
-    }
-}
+    fn restore_backup(&self, connection_string: &str, drop: bool, backup: Backup) -> Result<()> {
+        let pg_restore_options = self.parse_connection_string(connection_string)?;
+        let port = pg_restore_options.port.to_string();
 
-impl From<IOError> for StrategyError {
-    fn from(value: IOError) -> Self {
-        StrategyError(Box::new(value))
-    }
-}
+        let mut args = vec![
+            "--username",
+            &pg_restore_options.username,
+            "--port",
+            &port,
+            "--host",
+            &pg_restore_options.host,
+            "--dbname",
+            &pg_restore_options.database,
+            "--single-transaction"
+        ];
+        if drop {
+            args.extend_from_slice(&["--clean", "--if-exists"]);
+        }
 
-impl From<ProcessOutputError> for StrategyError {
-    fn from(value: ProcessOutputError) -> Self {
-        StrategyError(Box::new(value))
+        let mut decoder = GzDecoder::new(Vec::new());
+        decoder.write_all(&backup)?;
+        let decompressed_backup = decoder.finish()?;
+
+        let mut process = Command::new("pg_restore")
+            .args(args)
+            .env("PGPASSWORD", &pg_restore_options.password)
+            .stdin(Stdio::piped())
+            .stderr(Stdio::piped())
+            .spawn()?;
+        process.stdin.take().unwrap().write_all(&decompressed_backup)?;
+        let _ = process.wait_with_output()?.into_result()?;
+        Ok(())
     }
 }

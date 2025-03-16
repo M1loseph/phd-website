@@ -28,7 +28,7 @@ pub enum BackupType {
     Scheduled,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum BackupFormat {
     ArchiveGz,
     TarGz,
