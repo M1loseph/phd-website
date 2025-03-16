@@ -2,28 +2,30 @@ use std::sync::Arc;
 
 use log::{error, info};
 
-use crate::{backup_metadata::BackupType, mongodb::MongoDBBackuppingService};
+use crate::{model::BackupType, services::BackuppingService};
 
 use super::cron_jobs::Task;
 
-pub struct MongoDBScheduledBackupJob {
-    mongodb_backup_service: Arc<MongoDBBackuppingService>,
+pub struct ScheduledBackupJob {
+    backup_target_name: String,
+    backupping_service: Arc<BackuppingService>,
 }
 
-impl MongoDBScheduledBackupJob {
-    pub fn new(mongodb_backup_service: Arc<MongoDBBackuppingService>) -> Self {
+impl ScheduledBackupJob {
+    pub fn new(backup_target_name: String, backupping_service: Arc<BackuppingService>) -> Self {
         Self {
-            mongodb_backup_service,
+            backup_target_name,
+            backupping_service,
         }
     }
 }
 
-impl Task for MongoDBScheduledBackupJob {
+impl Task for ScheduledBackupJob {
     fn run_task(&self) {
         info!("Starting a scheduled mongodb full backup task");
         match self
-            .mongodb_backup_service
-            .create_mongodb_backup(BackupType::Scheduled)
+            .backupping_service
+            .create_backup(&self.backup_target_name, BackupType::Scheduled)
         {
             Ok(backup) => {
                 info!(

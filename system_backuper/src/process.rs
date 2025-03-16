@@ -1,7 +1,7 @@
+use std::fmt::Display;
 use std::process::Output;
 use std::result::Result;
 use std::str;
-use std::fmt::Display;
 use std::{error::Error as StdError, fmt};
 
 #[derive(Debug)]

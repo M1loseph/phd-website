@@ -1,23 +1,27 @@
 mod app_config;
-mod backup_metadata;
 mod endpoints;
 mod errorstack;
 mod file_system_repositories;
 mod jobs;
 mod lock;
-mod mongodb;
-mod postgres;
+mod model;
 mod process;
+mod services;
 
 use app_config::AppConfig;
 use dotenv;
-use endpoints::{MongoDBCreateBackupEndpoint, MongoDBReadAllBackups, MongoRestoreBackupEndpoint};
+use endpoints::{
+    ConfiguredTargetsReadAllEndpoint, CreateBackupEndpoint, MongoDBReadAllBackups,
+    MongoRestoreBackupEndpoint,
+};
 use file_system_repositories::{FileSystemBackupRepository, SQLiteBackupMetadataRepository};
 use iron::Iron;
-use jobs::{CronJobs, MongoDBScheduledBackupJob};
+use jobs::{CronJobs, ScheduledBackupJob};
 use lock::LockManager;
-use mongodb::MongoDBBackuppingService;
 use router::Router;
+use services::{
+    BackuppingService, MongoDBCompressedBackupStrategy, PostgresCompressedBackupStrategy,
+};
 use std::sync::{atomic::AtomicBool, Arc};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -33,47 +37,43 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             .unwrap(),
     );
 
-    let mongodb_backupping_service = Arc::new(
-        MongoDBBackuppingService::new(
-            app_config.mongodump_config_file_path,
-            app_config.mongodb_uri,
-            lock_manager.clone(),
-            backup_repository.clone(),
-            backup_metadata_repoository.clone(),
-        )
-        .unwrap(),
+    let mongodb_strategy = Arc::new(
+        MongoDBCompressedBackupStrategy::new(app_config.mongodump_config_file_path).unwrap(),
     );
-    let mongodb_full_backup_endpoint =
-        MongoDBCreateBackupEndpoint::new(mongodb_backupping_service.clone());
-    let mongodb_read_backups_endpoint =
-        MongoDBReadAllBackups::new(mongodb_backupping_service.clone());
-    let mongodb_restore_backup_endpoint =
-        MongoRestoreBackupEndpoint::new(mongodb_backupping_service.clone());
+    let postgres_strategy = Arc::new(PostgresCompressedBackupStrategy::new());
 
-    let mongodb_scheduled_backup_job =
-        MongoDBScheduledBackupJob::new(mongodb_backupping_service.clone());
+    let backupping_service = Arc::new(BackuppingService::new(
+        lock_manager.clone(),
+        backup_repository.clone(),
+        backup_metadata_repoository.clone(),
+        mongodb_strategy,
+        postgres_strategy,
+        app_config.backup_targets,
+    ));
+
+    let read_targets_endpoint = ConfiguredTargetsReadAllEndpoint::new(backupping_service.clone());
+    let create_backup_endpoint = CreateBackupEndpoint::new(backupping_service.clone());
+    let read_backups_endpoint = MongoDBReadAllBackups::new(backupping_service.clone());
+    let restore_backup_endpoint = MongoRestoreBackupEndpoint::new(backupping_service.clone());
 
     let mut cron_jobs = CronJobs::new();
-    cron_jobs.start(
-        &app_config.cyclic_backup_mongodb_cron,
-        mongodb_scheduled_backup_job,
-    )?;
+    for job in app_config.cyclic_backups {
+        let task = ScheduledBackupJob::new(job.target_name, backupping_service.clone());
+        cron_jobs.start(&job.cron_schedule, task)?;
+    }
 
     let mut router = Router::new();
+    router.get("/api/v1/targets", read_targets_endpoint, "readAllTargets");
     router.post(
-        "/api/v1/backups/mongodb",
-        mongodb_full_backup_endpoint,
-        "fullBackupMongoDB",
+        "/api/v1/backups/:target_name",
+        create_backup_endpoint,
+        "createBackupFromTarget",
     );
-    router.get(
-        "/api/v1/backups/mongodb",
-        mongodb_read_backups_endpoint,
-        "readAllMongoDBBackups",
-    );
+    router.get("/api/v1/backups", read_backups_endpoint, "readAllBackups");
     router.post(
-        "/api/v1/backups/mongodb/:backup_id",
-        mongodb_restore_backup_endpoint,
-        "restoreMongoDBBackup",
+        "/api/v1/backups/:target_name/:backup_id",
+        restore_backup_endpoint,
+        "restoreBackupToTarget",
     );
 
     signal_hook::flag::register_conditional_shutdown(

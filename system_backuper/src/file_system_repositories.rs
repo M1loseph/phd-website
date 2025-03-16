@@ -1,36 +1,65 @@
 use std::{
     collections::HashMap,
-    fs,
-    fs::File,
+    error::Error as StdError,
+    fmt::{Debug, Display},
+    fs::{self, File},
     io::{ErrorKind, Write},
+    num::ParseIntError,
     path::Path,
-    str::FromStr,
     sync::{Mutex, MutexGuard},
 };
 
-use crate::backup_metadata::{
-    Backup, BackupId, BackupMetadata, BackupMetadataRepository, BackupRepository, BackupTarget,
-    BackupType, RepositoryError, RepositoryResult,
+use crate::model::{
+    Backup, BackupFormat, BackupId, BackupMetadata, BackupMetadataRepository, BackupRepository,
+    BackupTargetKind, BackupType, RepositoryError, RepositoryResult,
 };
+use crate::{errorstack::to_error_stack, model::BackupTarget};
 use log::info;
+use rusqlite::Error as RustqliteError;
 use rusqlite::{params, Connection, ErrorCode, Row};
 
-static ARCHIVE_EXTENSION: &str = "gz";
-static DELIMETER: &str = "_";
 static MONGODB_DIR: &str = "mongodb";
 static POSTGRES_DIR: &str = "postgres";
+static PRIMARY_KEY_CONSTRAINT_VIOLATION_ERROR_MESSAGE: &str =
+    "UNIQUE constraint failed: backup_metadata.backup_id";
+
+pub struct EnumNotFoundError(String);
+
+impl StdError for EnumNotFoundError {}
+
+impl Display for EnumNotFoundError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "Did not find a matching enum value for input {}", self.0)
+    }
+}
+
+impl Debug for EnumNotFoundError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        to_error_stack(f, self)
+    }
+}
+
+trait EnumStringSQLForm: Sized {
+    fn to_sql(&self) -> &str;
+
+    fn from_sql(sql: String) -> Result<Self, EnumNotFoundError>;
+}
 
 impl<'a> TryFrom<&Row<'a>> for BackupMetadata {
     type Error = RepositoryError;
 
     fn try_from(row: &Row<'a>) -> Result<Self, Self::Error> {
+        let backup_target = BackupTarget {
+            kind: BackupTargetKind::from_sql(row.get(3)?)?,
+            name: row.get(4)?,
+        };
         let metadata = Self {
             backup_id: row.get::<usize, String>(0)?.parse::<u64>()?,
-            host: row.get(1)?,
-            created_at: row.get(2)?,
-            backup_size_bytes: row.get::<usize, String>(3)?.parse::<u64>()?,
-            backup_target: BackupTarget::from_str(&row.get::<usize, String>(4)?)?,
-            backup_type: BackupType::from_str(&row.get::<usize, String>(5)?)?,
+            created_at: row.get(1)?,
+            backup_size_bytes: row.get::<usize, String>(2)?.parse::<u64>()?,
+            backup_target: backup_target,
+            backup_type: BackupType::from_sql(row.get(5)?)?,
+            backup_format: BackupFormat::from_sql(row.get(6)?)?,
         };
         Ok(metadata)
     }
@@ -44,9 +73,7 @@ impl SQLiteBackupMetadataRepository {
     pub fn new(sqlite_path: String, connection_pool: u32) -> RepositoryResult<Self> {
         let sqlite_path = Path::new(&sqlite_path);
         if let Some(parent) = sqlite_path.parent() {
-            fs::create_dir_all(parent).map_err(|err| RepositoryError::Unknown {
-                cause: Box::new(err),
-            })?;
+            fs::create_dir_all(parent).map_err(|err| RepositoryError::Unknown(Box::new(err)))?;
         }
         let connections = (0..connection_pool)
             .into_iter()
@@ -78,23 +105,25 @@ impl SQLiteBackupMetadataRepository {
 impl BackupMetadataRepository for SQLiteBackupMetadataRepository {
     fn save(&self, backup_metadata: &BackupMetadata) -> RepositoryResult<()> {
         let query = r#"
-            INSERT INTO "backup_metadata"("backup_id", "host", "created_at", "backup_size_bytes", "backup_target", "backup_type")
-            VALUES (?1, ?2, ?3, ?4, ?5, ?6)
+            INSERT INTO "backup_metadata"("backup_id", "created_at", "backup_size_bytes", "backup_target_kind", "backup_target_name", "backup_type", "backup_format")
+            VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)
         "#;
         let connection = self.get_pool_connection();
         let mut statement = connection.prepare(query)?;
 
         let query_result = statement.execute(params![
             backup_metadata.backup_id.to_string(),
-            backup_metadata.host,
             backup_metadata.created_at,
             backup_metadata.backup_size_bytes.to_string(),
-            <&BackupTarget as Into<&str>>::into(&backup_metadata.backup_target),
-            <&BackupType as Into<&str>>::into(&backup_metadata.backup_type),
+            backup_metadata.backup_target.kind.to_sql(),
+            backup_metadata.backup_target.name,
+            backup_metadata.backup_type.to_sql(),
+            backup_metadata.backup_format.to_sql(),
         ]);
         query_result.map(|_| ()).map_err(|err| {
-            if let Some(code) = err.sqlite_error_code() {
-                if code == ErrorCode::ConstraintViolation {
+            if let RustqliteError::SqliteFailure(err, message) = &err {
+                let message = message.as_deref();
+                if err.code == ErrorCode::ConstraintViolation && message == Some(PRIMARY_KEY_CONSTRAINT_VIOLATION_ERROR_MESSAGE) {
                     return RepositoryError::IdAlreadyExists {
                         id: backup_metadata.backup_id,
                     };
@@ -106,7 +135,7 @@ impl BackupMetadataRepository for SQLiteBackupMetadataRepository {
 
     fn find_by_id(&self, id: BackupId) -> RepositoryResult<Option<BackupMetadata>> {
         let query = r#"
-            SELECT "backup_id", "host", "created_at", "backup_size_bytes", "backup_target", "backup_type"
+            SELECT "backup_id", "created_at", "backup_size_bytes", "backup_target_kind", "backup_target_name", "backup_type", "backup_format"
             FROM "backup_metadata"
             WHERE "backup_id" = ?1
         "#;
@@ -124,12 +153,12 @@ impl BackupMetadataRepository for SQLiteBackupMetadataRepository {
 
     fn find_all(&self) -> RepositoryResult<Vec<BackupMetadata>> {
         let query = r#"
-            SELECT "backup_id", "host", "created_at", "backup_size_bytes", "backup_target", "backup_type"
+            SELECT "backup_id", "created_at", "backup_size_bytes", "backup_target_kind", "backup_target_name", "backup_type", "backup_format"
             FROM "backup_metadata"
         "#;
         let connection = self.get_pool_connection();
         let mut connection = connection.prepare(query)?;
-        let rows = connection.query([])?;
+        let rows = connection.query(params![])?;
         rows.and_then(|row| BackupMetadata::try_from(row)).collect()
     }
 
@@ -154,18 +183,19 @@ impl FileSystemBackupRepository {
         Self { target_directory }
     }
 
-    fn generate_file_name(&self, backup_metadata: &BackupMetadata) -> String {
-        let timestmap_as_str = backup_metadata.created_at.to_rfc3339();
+    fn to_file_name(&self, backup_metadata: &BackupMetadata) -> String {
         let id = backup_metadata.backup_id.to_string();
-        let host = &backup_metadata.host;
-        let file_name = vec![id.as_str(), host, timestmap_as_str.as_str()].join(DELIMETER);
-        format!("{file_name}.{ARCHIVE_EXTENSION}")
+        let file_extension = match backup_metadata.backup_format {
+            BackupFormat::ArchiveGz => "gz",
+            BackupFormat::TarGz => "tar.gz",
+        };
+        format!("{id}.{file_extension}")
     }
 
-    fn backup_directory(&self, backup_target: &BackupTarget) -> &str {
+    fn backup_directory(&self, backup_target: &BackupTargetKind) -> &str {
         match backup_target {
-            BackupTarget::MongoDB => MONGODB_DIR,
-            BackupTarget::Postgres => POSTGRES_DIR,
+            BackupTargetKind::MongoDB => MONGODB_DIR,
+            BackupTargetKind::Postgres => POSTGRES_DIR,
         }
     }
 }
@@ -173,12 +203,12 @@ impl FileSystemBackupRepository {
 impl BackupRepository for FileSystemBackupRepository {
     fn save(&self, backup_metadata: &BackupMetadata, backup: Backup) -> RepositoryResult<()> {
         let output_dir = Path::new(&self.target_directory)
-            .join(self.backup_directory(&backup_metadata.backup_target))
-            .join(self.generate_file_name(&backup_metadata));
+            .join(self.backup_directory(&backup_metadata.backup_target.kind))
+            .join(self.to_file_name(&backup_metadata));
 
         info!(
             "Saving {} backup in {:?}...",
-            backup_metadata.backup_target, output_dir
+            backup_metadata.backup_target.name, output_dir
         );
 
         if let Some(parent) = output_dir.parent() {
@@ -196,8 +226,8 @@ impl BackupRepository for FileSystemBackupRepository {
         backup_location: &BackupMetadata,
     ) -> RepositoryResult<Option<Backup>> {
         let path = Path::new(&self.target_directory)
-            .join(self.backup_directory(&backup_location.backup_target))
-            .join(self.generate_file_name(&backup_location));
+            .join(self.backup_directory(&backup_location.backup_target.kind))
+            .join(self.to_file_name(&backup_location));
 
         info!("Loading backup from file {:?}...", path);
         match std::fs::read(path) {
@@ -214,24 +244,75 @@ impl BackupRepository for FileSystemBackupRepository {
 
 impl From<rusqlite::Error> for RepositoryError {
     fn from(value: rusqlite::Error) -> Self {
-        Self::new(value)
+        Self::new_unknown(value)
     }
 }
 
-impl From<std::num::ParseIntError> for RepositoryError {
-    fn from(value: std::num::ParseIntError) -> Self {
-        Self::new(value)
+impl From<ParseIntError> for RepositoryError {
+    fn from(value: ParseIntError) -> Self {
+        Self::new_unknown(value)
     }
 }
 
 impl From<std::io::Error> for RepositoryError {
     fn from(value: std::io::Error) -> Self {
-        Self::new(value)
+        Self::new_unknown(value)
     }
 }
 
-impl From<strum::ParseError> for RepositoryError {
-    fn from(value: strum::ParseError) -> Self {
-        Self::new(value)
+impl From<EnumNotFoundError> for RepositoryError {
+    fn from(value: EnumNotFoundError) -> Self {
+        Self::new_unknown(value)
+    }
+}
+
+impl EnumStringSQLForm for BackupTargetKind {
+    fn to_sql(&self) -> &str {
+        match self {
+            BackupTargetKind::MongoDB => "MONGODB",
+            BackupTargetKind::Postgres => "POSTGRES",
+        }
+    }
+
+    fn from_sql(sql: String) -> Result<Self, EnumNotFoundError> {
+        match sql.as_str() {
+            "MONGODB" => Ok(BackupTargetKind::MongoDB),
+            "POSTGRES" => Ok(BackupTargetKind::Postgres),
+            _ => Err(EnumNotFoundError(sql)),
+        }
+    }
+}
+
+impl EnumStringSQLForm for BackupType {
+    fn to_sql(&self) -> &str {
+        match self {
+            BackupType::Manual => "MANUAL",
+            BackupType::Scheduled => "SCHEDULED",
+        }
+    }
+
+    fn from_sql(sql: String) -> Result<Self, EnumNotFoundError> {
+        match sql.as_str() {
+            "MANUAL" => Ok(BackupType::Manual),
+            "SCHEDULED" => Ok(BackupType::Scheduled),
+            _ => Err(EnumNotFoundError(sql)),
+        }
+    }
+}
+
+impl EnumStringSQLForm for BackupFormat {
+    fn to_sql(&self) -> &str {
+        match self {
+            BackupFormat::ArchiveGz => "ARCHIVE_GZ",
+            BackupFormat::TarGz => "TAR_GZ",
+        }
+    }
+
+    fn from_sql(sql: String) -> Result<Self, EnumNotFoundError> {
+        match sql.as_str() {
+            "ARCHIVE_GZ" => Ok(BackupFormat::ArchiveGz),
+            "TAR_GZ" => Ok(BackupFormat::TarGz),
+            _ => Err(EnumNotFoundError(sql)),
+        }
     }
 }

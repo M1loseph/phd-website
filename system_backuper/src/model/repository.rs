@@ -1,12 +1,12 @@
 use std::fmt::Display;
 use std::{error::Error as StdError, fmt::Debug};
 
-use super::model::{Backup, BackupId, BackupMetadata};
+use super::{Backup, BackupId, BackupMetadata};
 use crate::errorstack::to_error_stack;
 
 pub enum RepositoryError {
     IdAlreadyExists { id: u64 },
-    Unknown { cause: Box<dyn StdError> },
+    Unknown(Box<dyn StdError>),
 }
 
 impl Debug for RepositoryError {
@@ -16,10 +16,8 @@ impl Debug for RepositoryError {
 }
 
 impl RepositoryError {
-    pub fn new(cause: impl StdError + 'static) -> Self {
-        Self::Unknown {
-            cause: Box::new(cause),
-        }
+    pub fn new_unknown(cause: impl StdError + 'static) -> Self {
+        Self::Unknown(Box::new(cause))
     }
 }
 
@@ -27,7 +25,7 @@ impl StdError for RepositoryError {
     fn source(&self) -> Option<&(dyn StdError + 'static)> {
         match self {
             RepositoryError::IdAlreadyExists { id: _ } => None,
-            RepositoryError::Unknown { cause } => Some(cause.as_ref()),
+            RepositoryError::Unknown(cause) => Some(cause.as_ref()),
         }
     }
 }
@@ -36,8 +34,8 @@ impl Display for RepositoryError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             RepositoryError::IdAlreadyExists { id } => write!(f, "Id {id} is already in use."),
-            RepositoryError::Unknown { cause } => {
-                write!(f, "RepositoryError[External[cause={:?}]]", cause)
+            RepositoryError::Unknown(_) => {
+                write!(f, "An unknown error has occurred.")
             }
         }
     }

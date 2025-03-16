@@ -2,37 +2,40 @@ use std::sync::Arc;
 
 use iron::{prelude::*, status, Handler};
 use log::{error, info};
+use router::Router;
 
 use crate::{
-    backup_metadata::BackupType,
     endpoints::api::{ApiError, ErrorCode},
-    mongodb::{BackupError, MongoDBBackuppingService},
+    model::BackupType,
+    services::{BackupCreateError, BackuppingService},
 };
 
 use super::api::{json_response, ArchiveBackupResponse};
 
-pub struct MongoDBCreateBackupEndpoint {
-    backupping_service: Arc<MongoDBBackuppingService>,
+pub struct CreateBackupEndpoint {
+    backupping_service: Arc<BackuppingService>,
 }
 
-impl MongoDBCreateBackupEndpoint {
-    pub fn new(backupping_service: Arc<MongoDBBackuppingService>) -> Self {
+impl CreateBackupEndpoint {
+    pub fn new(backupping_service: Arc<BackuppingService>) -> Self {
         Self { backupping_service }
     }
 }
 
-impl Handler for MongoDBCreateBackupEndpoint {
-    fn handle(&self, _: &mut Request) -> IronResult<Response> {
+impl Handler for CreateBackupEndpoint {
+    fn handle(&self, req: &mut Request) -> IronResult<Response> {
+        let router = req.extensions.get::<Router>().unwrap();
+        let target_name = router.find("target_name").unwrap(); 
         match self
             .backupping_service
-            .create_mongodb_backup(BackupType::Manual)
+            .create_backup(target_name, BackupType::Manual)
         {
             Ok(backup) => {
                 let response = ArchiveBackupResponse::from(backup);
                 Ok(json_response(status::Ok, response))
             }
             Err(err) => match err {
-                BackupError::BackupTargetLocked(_) => {
+                BackupCreateError::BackupTargetLocked(_) => {
                     info!("Abandoning mongodb backup - the target is locked");
                     let response = ApiError {
                         error_code: ErrorCode::BackupTargetLocked,
@@ -40,11 +43,16 @@ impl Handler for MongoDBCreateBackupEndpoint {
                     };
                     Ok(json_response(status::Locked, response))
                 }
-                _ => {
-                    error!(
-                        "Abandoning mongodb backup - an unknown error has occurred\n{:?}",
-                        err
-                    );
+                BackupCreateError::BackupTargetNotFound(_) => {
+                    info!("Abandoning mongodb backup - did not find the target");
+                    let response = ApiError {
+                        error_code: ErrorCode::BackupTargetNotFound,
+                        message: format!("{}", err),
+                    };
+                    Ok(json_response(status::NotFound, response))
+                }
+                BackupCreateError::Unknown(_) => {
+                    error!("Abandoning mongodb backup. Error:\n{:?}", err);
                     let response = ApiError {
                         error_code: ErrorCode::InternalError,
                         message: format!("{}", err),

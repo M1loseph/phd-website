@@ -2,7 +2,9 @@ mod mongodb_create_backup_endpoint;
 mod mongodb_read_backups_endpoint;
 mod mongodb_restore_backup_endpoint;
 mod api;
+mod configured_targets_read_endpoint;
 
-pub use mongodb_create_backup_endpoint::MongoDBCreateBackupEndpoint;
+pub use mongodb_create_backup_endpoint::CreateBackupEndpoint;
 pub use mongodb_read_backups_endpoint::MongoDBReadAllBackups;
 pub use mongodb_restore_backup_endpoint::MongoRestoreBackupEndpoint;
+pub use configured_targets_read_endpoint::ConfiguredTargetsReadAllEndpoint;
