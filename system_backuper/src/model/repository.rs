@@ -1,12 +1,12 @@
 use std::fmt::Display;
 use std::{error::Error as StdError, fmt::Debug};
 
-use super::{model::{Backup, BackupId, BackupMetadata}, BackupTarget};
+use super::{Backup, BackupId, BackupMetadata, BackupTargetKind};
 use crate::errorstack::to_error_stack;
 
 pub enum RepositoryError {
     IdAlreadyExists { id: u64 },
-    Unknown { cause: Box<dyn StdError> },
+    Unknown(Box<dyn StdError>),
 }
 
 impl Debug for RepositoryError {
@@ -17,9 +17,7 @@ impl Debug for RepositoryError {
 
 impl RepositoryError {
     pub fn new_unknown(cause: impl StdError + 'static) -> Self {
-        Self::Unknown {
-            cause: Box::new(cause),
-        }
+        Self::Unknown(Box::new(cause))
     }
 }
 
@@ -27,7 +25,7 @@ impl StdError for RepositoryError {
     fn source(&self) -> Option<&(dyn StdError + 'static)> {
         match self {
             RepositoryError::IdAlreadyExists { id: _ } => None,
-            RepositoryError::Unknown { cause } => Some(cause.as_ref()),
+            RepositoryError::Unknown(cause) => Some(cause.as_ref()),
         }
     }
 }
@@ -36,7 +34,7 @@ impl Display for RepositoryError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             RepositoryError::IdAlreadyExists { id } => write!(f, "Id {id} is already in use."),
-            RepositoryError::Unknown { cause } => {
+            RepositoryError::Unknown(_) => {
                 write!(f, "An unknown error has occurred.")
             }
         }
@@ -52,7 +50,7 @@ pub trait BackupMetadataRepository: Send + Sync {
 
     fn delete_by_id(&self, id: BackupId) -> RepositoryResult<bool>;
 
-    fn find_by_backup_target(&self, backup_target: BackupTarget) -> RepositoryResult<Vec<BackupMetadata>>;
+    fn find_all(&self) -> RepositoryResult<Vec<BackupMetadata>>;
 }
 
 pub trait BackupRepository: Send + Sync {

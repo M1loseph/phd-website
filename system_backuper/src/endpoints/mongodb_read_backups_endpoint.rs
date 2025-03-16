@@ -1,17 +1,17 @@
 use std::sync::Arc;
 
-use crate::{endpoints::api::{ApiError, ErrorCode}, services::MongoDBBackuppingService};
+use crate::{endpoints::api::{ApiError, ErrorCode}, services::BackuppingService};
 use log::{info, error};
 use iron::{prelude::*, status, Handler};
 
 use super::api::{json_response, ArchiveBackupResponse};
 
 pub struct MongoDBReadAllBackups {
-    backupping_service: Arc<MongoDBBackuppingService>,
+    backupping_service: Arc<BackuppingService>,
 }
 
 impl MongoDBReadAllBackups {
-    pub fn new(backupping_service: Arc<MongoDBBackuppingService>) -> Self {
+    pub fn new(backupping_service: Arc<BackuppingService>) -> Self {
         Self { backupping_service }
     }
 }

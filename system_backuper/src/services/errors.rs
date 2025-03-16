@@ -1,6 +1,6 @@
 use crate::{
-    backup_metadata::{BackupFormat, BackupId, BackupTarget},
     errorstack::to_error_stack,
+    model::{BackupFormat, BackupId, BackupTargetKind},
 };
 use std::{
     error::Error as StdError,
@@ -15,8 +15,12 @@ pub enum MongoDBBackuppingServiceInitializationError {
 impl StdError for MongoDBBackuppingServiceInitializationError {
     fn source(&self) -> Option<&(dyn StdError + 'static)> {
         match self {
-            MongoDBBackuppingServiceInitializationError::InvalidMonogoDBUri(_, error) => Some(error.as_ref()),
-            MongoDBBackuppingServiceInitializationError::FailedToCreateConfigurationFile(error) => Some(error.as_ref()),
+            MongoDBBackuppingServiceInitializationError::InvalidMonogoDBUri(_, error) => {
+                Some(error.as_ref())
+            }
+            MongoDBBackuppingServiceInitializationError::FailedToCreateConfigurationFile(error) => {
+                Some(error.as_ref())
+            }
         }
     }
 }
@@ -46,7 +50,8 @@ pub enum PorstgresBackuppingServiceInitializationError {
 }
 
 pub enum BackupCreateError {
-    BackupTargetLocked(BackupTarget),
+    BackupTargetLocked(String),
+    BackupTargetNotFound(String),
     Unknown(Box<dyn StdError>),
 }
 
@@ -54,6 +59,7 @@ impl StdError for BackupCreateError {
     fn source(&self) -> Option<&(dyn StdError + 'static)> {
         match self {
             BackupCreateError::BackupTargetLocked(_) => None,
+            BackupCreateError::BackupTargetNotFound(_) => None,
             BackupCreateError::Unknown(error) => Some(error.as_ref()),
         }
     }
@@ -72,26 +78,38 @@ impl Display for BackupCreateError {
                 f,
                 "Backup target {backup_target} is undegoing another opearation."
             ),
+            BackupCreateError::BackupTargetNotFound(backup_target) => {
+                write!(f, "Backup target {backup_target} was not found.")
+            }
             BackupCreateError::Unknown(_) => write!(f, "An unknown error has occurred."),
         }
     }
 }
 
 pub enum BackupRestoreError {
-    BackupTargetLocked(BackupTarget),
+    BackupTargetNotFound {
+        name: String,
+    },
+    BackupTargetLocked {
+        name: String,
+    },
     BackupDoesNotExist(BackupId),
     InconsistantData(BackupId),
-    UnsupportedFormat(BackupFormat),
+    IncompatibleKind {
+        from: BackupTargetKind,
+        to: BackupTargetKind,
+    },
     Unknown(Box<dyn StdError>),
 }
 
 impl StdError for BackupRestoreError {
     fn source(&self) -> Option<&(dyn StdError + 'static)> {
         match self {
-            BackupRestoreError::BackupTargetLocked(_) => None,
+            BackupRestoreError::BackupTargetNotFound { name: _ } => None,
+            BackupRestoreError::BackupTargetLocked { name: _ } => None,
             BackupRestoreError::BackupDoesNotExist(_) => None,
             BackupRestoreError::InconsistantData(_) => None,
-            BackupRestoreError::UnsupportedFormat(_) => None,
+            BackupRestoreError::IncompatibleKind { from: _, to: _ } => None,
             BackupRestoreError::Unknown(error) => Some(error.as_ref()),
         }
     }
@@ -106,11 +124,12 @@ impl Debug for BackupRestoreError {
 impl Display for BackupRestoreError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            BackupRestoreError::BackupTargetLocked(backup_target) => write!(
-                f,
-                "Backup target {} is undergoing another operation.",
-                backup_target
-            ),
+            BackupRestoreError::BackupTargetNotFound { name } => {
+                write!(f, "Backup target {} was not found.", name)
+            }
+            BackupRestoreError::BackupTargetLocked { name } => {
+                write!(f, "Backup target {} is undergoing another operation.", name)
+            }
             BackupRestoreError::BackupDoesNotExist(id) => {
                 write!(f, "Did not find backup with id {}.", id)
             }
@@ -118,8 +137,8 @@ impl Display for BackupRestoreError {
             BackupRestoreError::InconsistantData(backup_id) => {
                 write!(f, "Missing backup binary for backup_id {}", backup_id)
             }
-            BackupRestoreError::UnsupportedFormat(backup_format) => {
-                write!(f, "Can't restore backup with format {backup_format}")
+            BackupRestoreError::IncompatibleKind { from, to } => {
+                write!(f, "Can't restore backup of kind {from} to target {to}")
             }
         }
     }

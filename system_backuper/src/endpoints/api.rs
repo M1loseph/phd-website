@@ -1,4 +1,4 @@
-use crate::backup_metadata::{self, BackupMetadata};
+use crate::model::{self, BackupMetadata};
 use chrono::{DateTime, FixedOffset};
 use iron::{
     headers::ContentType,
@@ -10,9 +10,14 @@ use iron::{
 use serde::Serialize;
 
 #[derive(Serialize)]
+pub struct BackupTarget {
+    pub name: String,
+    pub kind: BackupTargetKind,
+}
+
+#[derive(Serialize)]
 pub struct ArchiveBackupResponse {
     pub backup_id: u64,
-    pub host: String,
     pub created_at: DateTime<FixedOffset>,
     pub backup_size_bytes: u64,
     pub backup_target: BackupTarget,
@@ -24,10 +29,12 @@ impl From<BackupMetadata> for ArchiveBackupResponse {
     fn from(value: BackupMetadata) -> Self {
         Self {
             backup_id: value.backup_id,
-            host: value.host,
             created_at: value.created_at,
             backup_size_bytes: value.backup_size_bytes,
-            backup_target: value.backup_target.into(),
+            backup_target: BackupTarget {
+                name: value.backup_target.name,
+                kind: value.backup_target.kind.into(),
+            },
             backup_type: value.backup_type.into(),
             backup_format: value.backup_format.into(),
         }
@@ -42,28 +49,28 @@ pub enum BackupType {
     Scheduled,
 }
 
-impl From<backup_metadata::BackupType> for BackupType {
-    fn from(value: backup_metadata::BackupType) -> Self {
+impl From<model::BackupType> for BackupType {
+    fn from(value: model::BackupType) -> Self {
         match value {
-            backup_metadata::BackupType::Manual => BackupType::Manual,
-            backup_metadata::BackupType::Scheduled => BackupType::Scheduled,
+            model::BackupType::Manual => Self::Manual,
+            model::BackupType::Scheduled => Self::Scheduled,
         }
     }
 }
 
 #[derive(Serialize)]
-pub enum BackupTarget {
+pub enum BackupTargetKind {
     #[serde(rename = "MONGODB")]
     MongoDB,
     #[serde(rename = "POSTGRES")]
     Postgres,
 }
 
-impl From<backup_metadata::BackupTarget> for BackupTarget {
-    fn from(value: backup_metadata::BackupTarget) -> Self {
+impl From<model::BackupTargetKind> for BackupTargetKind {
+    fn from(value: model::BackupTargetKind) -> Self {
         match value {
-            backup_metadata::BackupTarget::MongoDB => BackupTarget::MongoDB,
-            backup_metadata::BackupTarget::Postgres => BackupTarget::Postgres,
+            model::BackupTargetKind::MongoDB => Self::MongoDB,
+            model::BackupTargetKind::Postgres => Self::Postgres,
         }
     }
 }
@@ -72,6 +79,8 @@ impl From<backup_metadata::BackupTarget> for BackupTarget {
 pub enum ErrorCode {
     #[serde(rename = "BACKUP_TARGET_LOCKED")]
     BackupTargetLocked,
+    #[serde(rename = "BACKUP_TARGET_NOT_FOUND")]
+    BackupTargetNotFound,
     #[serde(rename = "INTERNAL_ERROR")]
     InternalError,
     #[serde(rename = "BACKUP_NOT_FOUND")]
@@ -107,11 +116,19 @@ pub enum BackupFormat {
     ArchiveGz,
 }
 
-impl From<backup_metadata::BackupFormat> for BackupFormat {
-    fn from(value: backup_metadata::BackupFormat) -> Self {
+impl From<model::BackupFormat> for BackupFormat {
+    fn from(value: model::BackupFormat) -> Self {
         match value {
-            backup_metadata::BackupFormat::ArchiveGz => Self::ArchiveGz,
-            backup_metadata::BackupFormat::TarGz => Self::TarGz,
+            model::BackupFormat::ArchiveGz => Self::ArchiveGz,
+            model::BackupFormat::TarGz => Self::TarGz,
         }
     }
+}
+
+
+#[derive(Serialize)]
+pub struct BackupTargetResponse {
+    pub name: String,
+    pub kind: BackupTargetKind,
+    pub host: Option<String>,
 }

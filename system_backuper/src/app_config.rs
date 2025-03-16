@@ -1,12 +1,14 @@
+use crate::model::{BackupTargetKind, ConfiguredBackupTarget, CyclicBackup};
+
 pub struct AppConfig {
     pub mongodump_config_file_path: String,
     pub locks_directory: String,
     pub target_directory: String,
-    pub mongodb_uri: String,
     pub db_path: String,
     pub db_connection_pool_size: u32,
     pub server_port: u32,
-    pub cyclic_backup_mongodb_cron: String,
+    pub backup_targets: Vec<ConfiguredBackupTarget>,
+    pub cyclic_backups: Vec<CyclicBackup>,
 }
 
 impl AppConfig {
@@ -23,7 +25,8 @@ impl AppConfig {
             &Self::to_env_variable_name("TARGET_DIRECTORY"),
             "local/results",
         );
-        let mongodb_uri = env::read(&Self::to_env_variable_name("MONGODB_URI"));
+        let backup_targets = env::read(&Self::to_env_variable_name("BACKUP_TARGETS"));
+        let backup_targets = Self::parse_backup_targets(backup_targets);
         let db_path = env::read_or_default(
             &Self::to_env_variable_name("DB_PATH"),
             "local/db/db.sqlite3",
@@ -32,25 +35,81 @@ impl AppConfig {
             env::read_int_or_default(&Self::to_env_variable_name("DB_CONNECTION_POOL_SIZE"), 3);
         let server_port =
             env::read_int_or_default(&Self::to_env_variable_name("SERVER_PORT"), 2000);
-        let cyclic_backup_mongodb_cron = env::read_or_default(
-            &Self::to_env_variable_name("CYCLIC_BACKUP_MONGODB_CRON"),
-            "0 0 4 * * * *",
-        );
+        let cyclic_backups = env::read(&Self::to_env_variable_name("CYCLIC_BACKUPS"));
+        let cyclic_backups = Self::parse_cyclic_backups(cyclic_backups);
 
         Self {
             mongodump_config_file_path,
             locks_directory,
             target_directory,
-            mongodb_uri,
             db_path,
             db_connection_pool_size,
             server_port,
-            cyclic_backup_mongodb_cron,
+            backup_targets,
+            cyclic_backups,
         }
     }
 
     fn to_env_variable_name(key_suffix: &str) -> String {
         format!("SB_{key_suffix}")
+    }
+
+    fn parse_cyclic_backups(env_variable: String) -> Vec<CyclicBackup> {
+        env_variable
+            .split(";")
+            .filter(|part| !part.is_empty())
+            .map(|part| part.split(","))
+            .map(|parts| {
+                let parts: Vec<&str> = parts.collect();
+                if parts.len() != 2 {
+                    panic!(
+                        "Invalid number of coma-seperated elements in {}",
+                        parts.join(",")
+                    );
+                }
+                let target_name = parts[0].to_string();
+                let cron = parts[1].to_string();
+                CyclicBackup {
+                    target_name,
+                    cron_schedule: cron,
+                }
+            })
+            .collect()
+    }
+
+    fn parse_backup_targets(env_variable: String) -> Vec<ConfiguredBackupTarget> {
+        env_variable
+            .split(";")
+            .filter(|part| !part.is_empty())
+            .map(|part| part.split(","))
+            .map(|parts| {
+                let parts: Vec<&str> = parts.collect();
+                if parts.len() != 3 {
+                    panic!(
+                        "Invalid number of coma-seperated elements in {}",
+                        parts.join(",")
+                    );
+                }
+                let name = parts[0].to_string();
+                let backup_target: BackupTargetKind = BackupTargetKind::from(parts[1]);
+                let connection_string = parts[2].to_string();
+                ConfiguredBackupTarget {
+                    target_name: name,
+                    target_kind: backup_target,
+                    connection_string,
+                }
+            })
+            .collect()
+    }
+}
+
+impl From<&str> for BackupTargetKind {
+    fn from(value: &str) -> Self {
+        match value {
+            "MongoDB" => BackupTargetKind::MongoDB,
+            "Postgres" => BackupTargetKind::Postgres,
+            _ => panic!("Unexpected backup target {}", value),
+        }
     }
 }
 
