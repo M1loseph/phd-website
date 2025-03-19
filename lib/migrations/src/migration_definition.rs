@@ -1,7 +1,8 @@
+use anyhow::{anyhow, bail, Error, Result};
 use log::info;
 use std::{cmp::Ordering, fs::DirEntry, path::PathBuf};
 
-use super::{errors::MigrationError, semantic_version::SemanticVersion};
+use super::semantic_version::SemanticVersion;
 
 #[derive(Eq, PartialEq, Clone)]
 pub struct MigrationDefinition {
@@ -10,24 +11,22 @@ pub struct MigrationDefinition {
     pub script: String,
 }
 
-pub trait MigrationDefinitionFactory {
-    fn create_migrations(&self) -> Result<Vec<MigrationDefinition>, MigrationError>;
-}
-
-pub struct FileMigrationDefinitionFactory {
+pub struct FileMigrationDefinitionLoader {
     pub migration_files_directory: PathBuf,
     pub file_name_separator: String,
 }
 
-impl FileMigrationDefinitionFactory {
-    fn create_migration(&self, source: &DirEntry) -> Result<MigrationDefinition, MigrationError> {
+impl FileMigrationDefinitionLoader {
+    fn create_migration_definition_from_file(
+        &self,
+        source: &DirEntry,
+    ) -> Result<MigrationDefinition> {
         let file_name = source.file_name();
 
-        let file_name = file_name
-            .to_str()
-            .ok_or(MigrationError::UnparsableFileName {
-                file_name: file_name.clone(),
-            })?;
+        let file_name = file_name.to_str().ok_or(anyhow!(
+            "File with name `{:?}` is not a valid utf8 string",
+            file_name
+        ))?;
         info!("Reading migration file {file_name}");
         let script = std::fs::read_to_string(source.path())?;
         match file_name.split_once(&self.file_name_separator) {
@@ -45,25 +44,21 @@ impl FileMigrationDefinitionFactory {
                     script,
                 })
             }
-            None => Err(MigrationError::IncorrectFileName {
-                file_name: String::from(file_name),
-            }),
+            None => Err(anyhow!("File {file_name} does not have two expected parts")),
         }
     }
-}
 
-impl MigrationDefinitionFactory for FileMigrationDefinitionFactory {
-    fn create_migrations(&self) -> Result<Vec<MigrationDefinition>, MigrationError> {
+    pub fn find_all_migrations(&self) -> Result<Vec<MigrationDefinition>> {
         let mut migration_files = std::fs::read_dir(&self.migration_files_directory)?
-            .map(|entry| -> Result<MigrationDefinition, MigrationError> {
+            .map(|entry| -> Result<MigrationDefinition> {
                 let entry = entry?;
                 let path = entry.path();
                 if path.is_dir() {
-                    return Err(MigrationError::FolderInsideMigrationsFolder);
+                    bail!("There is a folder inside the migrations folder which is strictly forbidden.");
                 }
-                self.create_migration(&entry)
+                self.create_migration_definition_from_file(&entry)
             })
-            .collect::<Result<Vec<MigrationDefinition>, MigrationError>>()?;
+            .collect::<Result<Vec<MigrationDefinition>, Error>>()?;
         migration_files.sort();
         Ok(migration_files)
     }

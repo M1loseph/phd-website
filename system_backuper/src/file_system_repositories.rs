@@ -1,22 +1,23 @@
 use std::{
-    collections::HashMap,
     error::Error as StdError,
     fmt::{Debug, Display},
     fs::{self, File},
     io::{ErrorKind, Write},
     num::ParseIntError,
     path::Path,
-    sync::{Mutex, MutexGuard},
 };
 
-use crate::model::{
-    Backup, BackupFormat, BackupId, BackupMetadata, BackupMetadataRepository, BackupRepository,
-    BackupTargetKind, BackupType, RepositoryError, RepositoryResult,
+use crate::{
+    connection_pool::ConnectionPool,
+    model::{
+        Backup, BackupFormat, BackupId, BackupMetadata, BackupMetadataRepository, BackupRepository,
+        BackupTargetKind, BackupType, RepositoryError, RepositoryResult,
+    },
 };
 use crate::{errorstack::to_error_stack, model::BackupTarget};
 use log::info;
 use rusqlite::Error as RustqliteError;
-use rusqlite::{params, Connection, ErrorCode, Row};
+use rusqlite::{params, ErrorCode, Row};
 
 static MONGODB_DIR: &str = "mongodb";
 static POSTGRES_DIR: &str = "postgres";
@@ -66,39 +67,12 @@ impl<'a> TryFrom<&Row<'a>> for BackupMetadata {
 }
 
 pub struct SQLiteBackupMetadataRepository {
-    connection_pool: HashMap<u32, Mutex<Connection>>,
+    connection_pool: ConnectionPool,
 }
 
 impl SQLiteBackupMetadataRepository {
-    pub fn new(sqlite_path: String, connection_pool: u32) -> RepositoryResult<Self> {
-        let sqlite_path = Path::new(&sqlite_path);
-        if let Some(parent) = sqlite_path.parent() {
-            fs::create_dir_all(parent).map_err(|err| RepositoryError::Unknown(Box::new(err)))?;
-        }
-        let connections = (0..connection_pool)
-            .into_iter()
-            .map(|_| Connection::open(&sqlite_path).map_err(|e| RepositoryError::from(e)))
-            .collect::<RepositoryResult<Vec<Connection>>>()?;
-
-        let pool = connections
-            .into_iter()
-            .enumerate()
-            .map(|(i, conn)| (i as u32, Mutex::new(conn)))
-            .collect();
-
-        Ok(Self {
-            connection_pool: pool,
-        })
-    }
-
-    fn get_pool_connection(&self) -> MutexGuard<Connection> {
-        // Unwrapping here seems ok. It is said on reddit and rust forum that accessing poisoned data should
-        // lead to panick.
-        //
-        // https://users.rust-lang.org/t/should-i-unwrap-a-mutex-lock/61519
-        // https://www.reddit.com/r/rust/comments/xy2rkl/whats_the_best_way_to_avoid_an_unwrap_of_a_mutex/
-        let index = rand::random::<u32>() % self.connection_pool.len() as u32;
-        self.connection_pool[&index].lock().unwrap()
+    pub fn new(connection_pool: ConnectionPool) -> RepositoryResult<Self> {
+        Ok(Self { connection_pool })
     }
 }
 
@@ -108,7 +82,7 @@ impl BackupMetadataRepository for SQLiteBackupMetadataRepository {
             INSERT INTO "backup_metadata"("backup_id", "created_at", "backup_size_bytes", "backup_target_kind", "backup_target_name", "backup_type", "backup_format")
             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)
         "#;
-        let connection = self.get_pool_connection();
+        let connection = self.connection_pool.get_random_connection();
         let mut statement = connection.prepare(query)?;
 
         let query_result = statement.execute(params![
@@ -123,7 +97,9 @@ impl BackupMetadataRepository for SQLiteBackupMetadataRepository {
         query_result.map(|_| ()).map_err(|err| {
             if let RustqliteError::SqliteFailure(err, message) = &err {
                 let message = message.as_deref();
-                if err.code == ErrorCode::ConstraintViolation && message == Some(PRIMARY_KEY_CONSTRAINT_VIOLATION_ERROR_MESSAGE) {
+                if err.code == ErrorCode::ConstraintViolation
+                    && message == Some(PRIMARY_KEY_CONSTRAINT_VIOLATION_ERROR_MESSAGE)
+                {
                     return RepositoryError::IdAlreadyExists {
                         id: backup_metadata.backup_id,
                     };
@@ -139,7 +115,7 @@ impl BackupMetadataRepository for SQLiteBackupMetadataRepository {
             FROM "backup_metadata"
             WHERE "backup_id" = ?1
         "#;
-        let connection = self.get_pool_connection();
+        let connection = self.connection_pool.get_random_connection();
         let mut statement = connection.prepare(query)?;
         let mut query_result = statement.query(params![id.to_string()])?;
         let backup_metadata = query_result
@@ -156,7 +132,7 @@ impl BackupMetadataRepository for SQLiteBackupMetadataRepository {
             SELECT "backup_id", "created_at", "backup_size_bytes", "backup_target_kind", "backup_target_name", "backup_type", "backup_format"
             FROM "backup_metadata"
         "#;
-        let connection = self.get_pool_connection();
+        let connection = self.connection_pool.get_random_connection();
         let mut connection = connection.prepare(query)?;
         let rows = connection.query(params![])?;
         rows.and_then(|row| BackupMetadata::try_from(row)).collect()
@@ -167,7 +143,7 @@ impl BackupMetadataRepository for SQLiteBackupMetadataRepository {
             DELETE FROM "backup_metadata"
             WHERE "backup_id" = ?1
         "#;
-        let connection = self.get_pool_connection();
+        let connection = self.connection_pool.get_random_connection();
         let mut statement = connection.prepare(query)?;
         let affected_rows = statement.execute(params![id.to_string()])?;
         return Ok(affected_rows == 1);

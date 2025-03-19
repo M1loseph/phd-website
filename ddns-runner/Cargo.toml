@@ -5,6 +5,7 @@ edition = "2021"
 
 [dependencies]
 dotenv = { path = "../lib/dotenv" }
+migrations = { path = "../lib/migrations" }
 iron = "0.6.1"
 # TODO: minimize the feature list
 tokio = { version = "1", features = ["full"] }

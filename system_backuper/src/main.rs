@@ -1,4 +1,5 @@
 mod app_config;
+mod connection_pool;
 mod endpoints;
 mod errorstack;
 mod file_system_repositories;
@@ -9,6 +10,7 @@ mod process;
 mod services;
 
 use app_config::AppConfig;
+use connection_pool::ConnectionPool;
 use dotenv;
 use endpoints::{
     ConfiguredTargetsReadAllEndpoint, CreateBackupEndpoint, MongoDBReadAllBackups,
@@ -18,24 +20,35 @@ use file_system_repositories::{FileSystemBackupRepository, SQLiteBackupMetadataR
 use iron::Iron;
 use jobs::{CronJobs, ScheduledBackupJob};
 use lock::LockManager;
+use migrations::{MigrationRunner, MigrationRunnerConfiguration, SqliteClientAdapter};
 use router::Router;
 use services::{
     BackuppingService, MongoDBCompressedBackupStrategy, PostgresCompressedBackupStrategy,
 };
 use std::sync::{atomic::AtomicBool, Arc};
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
     dotenv::read_env_file();
     env_logger::init();
 
     let app_config = AppConfig::create_from_environment();
 
+    let sqlite_connection_pool =
+        ConnectionPool::new(&app_config.db_path, app_config.db_connection_pool_size)?;
+
+    {
+        let connection = sqlite_connection_pool.get_random_connection();
+        let sqlite_adapter = SqliteClientAdapter::new(&connection);
+        let migrator =
+            MigrationRunner::new(MigrationRunnerConfiguration::default(), sqlite_adapter)?;
+        migrator.run_migrations().await?;
+    }
+
     let lock_manager = Arc::new(LockManager::new(app_config.locks_directory).unwrap());
     let backup_repository = Arc::new(FileSystemBackupRepository::new(app_config.target_directory));
-    let backup_metadata_repoository = Arc::new(
-        SQLiteBackupMetadataRepository::new(app_config.db_path, app_config.db_connection_pool_size)
-            .unwrap(),
-    );
+    let backup_metadata_repoository =
+        Arc::new(SQLiteBackupMetadataRepository::new(sqlite_connection_pool).unwrap());
 
     let mongodb_strategy = Arc::new(
         MongoDBCompressedBackupStrategy::new(app_config.mongodump_config_file_path).unwrap(),
