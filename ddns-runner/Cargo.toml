@@ -5,12 +5,11 @@ edition = "2021"
 
 [dependencies]
 dotenv = { path = "../lib/dotenv" }
-migrations = { path = "../lib/migrations" }
+migrations = { path = "../lib/migrations", features = [ "postgres" ] }
 iron = "0.6.1"
 # TODO: minimize the feature list
 tokio = { version = "1", features = ["full"] }
-# TODO: remove this feature if possible (not being used)
-reqwest = { version = "0.12", features = ["json"] }
+reqwest = { version = "0.12" }
 log = "0.4.21"
 env_logger = "0.11.2"
 prometheus = "0.13.3"
