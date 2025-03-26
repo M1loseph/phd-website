@@ -17,17 +17,22 @@ interface AppOpenedEventRepositoryCustom {
 }
 
 @Repository
-interface AppOpenedEventRepository : ReactiveCrudRepository<AppOpenedEvent, ObjectId>, AppOpenedEventRepositoryCustom
+interface AppOpenedEventRepository :
+  ReactiveCrudRepository<AppOpenedEvent, ObjectId>,
+  AppOpenedEventRepositoryCustom
 
 @Repository
 interface PageOpenedEventRepository : ReactiveCrudRepository<PageOpenedEvent, ObjectId>
 
 @Component
-class AppOpenedEventRepositoryCustomImpl(val mongoOperations: ReactiveMongoOperations) : AppOpenedEventRepositoryCustom {
+class AppOpenedEventRepositoryCustomImpl(
+  val mongoOperations: ReactiveMongoOperations,
+) : AppOpenedEventRepositoryCustom {
   override fun existsBySessionId(sessionId: SessionId): Mono<Boolean> {
     val searchBySessionIdQuery = query(where(AppOpenedEvent::sessionId).`is`(sessionId.rawValue))
 
-    return mongoOperations.count(searchBySessionIdQuery, AppOpenedEvent::class.java)
+    return mongoOperations
+      .count(searchBySessionIdQuery, AppOpenedEvent::class.java)
       .map { it > 0 }
   }
 }

@@ -2,7 +2,9 @@ package io.github.m1loseph.phdwebsiteanalyticsserver.services.analytics.model
 
 import org.slf4j.LoggerFactory
 
-class InvalidVersionException(message: String) : RuntimeException(message)
+class InvalidVersionException(
+  val invalidVersion: String,
+) : RuntimeException()
 
 data class AppVersion(
   val major: Int,

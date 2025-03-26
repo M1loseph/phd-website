@@ -17,14 +17,17 @@ import redis.clients.jedis.JedisPool
 import java.net.URI
 
 @Configuration
-class SmokeTestsConfig(private val meterRegistry: MeterRegistry) {
+class SmokeTestsConfig(
+  private val meterRegistry: MeterRegistry,
+) {
   @Value("\${spring.data.mongodb.uri}")
   lateinit var connectionString: String
 
   @Bean
   fun smokeTestsService(jedisPool: JedisPool): SmokeTestsService {
     val uri =
-      UriBuilder.fromURI(URI(connectionString))
+      UriBuilder
+        .fromURI(URI(connectionString))
         .withQueryParameter("serverSelectionTimeoutMS", "1000")
         .withQueryParameter("connectTimeoutMS", "1000")
         .withQueryParameter("socketTimeoutMS", "1000")
@@ -43,15 +46,15 @@ class SmokeTestsConfig(private val meterRegistry: MeterRegistry) {
     val customTagsForCommands = MongoCommandConnectionNameTagsProvider(TEST_CONNECTION_NAME)
 
     return MongoClients.create(
-      MongoClientSettings.builder()
+      MongoClientSettings
+        .builder()
         .applyConnectionString(connectionString)
         .addCommandListener(MongoMetricsCommandListener(meterRegistry, customTagsForCommands))
         .applyToConnectionPoolSettings {
           it.addConnectionPoolListener(
             MongoMetricsConnectionPoolListener(meterRegistry, customTagsForConnectionPool),
           )
-        }
-        .build(),
+        }.build(),
     )
   }
 

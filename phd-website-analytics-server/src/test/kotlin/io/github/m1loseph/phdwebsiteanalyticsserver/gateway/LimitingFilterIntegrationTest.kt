@@ -34,8 +34,7 @@ class LimitingFilterIntegrationTest : RedisAndMongoFixture() {
             "environment": "github_pages"
           }
         """,
-        )
-        .header("x-forwarded-for", "200.200.200.200")
+        ).header("x-forwarded-for", "200.200.200.200")
         .exchange()
         .expectStatus()
         .value { status ->

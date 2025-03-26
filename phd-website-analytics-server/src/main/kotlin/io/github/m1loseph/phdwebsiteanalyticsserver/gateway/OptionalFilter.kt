@@ -6,8 +6,10 @@ import org.springframework.web.server.WebFilter
 import org.springframework.web.server.WebFilterChain
 import reactor.core.publisher.Mono
 
-class OptionalFilter(private val rule: (RequestPath) -> Boolean, private val delegate: WebFilter) :
-  WebFilter {
+class OptionalFilter(
+  private val rule: (RequestPath) -> Boolean,
+  private val delegate: WebFilter,
+) : WebFilter {
   override fun filter(
     exchange: ServerWebExchange,
     chain: WebFilterChain,

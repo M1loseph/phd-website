@@ -3,9 +3,11 @@ package io.github.m1loseph.phdwebsiteanalyticsserver.services.limiting.impl
 import io.github.m1loseph.phdwebsiteanalyticsserver.services.limiting.config.BucketConfiguration
 import java.time.Clock
 
-class TokenBucketFactory(private val clock: Clock) {
-  fun createTokenBucket(bucketConfiguration: BucketConfiguration): TokenBucket {
-    return TokenBucket(
+class TokenBucketFactory(
+  private val clock: Clock,
+) {
+  fun createTokenBucket(bucketConfiguration: BucketConfiguration): TokenBucket =
+    TokenBucket(
       limit = bucketConfiguration.capacity,
       refillTime = bucketConfiguration.refillInterval,
       refillAmount = bucketConfiguration.refillAmount,
@@ -13,10 +15,9 @@ class TokenBucketFactory(private val clock: Clock) {
       currentValue = bucketConfiguration.capacity,
       clock = clock,
     )
-  }
 
-  fun createTokenBucketFromSnapshot(tokenBucketState: TokenBucketSnapshot): TokenBucket {
-    return TokenBucket(
+  fun createTokenBucketFromSnapshot(tokenBucketState: TokenBucketSnapshot): TokenBucket =
+    TokenBucket(
       limit = tokenBucketState.limit,
       refillTime = tokenBucketState.refillTime,
       refillAmount = tokenBucketState.refillAmount,
@@ -24,5 +25,4 @@ class TokenBucketFactory(private val clock: Clock) {
       currentValue = tokenBucketState.currentValue,
       clock = clock,
     )
-  }
 }

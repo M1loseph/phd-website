@@ -14,13 +14,9 @@ class LimitingService(
 ) {
   private val mutexes: List<Mutex> = (0..<NUMBER_OF_MUTEXES).toList().map { Mutex() }
 
-  suspend fun incrementUsageForIpAddress(ipAddress: IpAddressBucketId): TokenAcquireResult {
-    return findOrCreateBucket(ipAddress, singleIpConfig)
-  }
+  suspend fun incrementUsageForIpAddress(ipAddress: IpAddressBucketId): TokenAcquireResult = findOrCreateBucket(ipAddress, singleIpConfig)
 
-  suspend fun incrementGlobalUsage(): TokenAcquireResult {
-    return findOrCreateBucket(GlobalBucketId, globalConfig)
-  }
+  suspend fun incrementGlobalUsage(): TokenAcquireResult = findOrCreateBucket(GlobalBucketId, globalConfig)
 
   private suspend fun findOrCreateBucket(
     key: BucketId,
@@ -49,6 +45,5 @@ fun hashCodeHash(bucketId: BucketId): Int {
     hash + 1
   } else {
     hash
-  }
-    .absoluteValue
+  }.absoluteValue
 }

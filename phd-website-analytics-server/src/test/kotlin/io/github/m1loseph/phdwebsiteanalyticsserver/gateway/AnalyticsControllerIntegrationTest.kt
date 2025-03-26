@@ -40,8 +40,7 @@ class AnalyticsControllerIntegrationTest : RedisAndMongoFixture() {
                     "sessionId": "d7e9a4ae-3582-4b6c-8e6c-dadc38585ecc"
                 }
                 """,
-      )
-      .header("x-forwarded-for", "200.200.200.200")
+      ).header("x-forwarded-for", "200.200.200.200")
       .exchange()
       .expectStatus()
       .isEqualTo(400)
@@ -61,8 +60,7 @@ class AnalyticsControllerIntegrationTest : RedisAndMongoFixture() {
                     "environment": "pwr_server"
                 }
                 """,
-        )
-        .header("x-forwarded-for", "200.200.200.200")
+        ).header("x-forwarded-for", "200.200.200.200")
         .exchange()
         .expectStatus()
         .isEqualTo(201)
@@ -85,8 +83,7 @@ class AnalyticsControllerIntegrationTest : RedisAndMongoFixture() {
                     "sessionId": "$rawSessionId"
                 }
                 """,
-      )
-      .header("x-forwarded-for", "200.200.200.200")
+      ).header("x-forwarded-for", "200.200.200.200")
       .exchange()
       .expectStatus()
       .isEqualTo(201)
@@ -106,8 +103,7 @@ class AnalyticsControllerIntegrationTest : RedisAndMongoFixture() {
                     "sessionId": "0b6cb58b-7074-4025-9eeb-24c67c441d2f"
                 }
                 """,
-      )
-      .header("x-forwarded-for", "200.200.200.200")
+      ).header("x-forwarded-for", "200.200.200.200")
       .exchange()
       .expectStatus()
       .isEqualTo(400)

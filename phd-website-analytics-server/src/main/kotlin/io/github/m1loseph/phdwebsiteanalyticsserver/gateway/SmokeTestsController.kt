@@ -10,20 +10,20 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/internal/tests/smoke")
-class SmokeTestsController(private val smokeTestsService: SmokeTestsService) {
+class SmokeTestsController(
+  private val smokeTestsService: SmokeTestsService,
+) {
   @GetMapping("/redis")
-  suspend fun testIfConnectionToRedisIsAlive(): ResponseEntity<Void> {
-    return when (smokeTestsService.testIfConnectionToRedisIsAlive()) {
+  suspend fun testIfConnectionToRedisIsAlive(): ResponseEntity<Void> =
+    when (smokeTestsService.testIfConnectionToRedisIsAlive()) {
       SmokeTestResult.OK -> ResponseEntity(HttpStatus.OK)
       SmokeTestResult.ERROR -> ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR)
     }
-  }
 
   @GetMapping("/mongodb")
-  suspend fun testIfConnectionToMongodbIsAlive(): ResponseEntity<Void> {
-    return when (smokeTestsService.testIfConnectionToMongodbIsAlive()) {
+  suspend fun testIfConnectionToMongodbIsAlive(): ResponseEntity<Void> =
+    when (smokeTestsService.testIfConnectionToMongodbIsAlive()) {
       SmokeTestResult.OK -> ResponseEntity(HttpStatus.OK)
       SmokeTestResult.ERROR -> ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR)
     }
-  }
 }

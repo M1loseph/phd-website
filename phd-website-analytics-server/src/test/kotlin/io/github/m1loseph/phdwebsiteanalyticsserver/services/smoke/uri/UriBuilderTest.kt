@@ -9,7 +9,8 @@ class UriBuilderTest {
   fun givenUriWithoutQueryParameters_whenNewParametersAreAdded_thenShouldHaveInResultingUri() {
     val uri = URI("http://website.com")
     val uriWithQuery =
-      UriBuilder.fromURI(uri)
+      UriBuilder
+        .fromURI(uri)
         .withQueryParameter("query1", "value1")
         .withQueryParameter("query2", "value2")
         .build()

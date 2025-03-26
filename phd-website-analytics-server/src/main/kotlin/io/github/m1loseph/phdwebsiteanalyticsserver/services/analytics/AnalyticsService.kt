@@ -57,9 +57,9 @@ class AnalyticsService(
     createPageOpenedEventDto: CreatePageOpenedEventDto,
     userAgent: UserAgentName?,
   ): PageOpenedEvent {
-    val sessionId = SessionId(createPageOpenedEventDto.sessionId)
+    val sessionId = SessionId(createPageOpenedEventDto.sessionId.value)
     if (!appOpenedEventRepository.existsBySessionId(sessionId).awaitSingle()) {
-      throw SessionNotFoundException("Session ${sessionId.rawValue} was not established yet")
+      throw SessionNotFoundException(sessionId)
     }
     val entity =
       PageOpenedEvent(
@@ -73,7 +73,7 @@ class AnalyticsService(
             PageNameDto.TEACHING -> PageName.TEACHING
           },
         insertedAt = serverClock.instant(),
-        sessionId = SessionId(createPageOpenedEventDto.sessionId),
+        sessionId = SessionId(createPageOpenedEventDto.sessionId.value),
       )
     logger.info("Saving PageOpenedEvent event: {}", entity)
     return pageOpenedEventRepository.save(entity).awaitSingle()
@@ -84,4 +84,6 @@ class AnalyticsService(
   }
 }
 
-class SessionNotFoundException(message: String) : RuntimeException(message)
+class SessionNotFoundException(
+  val sessionId: SessionId,
+) : RuntimeException()
