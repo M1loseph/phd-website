@@ -40,8 +40,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     {
         let connection = sqlite_connection_pool.get_random_connection();
         let sqlite_adapter = SqliteClientAdapter::new(&connection);
-        let migrator =
-            MigrationRunner::new(MigrationRunnerConfiguration::default(), sqlite_adapter)?;
+        let migrator = MigrationRunner::new(
+            MigrationRunnerConfiguration::default(),
+             sqlite_adapter
+        );
         migrator.run_migrations().await?;
     }
 
