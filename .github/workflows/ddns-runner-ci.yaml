@@ -1,13 +1,17 @@
 name: DDNS-Runner Deployment
 on:
+  pull_request:
+    branches: [master]
+    paths: 
+      - 'ddns-runner/**'
   push:
     tags:
-      - "ddns-runner/*"
+      - 'ddns-runner/*'
 jobs:
   test:
     outputs: 
       ddns-version: ${{ steps.determine_version.outputs.version }}
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     steps:
       - name: Checkout repo
@@ -27,7 +31,8 @@ jobs:
 
   docker:
     needs: test
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
+    if: ${{ startsWith(github.ref, 'refs/tags/ddns-runner/') }}
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
