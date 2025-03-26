@@ -1,13 +1,15 @@
-name: DDNS-Runner Deployment
+name: DDNS-Runner Continuous Integration And Artifact Publishing
 on:
+  pull_request:
+    branches: [master]
+    paths: 
+      - 'ddns-runner/**'
   push:
     tags:
-      - "ddns-runner/*"
+      - 'ddns-runner/*'
 jobs:
-  test:
-    outputs: 
-      ddns-version: ${{ steps.determine_version.outputs.version }}
-    runs-on: ubuntu-latest
+  build-and-test:
+    runs-on: self-hosted
 
     steps:
       - name: Checkout repo
@@ -16,18 +18,21 @@ jobs:
       - name: Setup rust toolchain
         uses: actions-rust-lang/setup-rust-toolchain@v1
 
+      - name: Install OpenSSL dependencies
+        run: sudo apt install -y pkg-config libssl-dev
+
+      - name: Build app in debug
+        working-directory: ddns-runner
+        run: cargo build
+
       - name: Run tests
-        working-directory: backend/ddns-runner/ddns-runner
+        working-directory: ddns-runner
         run: cargo test
 
-      - name: Determine version
-        id: determine_version
-        working-directory: backend/ddns-runner/ddns-runner
-        run: echo "version=$(./tools/current-version.sh)" >> "$GITHUB_OUTPUT"
-
-  docker:
-    needs: test
-    runs-on: ubuntu-latest
+  publish-to-dockerub:
+    needs: build-and-test
+    runs-on: self-hosted
+    if: ${{ startsWith(github.ref, 'refs/tags/ddns-runner/') }}
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -44,12 +49,15 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Determine version
+        id: determine_version
+        working-directory: ddns-runner
+        run: echo "DDNS_VERSION=$(./tools/current-version.sh)" >> "$GITHUB_ENV"
+
       - name: Build and push
         uses: docker/build-push-action@v6
-        env:
-          DDNS_VERSION: ${{ needs.test.outputs.ddns-version }}
         with:
-          context: backend/ddns-runner/ddns-runner
+          context: ddns-runner
           platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/ddns-runner:${{ env.DDNS_VERSION }}

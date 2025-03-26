@@ -1,6 +1,5 @@
 mod config;
 mod duck_dns_client;
-mod migrations;
 mod prometheus_handler;
 mod system_metrics_task;
 mod update_ip_task;
@@ -10,7 +9,7 @@ use std::sync::Arc;
 
 use duck_dns_client::client::{DuckDnsClient, DuckDnsConfig};
 use iron::Iron;
-use migrations::migration_runner::{MigrationRunner, MigrationRunnerConfiguration};
+use migrations::{MigrationRunner, MigrationRunnerConfiguration, PostgresSQLClientAdapter};
 use prometheus_handler::PrometheusExporter;
 use router::Router;
 use system_metrics_task::PrometheusSystemInfoMetricsTask;
@@ -47,8 +46,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     {
         let mut runner_config = MigrationRunnerConfiguration::default();
         runner_config.migrations_files_directory = PathBuf::from(config.migration_files_directory);
+        let postgres_adapter = PostgresSQLClientAdapter::new(&postgres_client);
         let runner =
-            MigrationRunner::new(runner_config, &postgres_client).await?;
+            MigrationRunner::new(runner_config, postgres_adapter);
         runner.run_migrations().await?;
     }
 

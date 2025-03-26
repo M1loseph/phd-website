@@ -1,4 +1,4 @@
-name: Analytics Server Continuous Integration And Artifact Publisher
+name: Analytics Server Continuous Integration And Artifact Publishing
 on:
   pull_request:
     branches: [master]
@@ -10,11 +10,10 @@ on:
     branches: [master]
     paths: 
       - 'phd-website-analytics-server/**'
-  workflow_call:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     steps:
       - name: Checkout repo
