@@ -18,10 +18,10 @@ jobs:
       - name: Setup rust toolchain
         uses: actions-rust-lang/setup-rust-toolchain@v1
 
-      - name: Run tests
-        working-directory: system-backupper
-        run: cargo test
-
       - name: Build app in debug
         working-directory: system-backupper
         run: cargo build
+
+      - name: Run tests
+        working-directory: system-backupper
+        run: cargo test

@@ -18,13 +18,16 @@ jobs:
       - name: Setup rust toolchain
         uses: actions-rust-lang/setup-rust-toolchain@v1
 
-      - name: Run tests
-        working-directory: ddns-runner
-        run: cargo test
+      - name: Install OpenSSL dependencies
+        run: sudo apt install -y pkg-config libssl-dev
 
       - name: Build app in debug
         working-directory: ddns-runner
         run: cargo build
+
+      - name: Run tests
+        working-directory: ddns-runner
+        run: cargo test
 
   publish-to-dockerub:
     needs: build-and-test
