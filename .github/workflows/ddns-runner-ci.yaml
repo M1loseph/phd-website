@@ -1,4 +1,4 @@
-name: DDNS-Runner Deployment
+name: DDNS-Runner Continuous Integration And Artifact Publishing
 on:
   pull_request:
     branches: [master]
@@ -8,9 +8,7 @@ on:
     tags:
       - 'ddns-runner/*'
 jobs:
-  test:
-    outputs: 
-      ddns-version: ${{ steps.determine_version.outputs.version }}
+  build-and-test:
     runs-on: self-hosted
 
     steps:
@@ -21,15 +19,14 @@ jobs:
         uses: actions-rust-lang/setup-rust-toolchain@v1
 
       - name: Run tests
-        working-directory: backend/ddns-runner/ddns-runner
+        working-directory: ddns-runner
         run: cargo test
 
-      - name: Determine version
-        id: determine_version
-        working-directory: backend/ddns-runner/ddns-runner
-        run: echo "version=$(./tools/current-version.sh)" >> "$GITHUB_OUTPUT"
+      - name: Build app in debug
+        working-directory: ddns-runner
+        run: cargo build
 
-  docker:
+  publish-to-dockerub:
     needs: test
     runs-on: self-hosted
     if: ${{ startsWith(github.ref, 'refs/tags/ddns-runner/') }}
@@ -49,12 +46,15 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Determine version
+        id: determine_version
+        working-directory: ddns-runner
+        run: echo "DDNS_VERSION=$(./tools/current-version.sh)" >> "$GITHUB_ENV"
+
       - name: Build and push
         uses: docker/build-push-action@v6
-        env:
-          DDNS_VERSION: ${{ needs.test.outputs.ddns-version }}
         with:
-          context: backend/ddns-runner/ddns-runner
+          context: ddns-runner
           platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/ddns-runner:${{ env.DDNS_VERSION }}

@@ -1,4 +1,4 @@
-name: Analytics Server Continuous Integration And Artifact Publisher
+name: Analytics Server Continuous Integration And Artifact Publishing
 on:
   pull_request:
     branches: [master]
