@@ -1,11 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:phd_website/components/adapters/platform_aware_svg_adapter.dart';
 import 'package:phd_website/components/body_text.dart';
 import 'package:phd_website/components/clickable_link.dart';
 import 'package:phd_website/constants.dart';
+import 'package:phd_website/l10n/app_localizations.dart';
 import 'package:phd_website/layouts/scrollable_page_layout.dart';
 import 'package:phd_website/layouts/spaced_list_layout.dart';
 import 'package:phd_website/services/body_text_style_service.dart';
@@ -18,11 +18,11 @@ class ContactPage extends StatelessWidget {
   static const linkedinLogoPath = 'images/linkedin_logo.svg';
   static const stravaLogoPath = 'images/strava_logo.svg';
 
-  static const email = 'bogna.jaszczak@pwr.edu.pl';
+  static const email = 'bogna.jaszczak-dyka@pwr.edu.pl';
   static final stravaLink =
       Uri.parse('https://www.strava.com/athletes/74296734');
   static final linkedInLink =
-      Uri.parse('https://www.linkedin.com/in/bogna-jaszczak-228aab1b4/');
+      Uri.parse('https://www.linkedin.com/in/bogna-jaszczak-dyka-228aab1b4/');
 
   const ContactPage({super.key});
 

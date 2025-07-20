@@ -2,10 +2,10 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:phd_website/build_properties/build_properties.dart';
+import 'package:phd_website/l10n/app_localizations.dart';
 import 'package:phd_website/pages/contact_page.dart';
 import 'package:phd_website/services/body_text_style_service.dart';
 import 'package:phd_website/services/clipboard_service.dart';
@@ -62,6 +62,6 @@ void main() {
     await tester.tap(find.byIcon(Icons.copy));
 
     // Then
-    expect(clipboardService.copiedValue, 'bogna.jaszczak@pwr.edu.pl');
+    expect(clipboardService.copiedValue, 'bogna.jaszczak-dyka@pwr.edu.pl');
   });
 }
