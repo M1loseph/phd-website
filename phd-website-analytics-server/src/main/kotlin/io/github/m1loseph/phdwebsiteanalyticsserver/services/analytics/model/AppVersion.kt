@@ -16,7 +16,6 @@ data class AppVersion(
   companion object {
     private val logger = LoggerFactory.getLogger(AppVersion::class.java)
 
-    // TODO: benchmark it
     // TODO: write a version with splitting and compare performance
     fun parse(version: String): AppVersion {
       if (version.isEmpty()) {

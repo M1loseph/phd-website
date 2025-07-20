@@ -7,6 +7,7 @@ plugins {
   kotlin("plugin.spring") version "2.1.20"
 
   // Custom plugins
+  id("me.champeau.jmh") version "0.7.2"
   id("com.diffplug.spotless") version "7.0.2"
   id("com.google.cloud.tools.jib") version "3.4.5"
 }
