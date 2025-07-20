@@ -1,11 +1,11 @@
 {
-    "name": "Bogna Jaszczak",
-    "short_name": "Bogna Jaszczak",
+    "name": "Bogna Jaszczak-Dyka",
+    "short_name": "Bogna Jaszczak-Dyka",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "Bogna Jaszczak personal website",
+    "description": "Bogna Jaszczak-Dyka personal website",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:http/http.dart';
 import 'package:phd_website/build_properties/build_properties.dart';
@@ -8,6 +7,7 @@ import 'package:phd_website/components/app_title_updater.dart';
 import 'package:phd_website/components/cookies/cookie_popup.dart';
 import 'package:phd_website/components/selectable_stack.dart';
 import 'package:phd_website/components/sweetie_easter_egg.dart';
+import 'package:phd_website/l10n/app_localizations.dart';
 import 'package:phd_website/layouts/navigation_layout.dart';
 import 'package:phd_website/pages/consultation_page.dart';
 import 'package:phd_website/pages/contact_page.dart';

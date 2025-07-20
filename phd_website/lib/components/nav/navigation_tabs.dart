@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:phd_website/components/nav/section_navigation.dart';
+import 'package:phd_website/l10n/app_localizations.dart';
 import 'package:phd_website/layouts/responsive_layout.dart';
 
 class _NavigationDestination {
