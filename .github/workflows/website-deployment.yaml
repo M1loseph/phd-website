@@ -39,4 +39,4 @@ jobs:
       - name: Disconnect from VPN
         if: always()
         run: |
-          echo ${{ secrets.SUDO_PASSWORD }} | sudo -S killall openconnect
+          echo ${{ secrets.SUDO_PASSWORD }} | sudo -S killall -s SIGINT openconnect
