@@ -1,8 +1,9 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:phd_website/components/adapters/platform_aware_svg_adapter.dart';
+import 'package:phd_website/components/body_text.dart';
 import 'package:phd_website/components/clickable_link.dart';
+import 'package:phd_website/components/new_card_link.dart';
 import 'package:phd_website/constants.dart';
 import 'package:phd_website/l10n/app_localizations.dart';
 import 'package:phd_website/layouts/scrollable_page_layout.dart';
@@ -21,8 +22,26 @@ class ResearchPage extends StatelessWidget {
 
     final conferences = [
       Conference(
-        conferenceName: locale
-            .pageResearch_52ConferenceOnApplicationsOfMathematicsConferenceName,
+        conferenceName:
+            'Recent Advances in Applied Mathematics',
+        website: 'https://sites.google.com/pwr.edu.pl/raam-wroclaw-2024/',
+        talkTitle:
+            'From equations to elevations: optimizing the trail running strategy',
+        begin: DateTime(2024, DateTime.december, 6),
+        end: DateTime(2024, DateTime.december, 7),
+        location: 'Wrocław',
+      ),
+      Conference(
+        conferenceName:
+            'On the Trails of Mathematics: Cecylia Krieger-Dunaj and Her successors',
+        website: 'https://sites.google.com/impan.pl/otowim24',
+        talkTitle: 'A unified model for blood and lymph flow',
+        begin: DateTime(2024, DateTime.november, 8),
+        end: DateTime(2024, DateTime.november, 11),
+        location: 'Będlewo',
+      ),
+      Conference(
+        conferenceName: '51st Conference on Applications of Mathematics',
         website: 'https://sites.google.com/view/lii-kzm/strona-glowna',
         talkTitle:
             'From equations to elevations: optimizing the trail running strategy',
@@ -31,8 +50,7 @@ class ResearchPage extends StatelessWidget {
         location: 'Kościelisko',
       ),
       Conference(
-        conferenceName: locale
-            .pageResearch_XIIForumOfPartialDifferentialEquationsConferenceName,
+        conferenceName: 'XIII Forum of Partial Differential Equations',
         website: 'https://sites.google.com/impan.pl/xiiifpde/',
         talkTitle: 'A unified model for blood and lymph flow',
         begin: DateTime(2024, DateTime.june, 23),
@@ -40,8 +58,7 @@ class ResearchPage extends StatelessWidget {
         location: 'Będlewo',
       ),
       Conference(
-        conferenceName: locale
-            .pageResearch_51ConferenceOnApplicationsOfMathematicsConferenceName,
+        conferenceName: '51st Conference on Applications of Mathematics',
         website: 'https://sites.google.com/view/51-kzm/',
         talkTitle: 'Mathematical modelling of trail running',
         begin: DateTime(2023, DateTime.september, 10),
@@ -49,7 +66,7 @@ class ResearchPage extends StatelessWidget {
         location: 'Kościelisko',
       ),
       Conference(
-        conferenceName: locale.pageResearch_Ecmi2023ConferenceName,
+        conferenceName: 'ECMI Conference on Industrial and Applied Mathematics',
         website: 'https://ecmi2023.org/',
         talkTitle: 'Modeling Trail Running',
         begin: DateTime(2023, DateTime.july, 26),
@@ -62,7 +79,8 @@ class ResearchPage extends StatelessWidget {
       Publication(
         title:
             'Optimal strategy for trail running with nutrition and fatigue factors',
-        archiveUri: 'https://arxiv.org/abs/2401.02919',
+        publicationUri: 'https://epubs.siam.org/doi/abs/10.1137/24M1629936',
+        preprintUri: 'https://arxiv.org/abs/2401.02919',
         publicationDate: DateTime(2024, 1, 5),
         coauthors: ['Łukasz Płociniczak'],
       ),
@@ -75,28 +93,15 @@ class ResearchPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Align(
-                alignment: Alignment.topRight,
-                child: ORCiD(),
-              ),
-              SectionLabel(
-                text: locale.pageResearch_PublicationsSectionTitle,
-              ),
+              const Align(alignment: Alignment.topRight, child: ORCiD()),
+              SectionLabel(text: locale.pageResearch_PublicationsSectionTitle),
               for (var publication in publications)
-                PublicationWidget(
-                  publication: publication,
-                ),
-              const SizedBox(
-                height: 30,
-              ),
-              SectionLabel(
-                text: locale.pageResearch_ConferencesSectionTitle,
-              ),
+                PublicationWidget(publication: publication),
+              const SizedBox(height: 30),
+              SectionLabel(text: locale.pageResearch_ConferencesSectionTitle),
               for (var conference in conferences)
                 ConferenceWidget(conference: conference),
-              const SizedBox(
-                height: 30,
-              )
+              const SizedBox(height: 30),
             ],
           ),
         ),
@@ -108,38 +113,20 @@ class ResearchPage extends StatelessWidget {
 class ORCiD extends StatelessWidget {
   static final _orcidUrl = Uri.parse('https://orcid.org/0009-0008-3835-9170');
 
-  const ORCiD({
-    super.key,
-  });
+  const ORCiD({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 20),
-      child: IntrinsicWidth(
-        child: Stack(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: IconButton(
-                icon: const PlatformAwareSvgAdapter(
-                  path: 'images/orcid_logo.svg',
-                  width: 150,
-                ),
-                hoverColor: Colors.transparent,
-                onPressed: () async {
-                  await launchUrl(_orcidUrl);
-                },
-              ),
-            ),
-            const Align(
-              alignment: Alignment.bottomRight,
-              child: Icon(
-                CupertinoIcons.arrow_up_right_circle_fill,
-              ),
-            ),
-          ],
+    return NewCardLink(
+      child: IconButton(
+        icon: const PlatformAwareSvgAdapter(
+          path: 'images/orcid_logo.svg',
+          width: 150,
         ),
+        hoverColor: Colors.transparent,
+        onPressed: () async {
+          await launchUrl(_orcidUrl);
+        },
       ),
     );
   }
@@ -151,10 +138,7 @@ class PublicationWidget extends StatelessWidget {
 
   final Publication publication;
 
-  const PublicationWidget({
-    super.key,
-    required this.publication,
-  });
+  const PublicationWidget({super.key, required this.publication});
 
   @override
   Widget build(BuildContext context) {
@@ -166,6 +150,8 @@ class PublicationWidget extends StatelessWidget {
     final textThemeService = context.read<BodyTextStyleService>();
     final bodyTextStyle = textThemeService.getBodyTextStyle(context);
 
+    final archiveUri = publication.preprintUri;
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(padding),
@@ -173,33 +159,42 @@ class PublicationWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
-              '"${publication.title}"',
-              style: titleStyle,
-            ),
-            const SizedBox(
-              height: padding,
-            ),
+            Text('"${publication.title}"', style: titleStyle),
+            const SizedBox(height: padding),
             Text(
               locale.pageResearch_PublicationCoauthorsLabel(
                 publication.coauthors.join(', '),
               ),
             ),
-            const SizedBox(
-              height: padding * 2,
-            ),
+            const SizedBox(height: padding * 2),
             Row(
               children: [
                 const Icon(Icons.link),
                 const SizedBox(width: 10),
                 Flexible(
                   child: ClickableLink(
-                    uri: publication.archiveUri,
+                    uri: publication.publicationUri,
                     textStyle: bodyTextStyle,
                   ),
                 ),
               ],
             ),
+            archiveUri != null
+                ? Row(
+                    children: [
+                      const Icon(Icons.tag),
+                      const SizedBox(width: 10),
+                      Flexible(child: BodyText('Preprint')),
+                      const SizedBox(width: 10),
+                      Flexible(
+                        child: ClickableLink(
+                          uri: archiveUri,
+                          textStyle: bodyTextStyle,
+                        ),
+                      ),
+                    ],
+                  )
+                : SizedBox.shrink(),
             Row(
               children: [
                 const Icon(Icons.calendar_month_outlined),
@@ -224,10 +219,7 @@ class ConferenceWidget extends StatelessWidget {
 
   final Conference conference;
 
-  const ConferenceWidget({
-    super.key,
-    required this.conference,
-  });
+  const ConferenceWidget({super.key, required this.conference});
 
   @override
   Widget build(BuildContext context) {
@@ -244,13 +236,8 @@ class ConferenceWidget extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              conference.conferenceName,
-              style: titleStyle,
-            ),
-            const SizedBox(
-              height: padding * 2,
-            ),
+            Text(conference.conferenceName, style: titleStyle),
+            const SizedBox(height: padding * 2),
             Row(
               children: [
                 const Icon(Icons.co_present_outlined),
@@ -280,16 +267,19 @@ class ConferenceWidget extends StatelessWidget {
             ),
             Align(
               alignment: Alignment.centerRight,
-              child: TextButton(
-                child: Text(
-                  locale.pageResearch_OrganizerWebsite.toUpperCase(),
-                  style: bodyTextStyle,
+              child: NewCardLink(
+                iconSize: 15,
+                child: TextButton(
+                  child: Text(
+                    locale.pageResearch_OrganizerWebsite.toUpperCase(),
+                    style: bodyTextStyle,
+                  ),
+                  onPressed: () async {
+                    await launchUrl(conference.website);
+                  },
                 ),
-                onPressed: () async {
-                  await launchUrl(conference.website);
-                },
               ),
-            )
+            ),
           ],
         ),
       ),
@@ -298,10 +288,7 @@ class ConferenceWidget extends StatelessWidget {
 }
 
 class SectionLabel extends StatelessWidget {
-  const SectionLabel({
-    super.key,
-    required this.text,
-  });
+  const SectionLabel({super.key, required this.text});
 
   final String text;
 
@@ -309,13 +296,8 @@ class SectionLabel extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Padding(
-      padding: const EdgeInsets.only(
-        bottom: 20.0,
-      ),
-      child: Text(
-        text,
-        style: theme.textTheme.displaySmall,
-      ),
+      padding: const EdgeInsets.only(bottom: 20.0),
+      child: Text(text, style: theme.textTheme.displaySmall),
     );
   }
 }

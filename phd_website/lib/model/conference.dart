@@ -13,5 +13,7 @@ class Conference {
     required this.begin,
     required this.end,
     required this.location,
-  }) : website = Uri.parse(website);
+  }) : website = Uri.parse(website) {
+    assert(begin.isBefore(end) || begin == end);
+  }
 }
