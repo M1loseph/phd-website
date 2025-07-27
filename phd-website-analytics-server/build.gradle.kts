@@ -2,9 +2,9 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  id("org.springframework.boot") version "3.4.4"
-  kotlin("jvm") version "2.1.20"
-  kotlin("plugin.spring") version "2.1.20"
+  id("org.springframework.boot") version "3.5.4"
+  kotlin("jvm") version "2.2.0"
+  kotlin("plugin.spring") version "2.2.0"
 
   // Custom plugins
   id("me.champeau.jmh") version "0.7.2"
@@ -48,7 +48,7 @@ dependencies {
 tasks.withType<KotlinCompile> {
   compilerOptions {
     allWarningsAsErrors = true
-    freeCompilerArgs.addAll("-Xjsr305=strict")
+    freeCompilerArgs.addAll("-Xjsr305=strict", "-Xannotation-default-target=param-property")
     jvmTarget = JvmTarget.JVM_21
   }
 }

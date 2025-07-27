@@ -5,7 +5,6 @@ import io.github.m1loseph.phdwebsiteanalyticsserver.services.analytics.dto.Creat
 import io.github.m1loseph.phdwebsiteanalyticsserver.services.analytics.dto.EnvironmentDto
 import io.github.m1loseph.phdwebsiteanalyticsserver.services.analytics.dto.PageNameDto
 import io.github.m1loseph.phdwebsiteanalyticsserver.services.analytics.model.AppOpenedEvent
-import io.github.m1loseph.phdwebsiteanalyticsserver.services.analytics.model.AppVersion
 import io.github.m1loseph.phdwebsiteanalyticsserver.services.analytics.model.Environment
 import io.github.m1loseph.phdwebsiteanalyticsserver.services.analytics.model.PageName
 import io.github.m1loseph.phdwebsiteanalyticsserver.services.analytics.model.PageOpenedEvent
@@ -22,6 +21,7 @@ import java.util.UUID
 class AnalyticsService(
   private val appOpenedEventRepository: AppOpenedEventRepository,
   private val pageOpenedEventRepository: PageOpenedEventRepository,
+  private val appVersionParser: AppVersionParser,
   private val serverClock: Clock,
 ) {
   suspend fun persistAppOpenedEvent(
@@ -33,7 +33,7 @@ class AnalyticsService(
       if (createAppOpenedEventDto.appVersion == null) {
         null
       } else {
-        AppVersion.parse(createAppOpenedEventDto.appVersion)
+        appVersionParser.parse(createAppOpenedEventDto.appVersion)
       }
     val entity =
       AppOpenedEvent(
@@ -53,10 +53,7 @@ class AnalyticsService(
     return sessionId
   }
 
-  suspend fun persistPageOpenedEvent(
-    createPageOpenedEventDto: CreatePageOpenedEventDto,
-    userAgent: UserAgentName?,
-  ): PageOpenedEvent {
+  suspend fun persistPageOpenedEvent(createPageOpenedEventDto: CreatePageOpenedEventDto): PageOpenedEvent {
     val sessionId = SessionId(createPageOpenedEventDto.sessionId.value)
     if (!appOpenedEventRepository.existsBySessionId(sessionId).awaitSingle()) {
       throw SessionNotFoundException(sessionId)

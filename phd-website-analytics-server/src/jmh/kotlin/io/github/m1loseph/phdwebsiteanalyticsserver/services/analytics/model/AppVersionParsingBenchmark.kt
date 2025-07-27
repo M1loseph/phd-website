@@ -4,7 +4,6 @@ import org.openjdk.jmh.annotations.Benchmark
 import org.openjdk.jmh.infra.Blackhole
 
 open class AppVersionParsingBenchmark {
-
   @Benchmark
   fun benchmarkParsingLongVersion(blackHole: Blackhole) {
     val appVersion = AppVersion.parse(APP_VERSION_WITH_ABBREV)

@@ -35,12 +35,10 @@ class AnalyticsController(
 
   @PostMapping("/pageOpened")
   suspend fun onPageOpenedEvent(
-    @RequestHeader("User-Agent") userAgent: String?,
     @RequestBody @Valid createPageOpenedEventDto: CreatePageOpenedEventDto,
   ): ResponseEntity<Void> {
     analyticsService.persistPageOpenedEvent(
       createPageOpenedEventDto,
-      UserAgentName.fromNullable(userAgent),
     )
     return ResponseEntity(HttpStatus.CREATED)
   }
