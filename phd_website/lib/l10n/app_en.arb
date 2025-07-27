@@ -1,8 +1,8 @@
 {
     "@@locale": "en",
-    "appTitle": "Bogna Jaszczak",
+    "appTitle": "Bogna Jaszczak-Dyka",
     "@appTitle": {},
-    "pageHome_Name": "M.Sc. Bogna Jaszczak",
+    "pageHome_Name": "M.Sc. Bogna Jaszczak-Dyka",
     "@pageHome_Name": {},
     "pageHome_Department": "Department of Applied Mathematics,\nWrocław University of Science and Technology",
     "@pageHome_Department": {},
@@ -39,14 +39,6 @@
             }
         }
     },
-    "pageResearch_Ecmi2023ConferenceName": "ECMI 2023",
-    "@pageResearch_Ecmi2023ConferenceName": {},
-    "pageResearch_51ConferenceOnApplicationsOfMathematicsConferenceName": "51st Conference on Applications of Mathematics",
-    "@pageResearch_51ConferenceOnApplicationsOfMathematicsConferenceName": {},
-    "pageResearch_52ConferenceOnApplicationsOfMathematicsConferenceName": "52nd Conference on Applications of Mathematics",
-    "@pageResearch_52ConferenceOnApplicationsOfMathematicsConferenceName": {},
-    "pageResearch_XIIForumOfPartialDifferentialEquationsConferenceName": "XIII Forum of Partial Differential Equations",
-    "@pageResearch_XIIForumOfPartialDifferentialEquationsConferenceName": {},
     "pageResearch_PublicationsSectionTitle": "Publications",
     "@pageResearch_PublicationsSectionTitle": {},
     "pageResearch_PublicationCoauthorsLabel": "Coauthors: {coauthors}",
