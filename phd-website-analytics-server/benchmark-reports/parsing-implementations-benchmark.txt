@@ -1,3 +1,0 @@
-Benchmark                                                     Mode  Cnt  Score    Error  Units
-AppVersionParsersBenchmark.benchmarkParsingUsingManualParser  avgt    5  0.149 ±  0.001  us/op
-AppVersionParsersBenchmark.benchmarkParsingUsingRegexParser   avgt    5  0.328 ±  0.004  us/op
