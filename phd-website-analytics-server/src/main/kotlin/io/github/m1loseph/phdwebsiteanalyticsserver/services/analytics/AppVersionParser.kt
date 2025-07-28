@@ -72,14 +72,8 @@ class ManualAppVersionParser : AppVersionParser {
         }
 
         ParsingStep.HASH -> {
-          val hashValue = version.substring(previousSectionEnd + 1, version.length)
-          if (hashValue.length > 40) {
-            throw InvalidVersionException(version, "Version hash is too long")
-          }
-          if (hashValue.length <= 1) {
-            throw InvalidVersionException(version, "Version hash is too short")
-          }
-          for ((j, letter) in hashValue.withIndex()) {
+          val hashValueWithG = version.substring(previousSectionEnd + 1, version.length)
+          for ((j, letter) in hashValueWithG.withIndex()) {
             if (j == 0 && letter != 'g') {
               throw InvalidVersionException(version, "Version hash should start with g")
             }
@@ -87,7 +81,13 @@ class ManualAppVersionParser : AppVersionParser {
               throw InvalidVersionException(version, "Version hash contains invalid hex characters")
             }
           }
-          hash = hashValue.substring(1)
+          hash = hashValueWithG.substring(1)
+          if (hash.length > 40) {
+            throw InvalidVersionException(version, "Version hash is too long")
+          }
+          if (hash.length <= 1) {
+            throw InvalidVersionException(version, "Version hash is too short")
+          }
           parsingStep = ParsingStep.END
         }
 
@@ -132,7 +132,7 @@ class RegexAppVersionParser : AppVersionParser {
   }
 
   companion object {
-    val regex = Regex("""^(\d+)\.(\d+)(-(\d+)-g([0-9a-f]{2,39}))?$""")
+    val regex = Regex("""^(\d+)\.(\d+)(-(\d+)-g([0-9a-f]{1,40}))?$""")
 
     const val MAJOR_VERSION_GROUP = 1
     const val MINOR_VERSION_GROUP = 2

@@ -80,7 +80,7 @@ class AppVersionParserTest {
           "9.9-1-g",
           "10.10-1-g12345678u",
           "12.12-1-0bd1235876",
-          "12.12-1-gaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "12.12-1-g" + "a".repeat(41),
         )
 
       return implementations.flatMap { parser -> invalidVersions.map { version -> Arguments.of(parser, version) } }
