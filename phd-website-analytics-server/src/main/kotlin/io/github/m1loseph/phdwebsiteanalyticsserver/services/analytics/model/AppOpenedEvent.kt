@@ -7,7 +7,9 @@ import org.springframework.data.mongodb.core.mapping.Document
 import java.time.Instant
 
 @JvmInline
-value class AppOpenedEventId(private val id: ObjectId) {
+value class AppOpenedEventId(
+  private val id: ObjectId,
+) {
   companion object {
     fun create() = AppOpenedEventId(ObjectId())
   }

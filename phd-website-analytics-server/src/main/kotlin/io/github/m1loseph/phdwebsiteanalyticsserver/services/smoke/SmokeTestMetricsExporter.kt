@@ -6,7 +6,10 @@ import kotlinx.coroutines.runBlocking
 import org.springframework.stereotype.Component
 
 @Component
-class SmokeTestMetricsExporter(smokeTestsService: SmokeTestsService, meterRegistry: MeterRegistry) {
+class SmokeTestMetricsExporter(
+  smokeTestsService: SmokeTestsService,
+  meterRegistry: MeterRegistry,
+) {
   private val mongodbWorkingGauge =
     meterRegistry.gauge("tests.smoke", listOf(Tag.of("dependency", "mongodb")), smokeTestsService) {
       when (runBlocking { it.testIfConnectionToMongodbIsAlive() }) {

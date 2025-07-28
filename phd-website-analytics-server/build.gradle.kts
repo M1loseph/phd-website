@@ -1,29 +1,26 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import java.io.ByteArrayOutputStream
 
 plugins {
-  id("org.springframework.boot") version "3.2.2"
-  id("io.spring.dependency-management") version "1.1.4"
-  kotlin("jvm") version "1.9.22"
-  kotlin("plugin.spring") version "1.9.22"
+  id("org.springframework.boot") version "3.5.4"
+  kotlin("jvm") version "2.2.0"
+  kotlin("plugin.spring") version "2.2.0"
 
   // Custom plugins
-  id("com.diffplug.spotless") version "6.25.0"
-  id("com.google.cloud.tools.jib") version "3.4.1"
+  id("me.champeau.jmh") version "0.7.2"
+  id("com.diffplug.spotless") version "7.0.2"
+  id("com.google.cloud.tools.jib") version "3.4.5"
 }
 
 group = "io.github.m1loseph"
 version = calculateVersion()
-
-java {
-  sourceCompatibility = JavaVersion.VERSION_21
-}
 
 repositories {
   mavenCentral()
 }
 
 dependencies {
+  implementation(platform(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES))
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
   implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
@@ -49,9 +46,10 @@ dependencies {
 }
 
 tasks.withType<KotlinCompile> {
-  kotlinOptions {
-    freeCompilerArgs += "-Xjsr305=strict"
-    jvmTarget = "21"
+  compilerOptions {
+    allWarningsAsErrors = true
+    freeCompilerArgs.addAll("-Xjsr305=strict", "-Xannotation-default-target=param-property")
+    jvmTarget = JvmTarget.JVM_21
   }
 }
 
@@ -89,8 +87,13 @@ jib {
 }
 
 fun calculateVersion(): String {
-  val process = ProcessBuilder("git", "describe", "--tags", "--match", "analytics-server/**")
-    .start()
+  val process = ProcessBuilder(
+    "git",
+    "describe",
+    "--tags",
+    "--match",
+    "analytics-server/**",
+  ).start()
   if (!process.waitFor(10, TimeUnit.SECONDS)) {
     throw Exception("It took more than 10 seconds for git command to complete")
   }

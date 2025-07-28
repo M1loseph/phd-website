@@ -25,9 +25,7 @@ class TokenBucket
       return TokenAcquiredResult
     }
 
-    fun createSnapshot(): TokenBucketSnapshot {
-      return TokenBucketSnapshot(limit, refillTime, refillAmount, lastRefill, currentValue)
-    }
+    fun createSnapshot(): TokenBucketSnapshot = TokenBucketSnapshot(limit, refillTime, refillAmount, lastRefill, currentValue)
 
     fun timeToFull(): Duration {
       val diff = limit - currentValue
@@ -47,4 +45,6 @@ sealed class TokenAcquireResult
 
 data object TokenAcquiredResult : TokenAcquireResult()
 
-data class TokenDeniedResult(val remainingTime: Duration) : TokenAcquireResult()
+data class TokenDeniedResult(
+  val remainingTime: Duration,
+) : TokenAcquireResult()

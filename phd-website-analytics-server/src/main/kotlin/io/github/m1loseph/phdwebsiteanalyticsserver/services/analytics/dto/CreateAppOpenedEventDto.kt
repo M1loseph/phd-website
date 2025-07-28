@@ -1,6 +1,8 @@
 package io.github.m1loseph.phdwebsiteanalyticsserver.services.analytics.dto
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
+import jakarta.validation.constraints.Size
 import java.time.Instant
 
 enum class EnvironmentDto {
@@ -11,8 +13,9 @@ enum class EnvironmentDto {
   GITHUB_PAGES,
 }
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class CreateAppOpenedEventDto(
-  @param:JsonProperty("eventTime") val eventTime: Instant,
-  @param:JsonProperty("environment") val environment: EnvironmentDto,
-  @param:JsonProperty("appVersion") val appVersion: String?,
+  val eventTime: Instant,
+  val environment: EnvironmentDto,
+  @Size(min = 5, max = 100) val appVersion: String?,
 )

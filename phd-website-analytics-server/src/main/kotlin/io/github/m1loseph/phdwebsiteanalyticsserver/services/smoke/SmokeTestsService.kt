@@ -20,8 +20,8 @@ class SmokeTestsService(
   private val mongoClient: MongoClient,
   private val databaseName: String,
 ) {
-  fun testIfConnectionToRedisIsAlive(): SmokeTestResult {
-    return try {
+  fun testIfConnectionToRedisIsAlive(): SmokeTestResult =
+    try {
       jedisPool.resource.use {
         it.ping()
         SmokeTestResult.OK
@@ -30,7 +30,6 @@ class SmokeTestsService(
       logger.error("Error when executing ping in smoke test", e)
       SmokeTestResult.ERROR
     }
-  }
 
   suspend fun testIfConnectionToMongodbIsAlive(): SmokeTestResult {
     return try {

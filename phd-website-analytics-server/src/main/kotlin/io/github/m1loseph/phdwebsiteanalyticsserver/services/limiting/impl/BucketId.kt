@@ -9,7 +9,9 @@ data object GlobalBucketId : BucketId {
 }
 
 @JvmInline
-value class IpAddressBucketId(private val rawIpAddress: String) : BucketId {
+value class IpAddressBucketId(
+  private val rawIpAddress: String,
+) : BucketId {
   override fun toRawId(): String = rawIpAddress
 
   override fun toString(): String = rawIpAddress

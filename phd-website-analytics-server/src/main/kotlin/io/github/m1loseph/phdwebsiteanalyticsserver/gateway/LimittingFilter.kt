@@ -18,8 +18,10 @@ import org.springframework.web.server.WebFilter
 import org.springframework.web.server.WebFilterChain
 import reactor.core.publisher.Mono
 
-class LimitingFilter(private val limitingService: LimitingService, meterRegistry: MeterRegistry) :
-  WebFilter {
+class LimitingFilter(
+  private val limitingService: LimitingService,
+  meterRegistry: MeterRegistry,
+) : WebFilter {
   private val rejectedNoXForwardedFor: Counter =
     meterRegistry.counter(REJECTED_REQUEST_COUNTER_NAME, REASON_KEY, "no-x-forwarded-for")
   private val rejectedTooManyRequestsSingleIp: Counter =
@@ -34,6 +36,7 @@ class LimitingFilter(private val limitingService: LimitingService, meterRegistry
     val request = exchange.request
     val requestMethod = request.method
     if (HttpMethod.OPTIONS != requestMethod) {
+      // TODO: set response body to something meaningful
       val xForwardedForHeaderValue = request.headers["X-Forwarded-For"]?.firstOrNull()
       if (xForwardedForHeaderValue == null) {
         logger.warn("Rejected request because there was no X-Forwarded-For header")
@@ -61,6 +64,7 @@ class LimitingFilter(private val limitingService: LimitingService, meterRegistry
       for (check in checks) {
         when (val checkResult = check()) {
           is TokenDeniedResult -> {
+            // TODO: set response body to something meaningful
             logger.warn("Reject request because the bucket was drained")
             val remainingTime = checkResult.remainingTime.seconds
             val response = exchange.response

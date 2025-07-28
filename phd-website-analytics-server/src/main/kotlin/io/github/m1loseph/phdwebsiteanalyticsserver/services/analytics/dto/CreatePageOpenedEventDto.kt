@@ -1,8 +1,8 @@
 package io.github.m1loseph.phdwebsiteanalyticsserver.services.analytics.dto
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.Instant
-import java.util.UUID
 
 enum class PageNameDto {
   @JsonProperty("home")
@@ -21,8 +21,9 @@ enum class PageNameDto {
   TEACHING,
 }
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class CreatePageOpenedEventDto(
-  @param:JsonProperty("pageName") val pageName: PageNameDto,
-  @param:JsonProperty("eventTime") val eventTime: Instant,
-  @param:JsonProperty("sessionId") val sessionId: UUID,
+  val pageName: PageNameDto,
+  val eventTime: Instant,
+  val sessionId: SessionIdDto,
 )

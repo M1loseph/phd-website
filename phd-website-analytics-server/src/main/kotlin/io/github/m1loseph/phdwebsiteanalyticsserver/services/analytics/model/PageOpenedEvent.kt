@@ -25,10 +25,10 @@ data class PageOpenedEvent(
 )
 
 @JvmInline
-value class PageOpenedEventId(private val id: ObjectId) {
+value class PageOpenedEventId(
+  private val id: ObjectId,
+) {
   companion object {
-    fun create(): PageOpenedEventId {
-      return PageOpenedEventId(ObjectId())
-    }
+    fun create(): PageOpenedEventId = PageOpenedEventId(ObjectId())
   }
 }
