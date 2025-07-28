@@ -12,13 +12,11 @@ import org.openjdk.jmh.annotations.State
 import org.openjdk.jmh.infra.Blackhole
 import java.util.concurrent.TimeUnit
 
-
 @Fork(1)
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.MICROSECONDS)
 open class AppVersionParsersBenchmark {
-
   val regexParser = RegexAppVersionParser()
   val manualParser = ManualAppVersionParser()
 
