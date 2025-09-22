@@ -17,7 +17,7 @@ Fill it with the following variables:
 #### 2. Run certbot to get certificate
 
 `sudo snap install certbot --classic`
-`sudo certbot obtain -d phdwebsite.duckdns.org`
+`sudo certbot certonly --standalone -d phdwebsite.duckdns.org`
 
 #### 3. Prepare soft links to certificate and private key
 
