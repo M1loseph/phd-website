@@ -17,5 +17,5 @@ enum class EnvironmentDto {
 data class CreateAppOpenedEventDto(
   val eventTime: Instant,
   val environment: EnvironmentDto,
-  @Size(min = 5, max = 100) val appVersion: String?,
+  @Size(min = 3, max = 100) val appVersion: String?,
 )
