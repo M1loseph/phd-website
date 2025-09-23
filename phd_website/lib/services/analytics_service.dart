@@ -50,7 +50,7 @@ class AnalyticsService {
         final responseStatus = HttpStatus.fromCode(response.statusCode);
         if (responseStatus != HttpStatus.created) {
           if (kDebugMode) {
-            logger.debug('Got response $response');
+            logger.debug('Got response ${response.statusCode} ${response.body}');
           }
           await Future.delayed(const Duration(seconds: 5));
           continue;

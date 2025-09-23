@@ -1,4 +1,6 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class NewCardLink extends StatelessWidget {
   static const EdgeInsetsGeometry defaultPadding = EdgeInsets.all(8.0);
@@ -17,7 +19,7 @@ class NewCardLink extends StatelessWidget {
           Padding(padding: padding, child: child),
           Align(
             alignment: Alignment.bottomRight,
-            child: Icon(CupertinoIcons.arrow_up_right_circle_fill, size: iconSize,),
+            child: Icon(FontAwesomeIcons.link, size: iconSize,),
           ),
         ],
       ),

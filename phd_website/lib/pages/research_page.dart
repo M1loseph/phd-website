@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:phd_website/components/adapters/platform_aware_svg_adapter.dart';
 import 'package:phd_website/components/body_text.dart';
@@ -22,6 +23,15 @@ class ResearchPage extends StatelessWidget {
 
     final conferences = [
       Conference(
+        conferenceName: '53rd Conference on Applications of Mathematics',
+        website: 'https://sites.google.com/view/liiikzm/strona-glowna',
+        talkTitle: 'The dynamics of lymph: a mathematical framework',
+        begin: DateTime(2025, DateTime.september, 14),
+        end: DateTime(2025, DateTime.september, 20),
+        location: 'Kościelisko',
+        prize: locale.pageResearch_53rdConferenceOnApplicationsOfMathematicsPrize,
+      ),
+      Conference(
         conferenceName:
             'Recent Advances in Applied Mathematics',
         website: 'https://sites.google.com/pwr.edu.pl/raam-wroclaw-2024/',
@@ -41,7 +51,7 @@ class ResearchPage extends StatelessWidget {
         location: 'Będlewo',
       ),
       Conference(
-        conferenceName: '51st Conference on Applications of Mathematics',
+        conferenceName: '52nd Conference on Applications of Mathematics',
         website: 'https://sites.google.com/view/lii-kzm/strona-glowna',
         talkTitle:
             'From equations to elevations: optimizing the trail running strategy',
@@ -132,7 +142,6 @@ class ORCiD extends StatelessWidget {
   }
 }
 
-// TODO: try to remove duplications across PublicationWidget and ConferenceWidget
 class PublicationWidget extends StatelessWidget {
   static const padding = 8.0;
 
@@ -156,6 +165,7 @@ class PublicationWidget extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(padding),
         child: Column(
+          spacing: 2,
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -182,7 +192,7 @@ class PublicationWidget extends StatelessWidget {
             archiveUri != null
                 ? Row(
                     children: [
-                      const Icon(Icons.tag),
+                      const Icon(FontAwesomeIcons.newspaper),
                       const SizedBox(width: 10),
                       Flexible(child: BodyText('Preprint')),
                       const SizedBox(width: 10),
@@ -197,7 +207,7 @@ class PublicationWidget extends StatelessWidget {
                 : SizedBox.shrink(),
             Row(
               children: [
-                const Icon(Icons.calendar_month_outlined),
+                const Icon(FontAwesomeIcons.calendar),
                 const SizedBox(width: 10),
                 Flexible(
                   child: Text(
@@ -229,10 +239,13 @@ class ConferenceWidget extends StatelessWidget {
     final bodyTextStyle = textThemeService.getBodyTextStyle(context);
 
     final locale = AppLocalizations.of(context)!;
+    final prize = conference.prize;
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(padding),
         child: Column(
+          spacing: 2,
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -252,7 +265,7 @@ class ConferenceWidget extends StatelessWidget {
             ),
             Row(
               children: [
-                const Icon(Icons.calendar_month_outlined),
+                const Icon(FontAwesomeIcons.calendar),
                 const SizedBox(width: 10),
                 Flexible(
                   child: Text(
@@ -265,6 +278,20 @@ class ConferenceWidget extends StatelessWidget {
                 ),
               ],
             ),
+            prize != null ?
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Icon(FontAwesomeIcons.award),
+                const SizedBox(width: 10),
+                Flexible(
+                  child: Text(
+                    prize,
+                    style: bodyTextStyle,
+                  ),
+                ),
+              ],
+            ) : SizedBox.shrink(),
             Align(
               alignment: Alignment.centerRight,
               child: NewCardLink(

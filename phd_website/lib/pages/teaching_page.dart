@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:phd_website/clock/clock.dart';
 import 'package:phd_website/components/clickable_link.dart';
 import 'package:phd_website/components/semester_picker.dart';
-import 'package:phd_website/constants.dart';
 import 'package:phd_website/l10n/app_localizations.dart';
 import 'package:phd_website/layouts/scrollable_page_layout.dart';
 import 'package:phd_website/model/semester.dart';
@@ -40,66 +39,64 @@ class _TeachingPageState extends State<TeachingPage> {
     final bodyTextStyleService = context.read<BodyTextStyleService>();
     final bodyTheme = bodyTextStyleService.getBodyTextStyle(context);
     return ScrollablePageLayout(
-      page: Center(
-        child: FractionallySizedBox(
-          widthFactor: isMobileView(context) ? 1 : 10 / 12,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SemesterPicker(
-                selectSemesterCallback: (semester) {
-                  setState(() {
-                    selectedSemester = semester;
-                  });
-                },
-                currentSemester: selectedSemester,
+      page: FractionallySizedBox(
+        widthFactor: 10 / 12,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SemesterPicker(
+              selectSemesterCallback: (semester) {
+                setState(() {
+                  selectedSemester = semester;
+                });
+              },
+              currentSemester: selectedSemester,
+            ),
+            const SizedBox(
+              height: 50,
+            ),
+            if (selectedSemester ==
+                const Semester(SemesterYear(2023), SemesterType.winter))
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    locale.pageTeaching_DifferentialEquationsInTechnology,
+                    style: theme.textTheme.headlineSmall,
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Text(
+                    locale
+                        .pageTeaching_DifferentialEquationsInTechDescription,
+                    style: bodyTheme,
+                  ),
+                  ClickableLink(
+                    uri: TeachingPage.differentialEquationsRulesLink,
+                    textStyle: bodyTheme,
+                  ),
+                ],
               ),
-              const SizedBox(
-                height: 50,
-              ),
-              if (selectedSemester ==
-                  const Semester(SemesterYear(2023), SemesterType.winter))
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      locale.pageTeaching_DifferentialEquationsInTechnology,
-                      style: theme.textTheme.headlineSmall,
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    Text(
-                      locale
-                          .pageTeaching_DifferentialEquationsInTechDescription,
-                      style: bodyTheme,
-                    ),
-                    ClickableLink(
-                      uri: TeachingPage.differentialEquationsRulesLink,
-                      textStyle: bodyTheme,
-                    ),
-                  ],
-                ),
-              if (selectedSemester ==
-                  const Semester(SemesterYear(2024), SemesterType.winter))
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      locale.pageTeaching_IntroductionToComputerScience,
-                      style: theme.textTheme.headlineSmall,
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    Text(
-                      locale.pageTeaching_IntroductionToComputerDescription,
-                      style: bodyTheme,
-                    ),
-                  ],
-                )
-            ],
-          ),
+            if (selectedSemester ==
+                const Semester(SemesterYear(2024), SemesterType.winter))
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    locale.pageTeaching_IntroductionToComputerScience,
+                    style: theme.textTheme.headlineSmall,
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Text(
+                    locale.pageTeaching_IntroductionToComputerDescription,
+                    style: bodyTheme,
+                  ),
+                ],
+              )
+          ],
         ),
       ),
     );
