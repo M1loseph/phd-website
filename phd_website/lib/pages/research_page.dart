@@ -278,7 +278,7 @@ class ConferenceWidget extends StatelessWidget {
                 ),
               ],
             ),
-            details != null ? 
+            details != null ?
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
