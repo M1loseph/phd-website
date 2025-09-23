@@ -29,7 +29,7 @@ class ResearchPage extends StatelessWidget {
         begin: DateTime(2025, DateTime.september, 14),
         end: DateTime(2025, DateTime.september, 20),
         location: 'Kościelisko',
-        details: locale.pageResearch_53rdConferenceOnApplicationsOfMathematicsDetails,
+        prize: locale.pageResearch_53rdConferenceOnApplicationsOfMathematicsPrize,
       ),
       Conference(
         conferenceName:
@@ -239,7 +239,7 @@ class ConferenceWidget extends StatelessWidget {
     final bodyTextStyle = textThemeService.getBodyTextStyle(context);
 
     final locale = AppLocalizations.of(context)!;
-    final details = conference.details;
+    final prize = conference.prize;
 
     return Card(
       child: Padding(
@@ -278,7 +278,7 @@ class ConferenceWidget extends StatelessWidget {
                 ),
               ],
             ),
-            details != null ?
+            prize != null ?
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -286,7 +286,7 @@ class ConferenceWidget extends StatelessWidget {
                 const SizedBox(width: 10),
                 Flexible(
                   child: Text(
-                    details,
+                    prize,
                     style: bodyTextStyle,
                   ),
                 ),

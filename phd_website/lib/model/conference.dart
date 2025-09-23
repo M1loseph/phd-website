@@ -5,7 +5,7 @@ class Conference {
   final DateTime begin;
   final DateTime end;
   final String location;
-  final String? details;
+  final String? prize;
 
   Conference({
     required this.conferenceName,
@@ -14,7 +14,7 @@ class Conference {
     required this.begin,
     required this.end,
     required this.location,
-    this.details
+    this.prize
   }) : website = Uri.parse(website) {
     assert(begin.isBefore(end) || begin == end);
   }
