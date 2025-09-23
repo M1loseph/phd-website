@@ -25,35 +25,29 @@ import 'package:shared_preferences/shared_preferences.dart';
 void main() {
   final buildProperties = GitBuildProperties();
   final clock = Clock();
-  runApp(MultiProvider(
-    providers: [
-      ChangeNotifierProvider(
-        create: (_) => AppGlobalState(SharedPreferences.getInstance()),
-      ),
-      Provider(
-        create: (_) => BodyTextStyleService(),
-      ),
-      Provider<BuildProperties>.value(
-        value: buildProperties,
-      ),
-      Provider(
-        create: (_) => ClipboardService(),
-      ),
-      Provider.value(
-        value: clock,
-      ),
-      Provider(
-        create: (_) => AnalyticsService(
-          analyticsUrl: const String.fromEnvironment('ANALYTICS_SERVER_URL'),
-          environment: const String.fromEnvironment('ENVIRONMENT'),
-          httpClient: Client(),
-          clock: clock,
-          buildProperties: buildProperties,
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => AppGlobalState(SharedPreferences.getInstance()),
         ),
-      ),
-    ],
-    child: const PHDApp(),
-  ));
+        Provider(create: (_) => BodyTextStyleService()),
+        Provider<BuildProperties>.value(value: buildProperties),
+        Provider(create: (_) => ClipboardService()),
+        Provider.value(value: clock),
+        Provider(
+          create: (_) => AnalyticsService(
+            analyticsUrl: const String.fromEnvironment('ANALYTICS_SERVER_URL'),
+            environment: const String.fromEnvironment('ENVIRONMENT'),
+            httpClient: Client(),
+            clock: clock,
+            buildProperties: buildProperties,
+          ),
+        ),
+      ],
+      child: const PHDApp(),
+    ),
+  );
 }
 
 class PHDApp extends StatefulWidget {
@@ -83,10 +77,7 @@ class _PHDAppState extends State<PHDApp> {
                       child: SelectableStack(
                         alignment: Alignment.bottomCenter,
                         children: [
-                          NavigationLayout(
-                            state: state,
-                            currentPage: child,
-                          ),
+                          NavigationLayout(state: state, currentPage: child),
                           const CookiePopup(),
                         ],
                       ),
@@ -173,9 +164,7 @@ class _PHDAppState extends State<PHDApp> {
       title: globalState.applicationTitle,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.grey.shade100),
-        appBarTheme: AppBarTheme(
-          backgroundColor: Colors.grey.shade200,
-        ),
+        appBarTheme: AppBarTheme(backgroundColor: Colors.grey.shade200),
         useMaterial3: true,
       ),
       routerConfig: router,
