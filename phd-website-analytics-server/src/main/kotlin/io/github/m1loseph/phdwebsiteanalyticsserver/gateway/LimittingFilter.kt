@@ -35,47 +35,48 @@ class LimitingFilter(
   ): Mono<Void> {
     val request = exchange.request
     val requestMethod = request.method
-    if (HttpMethod.OPTIONS != requestMethod) {
-      // TODO: set response body to something meaningful
-      val xForwardedForHeaderValue = request.headers["X-Forwarded-For"]?.firstOrNull()
-      if (xForwardedForHeaderValue == null) {
-        logger.warn("Rejected request because there was no X-Forwarded-For header")
-        rejectedNoXForwardedFor.increment()
-        exchange.response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR)
-        return Mono.empty()
-      }
-      val requestIp = IpAddressBucketId(xForwardedForHeaderValue)
-      val checks =
-        listOf(
-          {
-            runBlocking {
-              incrementOnFail(
-                rejectedTooManyRequestsSingleIp,
-                limitingService.incrementUsageForIpAddress(requestIp),
-              )
-            }
-          },
-          {
-            runBlocking {
-              incrementOnFail(rejectedTooManyRequestsGlobal, limitingService.incrementGlobalUsage())
-            }
-          },
-        )
-      for (check in checks) {
-        when (val checkResult = check()) {
-          is TokenDeniedResult -> {
-            // TODO: set response body to something meaningful
-            logger.warn("Reject request because the bucket was drained")
-            val remainingTime = checkResult.remainingTime.seconds
-            val response = exchange.response
-            response.setStatusCode(TOO_MANY_REQUESTS)
-            response.headers["Retry-After"] = remainingTime.toString()
-            return Mono.empty()
+    if (HttpMethod.OPTIONS == requestMethod) {
+      return chain.filter(exchange)
+    }
+    // TODO: set response body to something meaningful
+    val xForwardedForHeaderValue = request.headers["X-Forwarded-For"]?.firstOrNull()
+    if (xForwardedForHeaderValue == null) {
+      logger.warn("Rejected request because there was no X-Forwarded-For header")
+      rejectedNoXForwardedFor.increment()
+      exchange.response.statusCode = HttpStatus.INTERNAL_SERVER_ERROR
+      return Mono.empty()
+    }
+    val requestIp = IpAddressBucketId(xForwardedForHeaderValue)
+    val checks =
+      listOf(
+        {
+          runBlocking {
+            incrementOnFail(
+              rejectedTooManyRequestsSingleIp,
+              limitingService.incrementUsageForIpAddress(requestIp),
+            )
           }
+        },
+        {
+          runBlocking {
+            incrementOnFail(rejectedTooManyRequestsGlobal, limitingService.incrementGlobalUsage())
+          }
+        },
+      )
+    for (check in checks) {
+      when (val checkResult = check()) {
+        is TokenDeniedResult -> {
+          // TODO: set response body to something meaningful
+          logger.warn("Reject request because the bucket was drained")
+          val remainingTime = checkResult.remainingTime.seconds
+          val response = exchange.response
+          response.statusCode = TOO_MANY_REQUESTS
+          response.headers["Retry-After"] = remainingTime.toString()
+          return Mono.empty()
+        }
 
-          TokenAcquiredResult -> {
-            continue
-          }
+        TokenAcquiredResult -> {
+          continue
         }
       }
     }

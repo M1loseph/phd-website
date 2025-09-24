@@ -6,6 +6,8 @@ import io.github.m1loseph.phdwebsiteanalyticsserver.services.analytics.dto.AppOp
 import io.github.m1loseph.phdwebsiteanalyticsserver.services.analytics.model.SessionId
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.MethodSource
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
 import org.springframework.boot.test.context.SpringBootTest
@@ -27,7 +29,7 @@ class AnalyticsControllerIntegrationTest : RedisAndMongoFixture() {
   lateinit var appOpenedEventRepository: AppOpenedEventRepository
 
   @Test
-  fun whenSendIncorrectPageName_thenShouldReturnBadRequestStatus() {
+  fun whenSendPageOpenedEvent_withIncorrectPageName_thenShouldReturnBadRequestStatus() {
     webTestClient
       .post()
       .uri("/api/v1/analytics/pageOpened")
@@ -57,7 +59,8 @@ class AnalyticsControllerIntegrationTest : RedisAndMongoFixture() {
           """
                 {
                     "eventTime": "2023-10-10T10:10:10Z",
-                    "environment": "pwr_server"
+                    "environment": "pwr_server",
+                    "appVersion": "1.0"
                 }
                 """,
         ).header("x-forwarded-for", "200.200.200.200")
@@ -90,7 +93,7 @@ class AnalyticsControllerIntegrationTest : RedisAndMongoFixture() {
   }
 
   @Test
-  fun whenSendPageOpenedEventWithoutEstablishingSession_thenShouldReturnBadRequest() {
+  fun whenSendPageOpenedEvent_withoutEstablishingSession_thenShouldReturnBadRequest() {
     webTestClient
       .post()
       .uri("/api/v1/analytics/pageOpened")
@@ -107,5 +110,52 @@ class AnalyticsControllerIntegrationTest : RedisAndMongoFixture() {
       .exchange()
       .expectStatus()
       .isEqualTo(400)
+  }
+
+  @ParameterizedTest
+  @MethodSource("invalidAppOpenedEventPayloads")
+  fun whenSendAppOpenedEvent_withIncorrectPayload_thenShouldReturnBadRequest(invalidPayload: String) {
+    webTestClient
+      .post()
+      .uri("/api/v1/analytics/appOpened")
+      .contentType(MediaType.APPLICATION_JSON)
+      .bodyValue(invalidPayload)
+      .header("x-forwarded-for", "200.200.200.200")
+      .exchange()
+      .expectStatus()
+      .isEqualTo(400)
+  }
+
+  companion object {
+    @JvmStatic
+    fun invalidAppOpenedEventPayloads() =
+      listOf(
+        """
+    {
+        "eventTime": "2023-10-10T10:10:13Z",
+        "environment": "pwr_server"
+    }
+    """,
+        """
+    {
+        "eventTime": "2023-10-10T10:10:13Z",
+        "environment": "pwr_server"
+        "appVersion": "1."
+    }""",
+        """
+    {
+        "eventTime": "2023-10-10T10:10:13Z",
+        "environment": "pwr_server"
+        "appVersion": "1.0."
+    }
+    """,
+        """
+    {
+            "eventTime": "2023-10-10T10:10:13Z",
+            "environment": "pwr_server"
+            "appVersion": "1.0.${"0".repeat(100)}
+    }
+    """,
+      )
   }
 }
