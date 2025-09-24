@@ -1,5 +1,6 @@
 name: Analytics Server Continuous Integration And Artifact Publishing
 on:
+  workflow_dispatch:
   pull_request:
     branches: [master]
     paths: 
