@@ -29,12 +29,7 @@ class AnalyticsService(
     userAgent: UserAgentName?,
   ): SessionId {
     val sessionId = SessionId(UUID.randomUUID())
-    val appVersion =
-      if (createAppOpenedEventDto.appVersion == null) {
-        null
-      } else {
-        appVersionParser.parse(createAppOpenedEventDto.appVersion)
-      }
+    val appVersion = appVersionParser.parse(createAppOpenedEventDto.appVersion)
     val entity =
       AppOpenedEvent(
         eventTime = createAppOpenedEventDto.eventTime,
