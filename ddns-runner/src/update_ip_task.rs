@@ -3,8 +3,7 @@ use crate::duck_dns_client::client::IPUpdateResult as IPUpdateResultAPI;
 use crate::duck_dns_client::client::ServerAction as ServerActionAPI;
 use log::{error, info};
 use prometheus::{IntCounterVec, Registry};
-use std::error::Error;
-use std::fmt::Display;
+use anyhow::Result;
 use std::{
     net::{IpAddr, Ipv4Addr, Ipv6Addr},
     time::{Duration, SystemTime},
@@ -87,25 +86,6 @@ impl From<tokio_postgres::Row> for IpUpdateResult {
     }
 }
 
-#[derive(Debug)]
-pub struct RepositoryError {
-    cause: Box<dyn Error>,
-}
-
-impl Error for RepositoryError {}
-
-impl Display for RepositoryError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "Error occurred in repository, cause: {}", self.cause)
-    }
-}
-
-type Result<R> = std::result::Result<R, RepositoryError>;
-
-pub trait Repository<T> {
-    async fn insert(&self, result: T) -> Result<T>;
-}
-
 pub struct IpUpdateResultPostgresRepository {
     client: tokio_postgres::Client,
 }
@@ -114,27 +94,35 @@ impl IpUpdateResultPostgresRepository {
     pub fn new(client: tokio_postgres::Client) -> Self {
         IpUpdateResultPostgresRepository { client }
     }
-}
-
-impl Repository<IpUpdateResult> for IpUpdateResultPostgresRepository {
-    async fn insert(&self, entity: IpUpdateResult) -> Result<IpUpdateResult> {
-        // TODO: unwrapping there is more deadly
+    
+    async fn insert(&self, domain: &str, entity: IpUpdateResult) -> Result<IpUpdateResult> {
+        let domain_row= self.client
+            .query_one(
+                r#"
+                    INSERT INTO "Domains"("name")
+                    VALUES ($1)
+                    ON CONFLICT ("name") DO NOTHING
+                    RETURNING ("id")"#,
+                &[&domain],
+            )
+            .await?;
+        let domain_id: &str = domain_row.get(0);
         let row = self
             .client
             .query_one(
                 r#"
-                    INSERT INTO "IpUpdateResults"(server_action, ipv4, ipv6, inserted_at)
-                    VALUES ($1, $2, $3, $4)
+                    INSERT INTO "IpUpdateResults"("server_action", "ipv4", "ipv6", "inserted_at", "domain_id")
+                    VALUES ($1, $2, $3, $4, $5)
                     RETURNING *"#,
                 &[
                     &entity.server_action.to_str(),
                     &IpAddr::V4(entity.ipv4),
                     &entity.ipv6.map(|v6| IpAddr::V6(v6)),
                     &entity.inserted_at,
+                    &domain_id,
                 ],
             )
-            .await
-            .unwrap();
+            .await?;
         Ok(IpUpdateResult::from(row))
     }
 }
@@ -144,6 +132,7 @@ pub struct UpdateIpTask {
     ip_results_counters: IntCounterVec,
     ip_update_result_repository: IpUpdateResultPostgresRepository,
     sleep_time: Duration,
+    domains_to_update: Vec<String>,
 }
 
 impl UpdateIpTask {
@@ -152,6 +141,7 @@ impl UpdateIpTask {
         duck_dns_client: DuckDnsClient,
         ip_update_result_repository: IpUpdateResultPostgresRepository,
         sleep_time: Duration,
+        domains_to_update: Vec<String>,
     ) -> std::result::Result<Self, Box<dyn std::error::Error>> {
         let ddns_request_counter = IntCounterVec::new(
             prometheus::Opts::new(
@@ -168,33 +158,37 @@ impl UpdateIpTask {
             ip_results_counters: ddns_request_counter,
             ip_update_result_repository,
             sleep_time,
+            domains_to_update,
         })
     }
 
     pub async fn update_dns_record_task(&self) {
         info!("Starting update_dns_record_task");
         loop {
-            match self.duck_dns_client.update_ip().await {
-                Ok(response) => {
-                    info!("Got response from Duck DNS: {:?}", response);
-                    let entity = IpUpdateResult::from(response);
-                    // TODO: handle the error to not be fatal
-                    let _ = self
-                        .ip_update_result_repository
-                        .insert(entity)
-                        .await
-                        .unwrap();
-                    self.ip_results_counters
-                        .with_label_values(&["success"])
-                        .inc();
-                }
-                Err(e) => {
-                    error!("Got error from Duck DNS: {:?}", e);
-                    self.ip_results_counters
-                        .with_label_values(&["failure"])
-                        .inc();
-                }
-            };
+            for domain_to_update in &self.domains_to_update {
+                match self.duck_dns_client.update_ip(domain_to_update).await {
+                    Ok(response) => {
+                        info!("Got response from Duck DNS for domain {}: {:?}", domain_to_update, response);
+                        let entity = IpUpdateResult::from(response);
+                        let update_result = self
+                            .ip_update_result_repository
+                            .insert(&domain_to_update, entity)
+                            .await;
+                        if let Err(e) = update_result {
+                            panic!("Error while saving the IP update result to the database: {}", e);
+                        }
+                        self.ip_results_counters
+                            .with_label_values(&["success"])
+                            .inc();
+                    }
+                    Err(e) => {
+                        error!("Got error from Duck DNS: {:?}", e);
+                        self.ip_results_counters
+                            .with_label_values(&["failure"])
+                            .inc();
+                    }
+                };
+            }
             sleep(self.sleep_time).await;
         }
     }

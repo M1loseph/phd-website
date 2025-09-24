@@ -27,7 +27,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let config = config::read_config_with_default()?;
     let client = DuckDnsClient::new(DuckDnsConfig {
-        domain_to_update: config.domain_to_update,
         duck_dns_address: config.duck_dns_address,
         token: config.token,
     });
@@ -60,6 +59,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         client,
         ip_update_result_repository,
         config.ip_update_interval,
+        config.domains_to_update,
     )?;
 
     tokio::spawn(async move {
