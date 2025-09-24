@@ -1,10 +1,4 @@
 web:
-  limiting:
-    fullBucketExpiration: PT1H
-    singleIp:
-      capacity: 5
-      refillAmount: 1
-      refillInterval: PT1M
   cors:
     mapping: '/**'
     allowed_origins:

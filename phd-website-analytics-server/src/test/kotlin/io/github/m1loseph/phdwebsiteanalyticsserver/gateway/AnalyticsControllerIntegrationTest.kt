@@ -59,7 +59,8 @@ class AnalyticsControllerIntegrationTest : RedisAndMongoFixture() {
           """
                 {
                     "eventTime": "2023-10-10T10:10:10Z",
-                    "environment": "pwr_server"
+                    "environment": "pwr_server",
+                    "appVersion": "1.0"
                 }
                 """,
         ).header("x-forwarded-for", "200.200.200.200")

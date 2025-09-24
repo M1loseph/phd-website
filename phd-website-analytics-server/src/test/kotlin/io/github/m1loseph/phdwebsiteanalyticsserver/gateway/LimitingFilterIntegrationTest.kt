@@ -15,7 +15,7 @@ import org.testcontainers.junit.jupiter.Testcontainers
 @Testcontainers
 @SpringBootTest(useMainMethod = UseMainMethod.ALWAYS)
 @AutoConfigureWebTestClient
-@ActiveProfiles("test")
+@ActiveProfiles("limiting-filter-test")
 class LimitingFilterIntegrationTest : RedisAndMongoFixture() {
   @Autowired
   lateinit var webTestClient: WebTestClient
@@ -31,7 +31,8 @@ class LimitingFilterIntegrationTest : RedisAndMongoFixture() {
           """
           {
             "eventTime": "2020-10-10T10:10:10Z",
-            "environment": "github_pages"
+            "environment": "github_pages",
+            "appVersion": "1.0"
           }
         """,
         ).header("x-forwarded-for", "200.200.200.200")
