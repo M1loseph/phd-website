@@ -1,5 +1,6 @@
 name: System Backupper Continuous Integration
 on:
+  workflow_dispatch:
   pull_request:
     branches: [master]
     paths: 
