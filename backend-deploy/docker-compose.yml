@@ -27,7 +27,7 @@ services:
     ports:
       - "6379:6379"
   phd-website-analytics-server:
-    image: m1loseph/phd-website-analytics-server:0.7
+    image: m1loseph/phd-website-analytics-server:0.8
     restart: always
     ports:
       - "8080:8080"
