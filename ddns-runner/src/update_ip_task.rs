@@ -63,12 +63,12 @@ impl From<IPUpdateResultAPI> for IpUpdateResult {
 
 impl From<tokio_postgres::Row> for IpUpdateResult {
     fn from(row: tokio_postgres::Row) -> Self {
-        let ipv4 = match row.get::<usize, IpAddr>(2) {
+        let ipv4: Ipv4Addr = match row.get("ipv4") {
             IpAddr::V4(v4) => v4,
             _ => panic!("Something else than IPV4 is stored in the IpUpdateResults table!"),
         };
 
-        let ipv6 = match row.get::<usize, Option<IpAddr>>(3) {
+        let ipv6: Option<Ipv6Addr>  = match row.get("ipv6") {
             Some(ip_address) => match ip_address {
                 IpAddr::V6(v6) => Some(v6),
                 _ => panic!("Something else than IPV6 is stored in the IpUpdateResults table!"),
@@ -77,11 +77,11 @@ impl From<tokio_postgres::Row> for IpUpdateResult {
         };
 
         IpUpdateResult {
-            id: Some(row.get(0)),
-            server_action: ServerAction::from_str(row.get(1)).unwrap(),
+            id: Some(row.get("id")),
+            server_action: ServerAction::from_str(row.get("server_action")).unwrap(),
             ipv4,
             ipv6,
-            inserted_at: row.get(4),
+            inserted_at: row.get("inserted_at"),
         }
     }
 }
@@ -96,30 +96,28 @@ impl IpUpdateResultPostgresRepository {
     }
     
     async fn insert(&self, domain: &str, entity: IpUpdateResult) -> Result<IpUpdateResult> {
-        let domain_row= self.client
-            .query_one(
+        self.client
+            .execute(
                 r#"
-                    INSERT INTO "Domains"("name")
+                    INSERT INTO "Domains"("domain_name")
                     VALUES ($1)
-                    ON CONFLICT ("name") DO NOTHING
-                    RETURNING ("id")"#,
+                    ON CONFLICT ("domain_name") DO NOTHING"#,
                 &[&domain],
             )
             .await?;
-        let domain_id: &str = domain_row.get(0);
         let row = self
             .client
             .query_one(
                 r#"
                     INSERT INTO "IpUpdateResults"("server_action", "ipv4", "ipv6", "inserted_at", "domain_id")
-                    VALUES ($1, $2, $3, $4, $5)
+                    VALUES ($1, $2, $3, $4, (SELECT "id" FROM "Domains" WHERE "domain_name" = $5))
                     RETURNING *"#,
                 &[
                     &entity.server_action.to_str(),
                     &IpAddr::V4(entity.ipv4),
                     &entity.ipv6.map(|v6| IpAddr::V6(v6)),
                     &entity.inserted_at,
-                    &domain_id,
+                    &domain,
                 ],
             )
             .await?;

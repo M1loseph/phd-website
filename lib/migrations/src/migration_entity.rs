@@ -164,7 +164,7 @@ pub mod postgres {
         }
 
         async fn execute(&self, migration: &str) -> Result<()> {
-            self.client.execute(migration, &[]).await?;
+            self.client.batch_execute(migration).await?;
             Ok(())
         }
     }
