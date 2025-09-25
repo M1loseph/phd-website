@@ -9,7 +9,6 @@ use std::{
 
 pub struct DuckDnsConfig {
     pub duck_dns_address: String,
-    pub domain_to_update: String,
     pub token: String,
 }
 
@@ -35,10 +34,10 @@ impl DuckDnsClient {
         DuckDnsClient { config }
     }
 
-    pub async fn update_ip(&self) -> Result<IPUpdateResult, UpdateIpError> {
+    pub async fn update_ip(&self, domain_to_update: &str) -> Result<IPUpdateResult, UpdateIpError> {
         let url = format!(
             "{}/update?domains={}&token={}&verbose=true",
-            self.config.duck_dns_address, self.config.domain_to_update, self.config.token
+            self.config.duck_dns_address, domain_to_update, self.config.token
         );
         trace!("Sending request to: {url}");
         let client = reqwest::Client::builder()

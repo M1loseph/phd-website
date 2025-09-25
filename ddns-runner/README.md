@@ -6,8 +6,8 @@ An app that calls [Duck DNS](https://www.duckdns.org/) at customizable interval 
 
 There is a handy [Docker image](https://hub.docker.com/r/m1loseph/ddns-runner). Set the following environment variables:
 
-- `DDNS_RUNNER_DOMAIN_TO_UPDATE` - the domain which ip you want to update.
-- `DDNS_RUNNER_TOKEN` - token that is used by the app to authorize to Duck DNS. It can be obtained [here](https://www.duckdns.org/) (login first).
+- `DDNS_RUNNER_DOMAINS_TO_UPDATE` - the domains which ip you want to update. They should be seperated by a semicolumn (`;`).
+- `DDNS_RUNNER_TOKEN` - token that is used by the app to authorize to Duck DNS. It can be obtained on [https://www.duckdns.org/](https://www.duckdns.org/) (login first).
 - `RUST_LOG` - logging level of the application.
 
 Optional configuration:
@@ -18,7 +18,8 @@ Optional configuration:
 ### Running locally
 
 First make sure to install packages required by this project. These are:
-- rust (via [this link](https://www.rust-lang.org/learn/get-started))
+
+- rust (via [https://www.rust-lang.org/learn/get-started](https://www.rust-lang.org/learn/get-started))
 - libssl-dev (via `sudo apt install libssl-dev`)
 - build-essential (via `sudo apt install build-essential`)
 

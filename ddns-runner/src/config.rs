@@ -43,7 +43,7 @@ impl Display for ConfigReadingError {
 
 #[derive(Debug)]
 pub struct ApplicationConfig {
-    pub domain_to_update: String,
+    pub domains_to_update: Vec<String>,
     pub duck_dns_address: String,
     pub token: String,
     pub server_port: u16,
@@ -63,7 +63,10 @@ fn read_env_variable(name: &str) -> Result<String, ConfigReadingError> {
 }
 
 pub fn read_config_with_default() -> Result<ApplicationConfig, ConfigReadingError> {
-    let domain_to_update = read_env_variable("DOMAIN_TO_UPDATE")?;
+    let domains_to_update = read_env_variable("DOMAINS_TO_UPDATE")?
+        .split(';')
+        .map(|s| s.to_string())
+        .collect::<Vec<String>>();
     let token = read_env_variable("TOKEN")?;
     let server_port = read_env_variable("SERVER_PORT")
         .ok()
@@ -80,7 +83,7 @@ pub fn read_config_with_default() -> Result<ApplicationConfig, ConfigReadingErro
     let database_uri = read_env_variable("POSTGRES_URI")?;
     let migration_files_directory = read_env_variable("MIGRATION_FILES_DIRECTORY")?;
     Ok(ApplicationConfig {
-        domain_to_update,
+        domains_to_update,
         duck_dns_address,
         token,
         server_port,
@@ -122,7 +125,7 @@ mod tests {
         let _cleaner = EnvVariableTest::new();
         let error = read_config_with_default().unwrap_err();
         let expected_error = ConfigReadingError::VariableNotSet {
-            variable_name: "DDNS_RUNNER_DOMAIN_TO_UPDATE".to_string(),
+            variable_name: "DDNS_RUNNER_DOMAINS_TO_UPDATE".to_string(),
         };
         assert_eq!(error, expected_error);
     }
@@ -130,7 +133,7 @@ mod tests {
     #[test]
     fn should_exit_with_error_when_token_is_missing() {
         let _cleaner = EnvVariableTest::new();
-        std::env::set_var("DDNS_RUNNER_DOMAIN_TO_UPDATE", "phdwebsite");
+        std::env::set_var("DDNS_RUNNER_DOMAINS_TO_UPDATE", "phdwebsite");
         let error = read_config_with_default().unwrap_err();
         let expected_error = ConfigReadingError::VariableNotSet {
             variable_name: "DDNS_RUNNER_TOKEN".to_string(),
@@ -141,7 +144,7 @@ mod tests {
     #[test]
     fn should_exit_with_error_when_address_is_missing() {
         let _cleaner = EnvVariableTest::new();
-        std::env::set_var("DDNS_RUNNER_DOMAIN_TO_UPDATE", "phdwebsite");
+        std::env::set_var("DDNS_RUNNER_DOMAINS_TO_UPDATE", "phdwebsite");
         std::env::set_var("DDNS_RUNNER_TOKEN", "1234");
         let error = read_config_with_default().unwrap_err();
         let expected_error = ConfigReadingError::VariableNotSet {
@@ -153,7 +156,7 @@ mod tests {
     #[test]
     fn should_exit_with_error_when_database_uri_is_missing() {
         let _cleaner = EnvVariableTest::new();
-        std::env::set_var("DDNS_RUNNER_DOMAIN_TO_UPDATE", "phdwebsite");
+        std::env::set_var("DDNS_RUNNER_DOMAINS_TO_UPDATE", "phdwebsite");
         std::env::set_var("DDNS_RUNNER_TOKEN", "1234");
         std::env::set_var("DDNS_RUNNER_DUCK_DNS_ADDRESS", "https://duckdns.org");
         let error = read_config_with_default().unwrap_err();
@@ -166,7 +169,7 @@ mod tests {
     #[test]
     fn should_exit_with_error_when_migration_files_directory_is_missing() {
         let _cleaner = EnvVariableTest::new();
-        std::env::set_var("DDNS_RUNNER_DOMAIN_TO_UPDATE", "phdwebsite");
+        std::env::set_var("DDNS_RUNNER_DOMAINS_TO_UPDATE", "phdwebsite");
         std::env::set_var("DDNS_RUNNER_TOKEN", "1234");
         std::env::set_var("DDNS_RUNNER_DUCK_DNS_ADDRESS", "https://duckdns.org");
         std::env::set_var("DDNS_RUNNER_POSTGRES_URI", "postgres://localhost:5432/postgres");
@@ -180,13 +183,13 @@ mod tests {
     #[test]
     fn should_read_config_and_apply_defaults() {
         let _cleaner = EnvVariableTest::new();
-        std::env::set_var("DDNS_RUNNER_DOMAIN_TO_UPDATE", "phdwebsite");
+        std::env::set_var("DDNS_RUNNER_DOMAINS_TO_UPDATE", "phdwebsite;someotherdomain");
         std::env::set_var("DDNS_RUNNER_TOKEN", "1234");
         std::env::set_var("DDNS_RUNNER_DUCK_DNS_ADDRESS", "https://duckdns.org");
         std::env::set_var("DDNS_RUNNER_POSTGRES_URI", "postgres://localhost:5432/postgres");
         std::env::set_var("DDNS_RUNNER_MIGRATION_FILES_DIRECTORY", "./migrations");
         let result = read_config_with_default().unwrap();
-        assert_eq!(result.domain_to_update, "phdwebsite");
+        assert_eq!(result.domains_to_update, vec!["phdwebsite", "someotherdomain"]);
         assert_eq!(result.token, "1234");
         assert_eq!(result.duck_dns_address, "https://duckdns.org");
         assert_eq!(result.server_port, 3000);
@@ -196,7 +199,7 @@ mod tests {
     #[test]
     fn should_read_config_and_override_defaults() {
         let _cleaner = EnvVariableTest::new();
-        std::env::set_var("DDNS_RUNNER_DOMAIN_TO_UPDATE", "phdwebsite");
+        std::env::set_var("DDNS_RUNNER_DOMAINS_TO_UPDATE", "phdwebsite");
         std::env::set_var("DDNS_RUNNER_TOKEN", "1234");
         std::env::set_var("DDNS_RUNNER_DUCK_DNS_ADDRESS", "https://duckdns.org");
         std::env::set_var("DDNS_RUNNER_POSTGRES_URI", "postgres://localhost:5432/postgres");
