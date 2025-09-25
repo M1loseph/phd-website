@@ -1,7 +1,0 @@
-apiVersion: 1
-
-providers:
-  - name: Dashboards provider
-    allowUiUpdates: true
-    options:
-      path: /var/lib/grafana/dashboards
