@@ -58,7 +58,7 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
-          context: ddns-runner
+          file: "ddns-runner/Dockerfile"
           platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/ddns-runner:${{ env.DDNS_VERSION }}

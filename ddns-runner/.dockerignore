@@ -20,8 +20,11 @@
 **/npm-debug.log
 **/secrets.dev.yaml
 **/values.dev.yaml
-/bin
-/target
+/phd_website
+/phd-website-analytics-server
+/duck-dns-server-mock
+bin
+target
 LICENSE
 README.md
 .env

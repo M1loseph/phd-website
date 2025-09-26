@@ -1,9 +1,13 @@
-FROM rust:1.80.1-slim-bookworm AS build
+FROM rust:1.90.0-slim-bookworm AS build
 
 RUN apt update && apt install -y pkg-config libssl-dev
 
-WORKDIR /build
-COPY . .
+WORKDIR /build/ddns-runner
+
+COPY ddns-runner .
+COPY lib/dotenv /build/lib/dotenv
+COPY lib/migrations /build/lib/migrations
+
 RUN cargo build --release
 
 FROM debian:bookworm-20240311
@@ -24,7 +28,7 @@ RUN adduser \
     appuser
 USER appuser
 
-COPY --from=build /build/target/release/ddns-runner /ddns-runner/ddns-runner
-COPY --chown=appuser:appuser ./migrations /ddns-runner/migrations/
+COPY --from=build /build/ddns-runner/target/release/ddns-runner /ddns-runner/ddns-runner
+COPY --chown=appuser:appuser ./ddns-runner/migrations /ddns-runner/migrations/
 EXPOSE 3000
 ENTRYPOINT ["/ddns-runner/ddns-runner"]
