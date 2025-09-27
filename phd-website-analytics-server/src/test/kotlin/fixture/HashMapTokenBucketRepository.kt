@@ -15,4 +15,8 @@ class HashMapTokenBucketRepository : TokenBucketRepository {
   ) {
     tokens[id] = tokenBucket
   }
+
+  override fun clear(id: BucketId) {
+    tokens.remove(id)
+  }
 }

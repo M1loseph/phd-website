@@ -12,6 +12,8 @@ interface TokenBucketRepository {
     id: BucketId,
     tokenBucket: TokenBucket,
   )
+
+  fun clear(id: BucketId)
 }
 
 @Repository
@@ -41,6 +43,12 @@ class RedisTokenBucketRepository(
         serialized,
         SetParams.setParams().ex(tokenBucket.timeToFull().seconds),
       )
+    }
+  }
+
+  override fun clear(id: BucketId) {
+    jedisPool.resource.use { client ->
+      client.del(id.toRawId().toByteArray())
     }
   }
 }
