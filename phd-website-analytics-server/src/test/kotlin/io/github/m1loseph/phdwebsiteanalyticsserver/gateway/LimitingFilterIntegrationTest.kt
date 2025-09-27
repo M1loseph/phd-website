@@ -60,33 +60,34 @@ class LimitingFilterIntegrationTest : RedisAndMongoFixture() {
     }
   }
 
-    @Test
-    fun whenCalledTooManyTimes_butReceivedOptionsRequest_thenShouldNotReject() {
-      repeat(ALLOWED_REQUESTS_WITHOUT_BLOCKING) { _ ->
-        webTestClient
-          .post()
-          .uri("/api/v1/analytics/appOpened")
-          .contentType(MediaType.APPLICATION_JSON)
-          .bodyValue(
-            """
+  @Test
+  fun whenCalledTooManyTimes_butReceivedOptionsRequest_thenShouldNotReject() {
+    repeat(ALLOWED_REQUESTS_WITHOUT_BLOCKING) { _ ->
+      webTestClient
+        .post()
+        .uri("/api/v1/analytics/appOpened")
+        .contentType(MediaType.APPLICATION_JSON)
+        .bodyValue(
+          """
           {
             "eventTime": "2020-10-10T10:10:10Z",
             "environment": "github_pages",
             "appVersion": "1.0"
           }
         """,
-          ).header("x-forwarded-for", X_FORWARDED_FOR_HEADER_VALUE)
-          .exchange()
-          .expectStatus()
-          .value(IsEqual(201))
-      }
-
-      webTestClient.options()
-        .uri("/api/v1/analytics/appOpened")
-        .header("x-forwarded-for", X_FORWARDED_FOR_HEADER_VALUE)
+        ).header("x-forwarded-for", X_FORWARDED_FOR_HEADER_VALUE)
         .exchange()
         .expectStatus()
-        .value(IsEqual(200))
+        .value(IsEqual(201))
+    }
+
+    webTestClient
+      .options()
+      .uri("/api/v1/analytics/appOpened")
+      .header("x-forwarded-for", X_FORWARDED_FOR_HEADER_VALUE)
+      .exchange()
+      .expectStatus()
+      .value(IsEqual(200))
   }
 
   companion object {
