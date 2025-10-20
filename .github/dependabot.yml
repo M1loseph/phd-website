@@ -16,4 +16,12 @@ updates:
     directory: "/ddns-runner"
     schedule:
       interval: "weekly"
+  - package-ecosystem: "cargo"
+    directory: "/duck-dns-server-mock"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "cargo"
+    directory: "/system-backupper"
+    schedule:
+      interval: "weekly"
   
