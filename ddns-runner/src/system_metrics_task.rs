@@ -42,16 +42,11 @@ impl PrometheusSystemInfoMetricsTask {
                     continue;
                 }
             };
-            // TODO: replace existing code with commented one when this issue is resolved
-            // https://github.com/GuillaumeGomez/sysinfo/issues/1351
-            //
-            // let updated_processes = system_info.refresh_processes_specifics(
-            //     ProcessesToUpdate::Some(&[pid]),
-            //     ProcessRefreshKind::new().with_cpu().with_memory(),
-            // );
+
             let updated_processes = system_info.refresh_processes_specifics(
-                ProcessesToUpdate::All,
-                ProcessRefreshKind::new().with_cpu().with_memory(),
+                ProcessesToUpdate::Some(&[pid]),
+                false,
+                ProcessRefreshKind::default().with_cpu().with_memory(),
             );
 
             debug!("Updated {} processes information", updated_processes);
