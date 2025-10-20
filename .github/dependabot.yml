@@ -12,3 +12,8 @@ updates:
     directory: "/phd-website-analytics-server"
     schedule:
       interval: "weekly"
+  - package-ecosystem: "cargo"
+    directory: "/ddns-runner"
+    schedule:
+      interval: "weekly"
+  
