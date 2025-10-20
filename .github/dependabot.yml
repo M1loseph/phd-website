@@ -4,3 +4,11 @@ updates:
     directory: "/phd_website"
     schedule:
       interval: "weekly"
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "gradle"
+    directory: "/phd-website-analytics-server"
+    schedule:
+      interval: "weekly"

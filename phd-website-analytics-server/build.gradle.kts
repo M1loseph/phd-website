@@ -1,15 +1,14 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  id("org.springframework.boot") version "3.5.4"
-  kotlin("jvm") version "2.2.0"
-  kotlin("plugin.spring") version "2.2.0"
+  alias(libs.plugins.spring.plugin)
+  alias(libs.plugins.kotlin.jvm)
+  alias(libs.plugins.kotlin.spring)
 
   // Custom plugins
-  id("me.champeau.jmh") version "0.7.2"
-  id("com.diffplug.spotless") version "7.0.2"
-  id("com.google.cloud.tools.jib") version "3.4.5"
+  alias(libs.plugins.jmh)
+  alias(libs.plugins.spotless)
+  alias(libs.plugins.jib)
 }
 
 group = "io.github.m1loseph"
@@ -19,37 +18,37 @@ repositories {
   mavenCentral()
 }
 
+kotlin {
+  jvmToolchain(21)
+}
+
 dependencies {
   implementation(platform(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES))
-  implementation("org.springframework.boot:spring-boot-starter-webflux")
-  implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
-  implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-  implementation("org.springframework.boot:spring-boot-starter-validation")
-  implementation("org.springframework.boot:spring-boot-starter-actuator")
-  implementation("org.springframework.boot:spring-boot-starter-data-mongodb-reactive")
-  implementation("io.micrometer:micrometer-registry-prometheus")
+  implementation(libs.spring.boot.starter.webflux)
+  implementation(libs.reactor.kotlin.extensions)
+  implementation(libs.jackson.module.kotlin)
+  implementation(libs.spring.boot.starter.validation)
+  implementation(libs.spring.boot.starter.actuator)
+  implementation(libs.spring.boot.starter.data.mongodb.reactive)
+  implementation(libs.micrometer.registry.prometheus)
 
-  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
-  implementation("jakarta.validation:jakarta.validation-api")
+  implementation(libs.kotlinx.coroutines.reactor)
+  implementation(libs.jakarta.validation.api)
 
-  implementation("redis.clients:jedis:5.1.0")
+  implementation(libs.jedis)
 
-  implementation("org.jetbrains.kotlin:kotlin-reflect")
 
-  testImplementation("org.springframework.boot:spring-boot-starter-test") {
-    exclude(group = "com.vaadin.external.google", module = "android-json")
-  }
-  testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test")
-  testImplementation("io.projectreactor:reactor-test")
-  testImplementation("org.testcontainers:junit-jupiter:1.20.3")
-  testImplementation("org.mockito.kotlin:mockito-kotlin:5.2.1")
+  testImplementation(libs.spring.boot.starter.test)
+  testImplementation(libs.kotlinx.coroutines.test)
+  testImplementation(libs.reactor.test)
+  testImplementation(libs.test.containers)
+  testImplementation(libs.mockito.kotlin)
 }
 
 tasks.withType<KotlinCompile> {
   compilerOptions {
     allWarningsAsErrors = true
     freeCompilerArgs.addAll("-Xjsr305=strict", "-Xannotation-default-target=param-property")
-    jvmTarget = JvmTarget.JVM_21
   }
 }
 
