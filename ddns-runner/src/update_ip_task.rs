@@ -1,9 +1,9 @@
 use crate::duck_dns_client::client::DuckDnsClient;
 use crate::duck_dns_client::client::IPUpdateResult as IPUpdateResultAPI;
 use crate::duck_dns_client::client::ServerAction as ServerActionAPI;
+use anyhow::Result;
 use log::{error, info};
 use prometheus::{IntCounterVec, Registry};
-use anyhow::Result;
 use std::{
     net::{IpAddr, Ipv4Addr, Ipv6Addr},
     time::{Duration, SystemTime},
@@ -140,7 +140,7 @@ impl UpdateIpTask {
         ip_update_result_repository: IpUpdateResultPostgresRepository,
         sleep_time: Duration,
         domains_to_update: Vec<String>,
-    ) -> std::result::Result<Self, Box<dyn std::error::Error>> {
+    ) -> Result<Self> {
         let ddns_request_counter = IntCounterVec::new(
             prometheus::Opts::new(
                 "ddnsrunner_ddns_requests_total",

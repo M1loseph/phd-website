@@ -6,17 +6,16 @@ edition = "2021"
 [dependencies]
 dotenv = { path = "../lib/dotenv" }
 migrations = { path = "../lib/migrations", features = [ "postgres" ] }
-iron = "0.6.1"
 # TODO: minimize the feature list
 tokio = { version = "1", features = ["full"] }
 reqwest = { version = "0.12" }
 log = "0.4.21"
 env_logger = "0.11.2"
 prometheus = "0.13.3"
-router = "0.6.0"
 sysinfo = "0.31.4"
 tokio-postgres = "0.7.11"
 regex = "1.10.6"
 sha2 = "0.10.8"
 signal-hook = "0.3.17"
 anyhow = "1.0.100"
+axum = "0.8.6"

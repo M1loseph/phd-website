@@ -1,25 +1,31 @@
 mod config;
 mod duck_dns_client;
-mod prometheus_handler;
+mod handlers;
 mod system_metrics_task;
 mod update_ip_task;
 use std::path::PathBuf;
 use std::sync::atomic::AtomicBool;
 use std::sync::Arc;
 
+use anyhow::Result;
+use axum::routing::get;
+use axum::Router;
 use duck_dns_client::client::{DuckDnsClient, DuckDnsConfig};
-use iron::Iron;
+use handlers::{prometheus_handler, AppState};
 use migrations::{MigrationRunner, MigrationRunnerConfiguration, PostgresSQLClientAdapter};
-use prometheus_handler::PrometheusExporter;
-use router::Router;
 use system_metrics_task::PrometheusSystemInfoMetricsTask;
+use tokio::net::TcpListener;
 use tokio_postgres::NoTls;
 use update_ip_task::{IpUpdateResultPostgresRepository, UpdateIpTask};
 
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
+async fn main() -> Result<()> {
     // required by Docker to exit the container gracefully by SIGTERM without waiting for SIGKILL
-    signal_hook::flag::register_conditional_shutdown(signal_hook::consts::SIGTERM, 0, Arc::new(AtomicBool::new(true)))?;
+    signal_hook::flag::register_conditional_shutdown(
+        signal_hook::consts::SIGTERM,
+        0,
+        Arc::new(AtomicBool::new(true)),
+    )?;
     dotenv::read_env_file();
     env_logger::init();
 
@@ -46,8 +52,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         let mut runner_config = MigrationRunnerConfiguration::default();
         runner_config.migrations_files_directory = PathBuf::from(config.migration_files_directory);
         let postgres_adapter = PostgresSQLClientAdapter::new(&postgres_client);
-        let runner =
-            MigrationRunner::new(runner_config, postgres_adapter);
+        let runner = MigrationRunner::new(runner_config, postgres_adapter);
         runner.run_migrations().await?;
     }
 
@@ -69,11 +74,15 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         process_info_metrics.update_system_info().await;
     });
 
-    let exporter = PrometheusExporter::new(registry);
-    let addr = format!("0.0.0.0:{}", config.server_port);
+    let app_state = Arc::new(AppState { registry });
 
-    let mut router = Router::new();
-    router.get("/internal/status/prometheus", exporter, "prometheus");
-    let _ = Iron::new(router).http(addr);
+    let app = Router::new()
+        .route("/internal/status/prometheus", get(prometheus_handler))
+        .with_state(app_state);
+
+    let addr = format!("0.0.0.0:{}", config.server_port);
+    let listener = TcpListener::bind(&addr).await?;
+
+    axum::serve(listener, app).await?;
     Ok(())
 }
