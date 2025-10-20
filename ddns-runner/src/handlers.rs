@@ -1,10 +1,9 @@
 use std::sync::Arc;
 
 use axum::extract::State;
-use axum::http::{header, HeaderMap, HeaderValue};
+use axum::http::{header, HeaderMap, HeaderValue, StatusCode};
 use log::error;
 use prometheus::TextEncoder;
-use reqwest::StatusCode;
 
 pub struct AppState {
     pub registry: prometheus::Registry,
