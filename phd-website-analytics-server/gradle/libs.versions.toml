@@ -5,7 +5,7 @@ jmh-plugin = "0.7.2"
 spotless = "8.0.0"
 jib = "3.4.5"
 jedis = "7.0.0"
-mockito = "5.2.1"
+mockito = "6.1.0"
 
 [libraries]
 spring-boot-starter-webflux = { group = "org.springframework.boot", name = "spring-boot-starter-webflux" }
