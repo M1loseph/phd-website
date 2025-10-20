@@ -17,7 +17,7 @@ permissions:
 
 jobs:
   build:
-    runs-on: self-hosted
+    runs-on: [self-hosted, arm64]
 
     steps:
       - name: Checkout repo
