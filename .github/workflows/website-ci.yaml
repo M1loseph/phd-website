@@ -30,7 +30,7 @@ jobs:
 
       - name: Run build script
         working-directory: phd_website
-        run: ./scripts/ci/build.sh ${{ secrets.DEPLOYMENT_ENDPOINT }} https://phdwebsite.duckdns.org pwr_server
+        run: ./scripts/ci/build.sh "/~jaszczak/" "https://phdwebsite.duckdns.org" pwr_server
 
       - name: Save artifact
         if: ${{ startsWith(github.ref, 'refs/tags/phdwebsite/') }}
@@ -39,3 +39,4 @@ jobs:
           name: web-build-artifact
           path: phd_website/build/web
           retention-days: 1
+

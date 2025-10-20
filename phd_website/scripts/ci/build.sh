@@ -40,3 +40,4 @@ flutter build web --base-href "${DEPLOYMENT_ENDPOINT}" \
     --dart-define ANALYTICS_SERVER_URL="${ANALYTICS_SERVER_URL}" \
     --dart-define ENVIRONMENT="${ENVIRONMENT}" \
     --no-tree-shake-icons
+
