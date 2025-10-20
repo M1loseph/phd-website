@@ -12,6 +12,9 @@ on:
     paths: 
       - 'phd-website-analytics-server/**'
 
+permissions:
+  checks: write
+
 jobs:
   build:
     runs-on: self-hosted
