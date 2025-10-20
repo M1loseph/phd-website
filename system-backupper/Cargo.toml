@@ -5,7 +5,7 @@ edition = "2021"
 
 [dependencies]
 anyhow = "1.0.97"
-chrono = { version = "0.4.39", features = ["serde"] }
+chrono = { version = "0.4.42", features = ["serde"] }
 cron = "0.15.0"
 dotenv = { path = '../lib/dotenv' }
 migrations = { path = '../lib/migrations', features = ["sqlite"] }
