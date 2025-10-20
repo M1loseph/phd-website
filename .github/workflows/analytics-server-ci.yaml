@@ -14,8 +14,7 @@ on:
 
 jobs:
   build:
-    # Self hosted runner has old ARM and new mongodb does not work there
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     steps:
       - name: Checkout repo
