@@ -1,0 +1,35 @@
+[versions]
+kotlin = "2.2.0"
+spring-boot = "3.5.4"
+jmh-plugin = "0.7.2"
+spotless = "7.0.2"
+jib = "3.4.5"
+jedis = "5.1.0"
+mockito = "5.2.1"
+
+[libraries]
+spring-boot-starter-webflux = { group = "org.springframework.boot", name = "spring-boot-starter-webflux" }
+reactor-kotlin-extensions = { group = "io.projectreactor.kotlin", name = "reactor-kotlin-extensions" }
+jackson-module-kotlin = { group = "com.fasterxml.jackson.module", name = "jackson-module-kotlin" }
+spring-boot-starter-validation = { group = "org.springframework.boot", name = "spring-boot-starter-validation" }
+spring-boot-starter-actuator = { group = "org.springframework.boot", name = "spring-boot-starter-actuator" }
+spring-boot-starter-data-mongodb-reactive = { group = "org.springframework.boot", name = "spring-boot-starter-data-mongodb-reactive" }
+micrometer-registry-prometheus = { group = "io.micrometer", name = "micrometer-registry-prometheus" }
+kotlinx-coroutines-reactor = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-reactor" }
+jakarta-validation-api = { group = "jakarta.validation", name = "jakarta.validation-api" }
+jedis = { group = "redis.clients", name = "jedis", version.ref = "jedis" }
+
+spring-boot-starter-test = { group = "org.springframework.boot", name = "spring-boot-starter-test" }
+kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test" }
+reactor-test = { group = "io.projectreactor", name = "reactor-test" }
+test-containers = { group = "org.testcontainers", name = "junit-jupiter" }
+mockito-kotlin = { group = "org.mockito.kotlin", name = "mockito-kotlin", version.ref = "mockito" }
+
+[plugins]
+spring-plugin = { id = "org.springframework.boot", version.ref = "spring-boot" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlin-spring = { id = "org.jetbrains.kotlin.plugin.spring", version.ref = "kotlin" }
+
+jmh = { id = "me.champeau.jmh", version.ref = "jmh-plugin" }
+spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
+jib = { id = "com.google.cloud.tools.jib", version.ref = "jib" }
