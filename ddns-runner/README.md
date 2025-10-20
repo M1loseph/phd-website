@@ -1,8 +1,8 @@
-## DDNS Runner
+# DDNS Runner
 
 An app that calls [Duck DNS](https://www.duckdns.org/) at customizable interval to update DNS record.
 
-### Running on production
+## Running on production
 
 There is a handy [Docker image](https://hub.docker.com/r/m1loseph/ddns-runner). Set the following environment variables:
 
@@ -15,7 +15,7 @@ Optional configuration:
 - `DDNS_RUNNER_IP_UPDATE_INTERVAL_SEC` - ip update interval in seconds. Defaults to 300 (5 minutes).
 - `DDNS_RUNNER_SERVER_PORT` - port for the server that hosts prometheus metrics on `/internal/status/prometheus` endpoint. Defaults to `3000`.
 
-### Running locally
+## Running locally
 
 First make sure to install packages required by this project. These are:
 
@@ -23,16 +23,16 @@ First make sure to install packages required by this project. These are:
 - libssl-dev (via `sudo apt install libssl-dev`)
 - build-essential (via `sudo apt install build-essential`)
 
-#### With actual Duck DNS
+### With actual Duck DNS
 
 Set the environments variables as described in [Running on production](#running-on-production) and run the app using `cargo run` command.
 The app supports `.env` file, so instead of setting environment variables manually in the terminal, you can just create `.env` file and put them all there.
 
-#### With mock server
+### With mock server
 
 Copy file `.env-dev` and name it `.env`. Run project `duck-dns-server-mock` in another terminal and after that run `ddns-runner`.
 
-### Prometheus metrics
+## Prometheus metrics
 
 You can access prometheus metrics on `/internal/status/prometheus` endpoint. Below there is a table of exposed metrics.
 
@@ -40,8 +40,8 @@ You can access prometheus metrics on `/internal/status/prometheus` endpoint. Bel
 | --- | --- | --- |
 | `ddnsrunner_ddns_requests` | Number of requests made to Duck DNS | `result`:  `failure`, `success` |
 
-### Building the docker image
+## Building the docker image
 
-`docker build -t <image-name> . `
+`docker build -t <image-name> .`
 
 `docker push <image-name>`
