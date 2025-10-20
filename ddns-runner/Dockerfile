@@ -17,7 +17,7 @@ ARG ADDITIONAL_PACKAGES
 RUN apt update && apt install -y libssl-dev ${ADDITIONAL_PACKAGES} && apt clean
 # Create a non-privileged user that the app will run under.
 # See https://docs.docker.com/go/dockerfile-user-best-practices/
-RUN groupadd -r appuser && useradd --no-log-init -r -g appuser appuser
+RUN groupadd -r appuser && useradd --no-log-init -r -g appuser -u 10001 --home /nonexistent --shell /sbin/nologin appuser
 USER appuser
 
 COPY --from=build /build/ddns-runner/target/release/ddns-runner /ddns-runner/ddns-runner
