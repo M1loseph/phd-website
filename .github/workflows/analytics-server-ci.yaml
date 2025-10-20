@@ -12,10 +12,12 @@ on:
     paths: 
       - 'phd-website-analytics-server/**'
 
+permissions:
+  checks: write
+
 jobs:
   build:
-    # Self hosted runner has old ARM and new mongodb does not work there
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     steps:
       - name: Checkout repo
@@ -35,6 +37,12 @@ jobs:
       - name: Run gradle build
         working-directory: 'phd-website-analytics-server/'
         run: ./gradlew build
+
+      - name: Publish Test Report
+        uses: mikepenz/action-junit-report@v5
+        if: success() || failure()
+        with:
+          report_paths: '**/build/test-results/test/TEST-*.xml'
 
       - name: Login to Docker Hub
         if: ${{ startsWith(github.ref, 'refs/tags/analytics-server/') }}
