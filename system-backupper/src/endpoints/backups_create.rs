@@ -168,7 +168,7 @@ mod tests {
         response.assert_header("content-type", "application/json");
         response.assert_json(&json!({
             "error_code": "BACKUP_TARGET_LOCKED",
-            "message": "Backup target testTarget is undegoing another opearation."
+            "message": "Backup target testTarget is undergoing another operation."
         }));
     }
 }
