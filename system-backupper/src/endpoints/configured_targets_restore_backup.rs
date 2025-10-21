@@ -45,7 +45,7 @@ pub async fn configured_targets_restore_backup(
                 Err((StatusCode::NOT_FOUND, Json(response_body)))
             }
             BackupRestoreError::BackupDoesNotExist(_) => {
-                warn!("Backup doeos not exist. Backup ID = {}", backup_id);
+                warn!("Backup does not exist. Backup ID = {}", backup_id);
                 let response_body = ApiError {
                     error_code: ErrorCode::BackupNotFound,
                     message: format!("{}", err),
