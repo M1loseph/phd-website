@@ -8,11 +8,11 @@ use super::cron_jobs::Task;
 
 pub struct ScheduledBackupJob {
     backup_target_name: String,
-    backupping_service: Arc<BackuppingService>,
+    backupping_service: Arc<dyn BackuppingService>,
 }
 
 impl ScheduledBackupJob {
-    pub fn new(backup_target_name: String, backupping_service: Arc<BackuppingService>) -> Self {
+    pub fn new(backup_target_name: String, backupping_service: Arc<dyn BackuppingService>) -> Self {
         Self {
             backup_target_name,
             backupping_service,

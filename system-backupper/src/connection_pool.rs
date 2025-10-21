@@ -28,7 +28,7 @@ impl ConnectionPool {
         })
     }
 
-    pub fn get_random_connection(&self) -> MutexGuard<Connection> {
+    pub fn get_random_connection(&'_ self) -> MutexGuard<'_, Connection> {
         // Unwrapping here seems ok. It is said on reddit and rust forum that accessing poisoned data should
         // lead to panick.
         //

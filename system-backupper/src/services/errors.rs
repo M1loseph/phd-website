@@ -34,7 +34,7 @@ impl Display for BackupCreateError {
         match self {
             BackupCreateError::BackupTargetLocked(backup_target) => write!(
                 f,
-                "Backup target {backup_target} is undegoing another opearation."
+                "Backup target {backup_target} is undergoing another operation."
             ),
             BackupCreateError::BackupTargetNotFound(backup_target) => {
                 write!(f, "Backup target {backup_target} was not found.")

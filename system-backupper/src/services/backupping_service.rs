@@ -1,7 +1,7 @@
 use crate::lock::{LockError, LockManager};
 use crate::model::{
-    BackupId, BackupMetadata, BackupMetadataRepository, BackupRepository,
-    BackupTarget, BackupTargetKind, BackupType, ConfiguredBackupTarget, RandomId, RepositoryError,
+    BackupId, BackupMetadata, BackupMetadataRepository, BackupRepository, BackupTarget,
+    BackupTargetKind, BackupType, ConfiguredBackupTarget, RandomId, RepositoryError,
 };
 use chrono::Local;
 use log::info;
@@ -15,7 +15,26 @@ use super::errors::{BackupCreateError, BackupFindError, BackupRestoreError};
 
 static METADATA_SAVE_RETRIES: u8 = 3;
 
-pub struct BackuppingService {
+pub trait BackuppingService: Send + Sync {
+    fn create_backup(
+        &self,
+        target_name: &str,
+        backup_type: BackupType,
+    ) -> Result<BackupMetadata, BackupCreateError>;
+
+    fn read_all_backups(&self) -> Result<Vec<BackupMetadata>, BackupFindError>;
+
+    fn restore_backup(
+        &self,
+        target_name: &str,
+        backup_id: u64,
+        drop: bool,
+    ) -> Result<(), BackupRestoreError>;
+
+    fn read_all_configured_targets(&self) -> &Vec<ConfiguredBackupTarget>;
+}
+
+pub struct BackuppingServiceImpl {
     lock_manager: Arc<LockManager>,
     backup_repository: Arc<dyn BackupRepository>,
     backup_metadata_repository: Arc<dyn BackupMetadataRepository>,
@@ -24,26 +43,8 @@ pub struct BackuppingService {
     backup_targets: Vec<ConfiguredBackupTarget>,
 }
 
-impl BackuppingService {
-    pub fn new(
-        lock_manager: Arc<LockManager>,
-        backup_repository: Arc<dyn BackupRepository>,
-        backup_metadata_repository: Arc<dyn BackupMetadataRepository>,
-        mongodb_strategy: Arc<MongoDBCompressedBackupStrategy>,
-        postgres_strategy: Arc<PostgresCompressedBackupStrategy>,
-        backup_targets: Vec<ConfiguredBackupTarget>,
-    ) -> Self {
-        Self {
-            lock_manager,
-            backup_repository,
-            backup_metadata_repository,
-            mongodb_strategy,
-            postgres_strategy,
-            backup_targets,
-        }
-    }
-
-    pub fn create_backup(
+impl BackuppingService for BackuppingServiceImpl {
+    fn create_backup(
         &self,
         target_name: &str,
         backup_type: BackupType,
@@ -106,12 +107,12 @@ impl BackuppingService {
         Ok(backup_metadata)
     }
 
-    pub fn read_all_mongodb_backups(&self) -> Result<Vec<BackupMetadata>, BackupFindError> {
+    fn read_all_backups(&self) -> Result<Vec<BackupMetadata>, BackupFindError> {
         let backups = self.backup_metadata_repository.find_all()?;
         Ok(backups)
     }
 
-    pub fn restore_backup(
+    fn restore_backup(
         &self,
         target_name: &str,
         backup_id: u64,
@@ -147,8 +148,28 @@ impl BackuppingService {
         Ok(())
     }
 
-    pub fn read_all_configured_targets(&self) -> &Vec<ConfiguredBackupTarget> {
+    fn read_all_configured_targets(&self) -> &Vec<ConfiguredBackupTarget> {
         &self.backup_targets
+    }
+}
+
+impl BackuppingServiceImpl {
+    pub fn new(
+        lock_manager: Arc<LockManager>,
+        backup_repository: Arc<dyn BackupRepository>,
+        backup_metadata_repository: Arc<dyn BackupMetadataRepository>,
+        mongodb_strategy: Arc<MongoDBCompressedBackupStrategy>,
+        postgres_strategy: Arc<PostgresCompressedBackupStrategy>,
+        backup_targets: Vec<ConfiguredBackupTarget>,
+    ) -> Self {
+        Self {
+            lock_manager,
+            backup_repository,
+            backup_metadata_repository,
+            mongodb_strategy,
+            postgres_strategy,
+            backup_targets,
+        }
     }
 
     fn find_target_by_name(&self, name: &str) -> Option<&ConfiguredBackupTarget> {

@@ -1,12 +1,5 @@
 use crate::model::{self, BackupMetadata};
 use chrono::{DateTime, FixedOffset};
-use iron::{
-    headers::ContentType,
-    mime::{Mime, SubLevel, TopLevel},
-    modifiers::Header,
-    status::Status,
-    Response,
-};
 use serde::Serialize;
 
 #[derive(Serialize)]
@@ -91,21 +84,6 @@ pub enum ErrorCode {
 pub struct ApiError {
     pub error_code: ErrorCode,
     pub message: String,
-}
-
-pub fn json_response<T>(status: Status, response_body: T) -> Response
-where
-    T: Sized + Serialize,
-{
-    let response_body = serde_json::to_string(&response_body).unwrap();
-
-    let header = Header(ContentType(Mime(
-        TopLevel::Application,
-        SubLevel::Json,
-        vec![],
-    )));
-
-    Response::with((status, response_body, header))
 }
 
 #[derive(Serialize, Debug)]
