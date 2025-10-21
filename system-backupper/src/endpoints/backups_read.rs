@@ -8,7 +8,7 @@ use log::{error, info};
 use std::sync::Arc;
 
 pub async fn backups_read_all(
-    State(backupping_service): State<Arc<BackuppingService>>,
+    State(backupping_service): State<Arc<dyn BackuppingService>>,
 ) -> Result<Json<Vec<ArchiveBackupResponse>>, (StatusCode, Json<ApiError>)> {
     info!("Got request to list all backups");
     match backupping_service.read_all_backups() {

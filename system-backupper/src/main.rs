@@ -28,7 +28,7 @@ use services::{
 use std::sync::{atomic::AtomicBool, Arc};
 use tokio::net::TcpListener;
 
-use crate::endpoints::configured_targets_restore_backup;
+use crate::{endpoints::configured_targets_restore_backup, services::BackuppingServiceImpl};
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -63,7 +63,7 @@ async fn main() -> Result<()> {
     )?);
     let postgres_strategy = Arc::new(PostgresCompressedBackupStrategy::new());
 
-    let backupping_service = Arc::new(BackuppingService::new(
+    let backupping_service: Arc<dyn BackuppingService> = Arc::new(BackuppingServiceImpl::new(
         lock_manager.clone(),
         backup_repository.clone(),
         backup_metadata_repoository.clone(),
@@ -81,7 +81,7 @@ async fn main() -> Result<()> {
     let router = Router::new()
         .route("/api/v1/targets", get(configured_targets_read_all))
         .route(
-            "/api/v1/targets/{targetName}/backup/{backupId}",
+            "/api/v1/targets/{target_name}/backup/{backup_id}",
             post(configured_targets_restore_backup),
         )
         .route("/api/v1/backups", get(backups_read_all))

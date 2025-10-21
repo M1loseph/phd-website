@@ -11,7 +11,7 @@ use log::{error, info, warn};
 use std::{collections::HashMap, sync::Arc};
 
 pub async fn configured_targets_restore_backup(
-    State(backupping_service): State<Arc<BackuppingService>>,
+    State(backupping_service): State<Arc<dyn BackuppingService>>,
     Path((target_name, backup_id)): Path<(String, u64)>,
     Query(query_params): Query<HashMap<String, String>>,
 ) -> Result<StatusCode, (StatusCode, Json<ApiError>)> {

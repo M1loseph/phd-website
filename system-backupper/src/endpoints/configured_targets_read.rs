@@ -5,7 +5,7 @@ use std::sync::Arc;
 use url::Url;
 
 pub async fn configured_targets_read_all(
-    State(backupping_service): State<Arc<BackuppingService>>,
+    State(backupping_service): State<Arc<dyn BackuppingService>>,
 ) -> Json<Vec<BackupTargetResponse>> {
     let targets = backupping_service.read_all_configured_targets();
     let response_body: Vec<BackupTargetResponse> = targets
