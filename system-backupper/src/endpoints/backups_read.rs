@@ -21,7 +21,7 @@ pub async fn backups_read_all(
         }
         Err(err) => {
             error!(
-                "An error has ocurred when listing MongoDB backups.\n{:?}",
+                "An error has occurred when listing MongoDB backups.\n{:?}",
                 err
             );
             let response_body = ApiError {
