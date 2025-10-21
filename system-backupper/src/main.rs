@@ -9,26 +9,34 @@ mod model;
 mod process;
 mod services;
 
+use anyhow::Result;
 use app_config::AppConfig;
+use axum::{
+    routing::{get, post},
+    Router,
+};
 use connection_pool::ConnectionPool;
 use dotenv;
-use endpoints::{
-    ConfiguredTargetsReadAllEndpoint, CreateBackupEndpoint, MongoDBReadAllBackups,
-    MongoRestoreBackupEndpoint,
-};
+use endpoints::{backups_create, backups_read_all, configured_targets_read_all};
 use file_system_repositories::{FileSystemBackupRepository, SQLiteBackupMetadataRepository};
-use iron::Iron;
 use jobs::{CronJobs, ScheduledBackupJob};
 use lock::LockManager;
 use migrations::{MigrationRunner, MigrationRunnerConfiguration, SqliteClientAdapter};
-use router::Router;
 use services::{
     BackuppingService, MongoDBCompressedBackupStrategy, PostgresCompressedBackupStrategy,
 };
 use std::sync::{atomic::AtomicBool, Arc};
+use tokio::net::TcpListener;
+
+use crate::endpoints::configured_targets_restore_backup;
 
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
+async fn main() -> Result<()> {
+    signal_hook::flag::register_conditional_shutdown(
+        signal_hook::consts::SIGTERM,
+        0,
+        Arc::new(AtomicBool::new(true)),
+    )?;
     dotenv::read_env_file();
     env_logger::init();
 
@@ -40,21 +48,19 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     {
         let connection = sqlite_connection_pool.get_random_connection();
         let sqlite_adapter = SqliteClientAdapter::new(&connection);
-        let migrator = MigrationRunner::new(
-            MigrationRunnerConfiguration::default(),
-             sqlite_adapter
-        );
+        let migrator =
+            MigrationRunner::new(MigrationRunnerConfiguration::default(), sqlite_adapter);
         migrator.run_migrations().await?;
     }
 
-    let lock_manager = Arc::new(LockManager::new(app_config.locks_directory).unwrap());
+    let lock_manager = Arc::new(LockManager::new(app_config.locks_directory)?);
     let backup_repository = Arc::new(FileSystemBackupRepository::new(app_config.target_directory));
     let backup_metadata_repoository =
         Arc::new(SQLiteBackupMetadataRepository::new(sqlite_connection_pool).unwrap());
 
-    let mongodb_strategy = Arc::new(
-        MongoDBCompressedBackupStrategy::new(app_config.mongodump_config_file_path).unwrap(),
-    );
+    let mongodb_strategy = Arc::new(MongoDBCompressedBackupStrategy::new(
+        app_config.mongodump_config_file_path,
+    )?);
     let postgres_strategy = Arc::new(PostgresCompressedBackupStrategy::new());
 
     let backupping_service = Arc::new(BackuppingService::new(
@@ -66,40 +72,24 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         app_config.backup_targets,
     ));
 
-    let read_targets_endpoint = ConfiguredTargetsReadAllEndpoint::new(backupping_service.clone());
-    let create_backup_endpoint = CreateBackupEndpoint::new(backupping_service.clone());
-    let read_backups_endpoint = MongoDBReadAllBackups::new(backupping_service.clone());
-    let restore_backup_endpoint = MongoRestoreBackupEndpoint::new(backupping_service.clone());
-
     let mut cron_jobs = CronJobs::new();
     for job in app_config.cyclic_backups {
         let task = ScheduledBackupJob::new(job.target_name, backupping_service.clone());
         cron_jobs.start(&job.cron_schedule, task)?;
     }
 
-    let mut router = Router::new();
-    router.get("/api/v1/targets", read_targets_endpoint, "readAllTargets");
-    router.post(
-        "/api/v1/backups/:target_name",
-        create_backup_endpoint,
-        "createBackupFromTarget",
-    );
-    router.get("/api/v1/backups", read_backups_endpoint, "readAllBackups");
-    router.post(
-        "/api/v1/backups/:target_name/:backup_id",
-        restore_backup_endpoint,
-        "restoreBackupToTarget",
-    );
+    let router = Router::new()
+        .route("/api/v1/targets", get(configured_targets_read_all))
+        .route(
+            "/api/v1/targets/{targetName}/backup/{backupId}",
+            post(configured_targets_restore_backup),
+        )
+        .route("/api/v1/backups", get(backups_read_all))
+        .route("/api/v1/backups/{target_name}", post(backups_create))
+        .with_state(backupping_service.clone());
 
-    signal_hook::flag::register_conditional_shutdown(
-        signal_hook::consts::SIGTERM,
-        0,
-        Arc::new(AtomicBool::new(true)),
-    )
-    .unwrap();
-
-    Iron::new(router)
-        .http(format!("0.0.0.0:{}", app_config.server_port))
-        .unwrap();
+    let bind_address = format!("0.0.0.0:{}", app_config.server_port);
+    let listener = TcpListener::bind(bind_address).await?;
+    axum::serve(listener, router).await?;
     Ok(())
 }

@@ -106,7 +106,7 @@ impl BackuppingService {
         Ok(backup_metadata)
     }
 
-    pub fn read_all_mongodb_backups(&self) -> Result<Vec<BackupMetadata>, BackupFindError> {
+    pub fn read_all_backups(&self) -> Result<Vec<BackupMetadata>, BackupFindError> {
         let backups = self.backup_metadata_repository.find_all()?;
         Ok(backups)
     }
