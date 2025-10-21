@@ -18,6 +18,6 @@ RUN groupadd -r appuser && useradd --no-log-init -r -g appuser -u 10001 --home /
 USER appuser
 
 COPY --from=build /build/system-backupper/target/release/system-backupper /system-backupper/system-backupper
-COPY --chown=appuser:appuser /system-backupper/migrations /system-backupper/migrations/
+COPY --chown=appuser:appuser system-backupper/migrations /system-backupper/migrations/
 EXPOSE 2000
 ENTRYPOINT ["/system-backupper/system-backupper"]
