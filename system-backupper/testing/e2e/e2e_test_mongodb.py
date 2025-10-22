@@ -5,7 +5,6 @@ DATABASE_NAME = "testdb"
 COLLECTION_NAME = "test_collection"
 
 def __insert_test_source_data(source_client):
-    
     source_db = source_client[DATABASE_NAME]
     source_collection = source_db[COLLECTION_NAME]
     source_collection.delete_many({})
