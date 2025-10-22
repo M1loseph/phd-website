@@ -9,20 +9,49 @@ on:
     tags:
       - 'system-backupper/*'
 jobs:
-  build-and-test:
+  build:
     runs-on: self-hosted
 
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v5
+      - uses: actions/checkout@v5
 
-      - name: Setup rust toolchain
-        uses: actions-rust-lang/setup-rust-toolchain@v1
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
 
-      - name: Build app in debug
-        working-directory: system-backupper
+      - working-directory: system-backupper
         run: cargo build
 
-      - name: Run tests
-        working-directory: system-backupper
+      - working-directory: system-backupper
         run: cargo test
+
+  e2e-tests:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v5
+
+      # This step uses an already existing python installation.
+      # The setup-python action does not work on self-hosted runners with Debian (any version) as for now.
+      - name: Set up Python venv and dependencies
+        working-directory: system-backupper/testing/e2e
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install -r requirements.txt
+
+      - name: Build docker image
+        working-directory: system-backupper/testing/e2e
+        run: docker compose build
+
+      - name: Setup testing environment
+        working-directory: system-backupper/testing/e2e
+        run: docker compose up -d --wait
+
+      - name: Run e2e tests
+        working-directory: system-backupper/testing/e2e
+        run: |
+          source venv/bin/activate
+          pytest *.py
+
+      - name: Tear down testing environment
+        if: always()
+        working-directory: system-backupper/testing/e2e
+        run: docker compose down -v

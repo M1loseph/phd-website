@@ -17,18 +17,20 @@ use axum::{
 };
 use connection_pool::ConnectionPool;
 use dotenv;
-use endpoints::{backups_create, backups_read_all, configured_targets_read_all};
+use endpoints::{
+    backups_create, backups_read_all, configured_targets_read_all,
+    configured_targets_restore_backup, healthy,
+};
 use file_system_repositories::{FileSystemBackupRepository, SQLiteBackupMetadataRepository};
 use jobs::{CronJobs, ScheduledBackupJob};
 use lock::LockManager;
 use migrations::{MigrationRunner, MigrationRunnerConfiguration, SqliteClientAdapter};
 use services::{
-    BackuppingService, MongoDBCompressedBackupStrategy, PostgresCompressedBackupStrategy,
+    BackuppingService, BackuppingServiceImpl, MongoDBCompressedBackupStrategy,
+    PostgresCompressedBackupStrategy,
 };
 use std::sync::{atomic::AtomicBool, Arc};
 use tokio::net::TcpListener;
-
-use crate::{endpoints::configured_targets_restore_backup, services::BackuppingServiceImpl};
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -81,11 +83,12 @@ async fn main() -> Result<()> {
     let router = Router::new()
         .route("/api/v1/targets", get(configured_targets_read_all))
         .route(
-            "/api/v1/targets/{target_name}/backup/{backup_id}",
+            "/api/v1/targets/{target_name}/backups/{backup_id}",
             post(configured_targets_restore_backup),
         )
         .route("/api/v1/backups", get(backups_read_all))
         .route("/api/v1/backups/{target_name}", post(backups_create))
+        .route("/internal/status/health", get(healthy))
         .with_state(backupping_service.clone());
 
     let bind_address = format!("0.0.0.0:{}", app_config.server_port);

@@ -1,5 +1,5 @@
 use chrono::Local;
-use log::error;
+use log::{debug, error};
 use std::error::Error as StdError;
 use std::fmt::Display;
 use std::fs::File;
@@ -63,7 +63,9 @@ impl LockManager {
         let lock_file_name = format!("{key}.lock");
         let lock_file_path = self.locks_directory.join(lock_file_name);
         let lock_creation_time = Local::now();
-        Lock::new(&lock_creation_time.to_rfc3339(), &key, lock_file_path)
+        let lock = Lock::new(&lock_creation_time.to_rfc3339(), &key, lock_file_path)?;
+        debug!("Created temporary lock for key {}", key);
+        Ok(lock)
     }
 }
 
