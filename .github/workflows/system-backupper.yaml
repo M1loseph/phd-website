@@ -24,26 +24,26 @@ jobs:
         run: cargo test
 
   e2e-tests:
-    needs: build
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v5
+
+      - name: Set up Python venv and dependencies
+        working-directory: system-backupper/testing/e2e
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install -r requirements.txt
 
       - name: Build docker image
         working-directory: system-backupper/testing/e2e
         run: docker compose build
 
-      - uses: actions/setup-python@v6
-        with:
-          python-version: '3.12' 
-
-      - working-directory: system-backupper/testing/e2e
-        run: pip install -r requirements.txt
-
       - name: Run tests
         working-directory: system-backupper/testing/e2e
         run: |
           docker compose up -d --wait
+          source venv/bin/activate
           pytest *.py
 
       - name: Tear down testing environment
