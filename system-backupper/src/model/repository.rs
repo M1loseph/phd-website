@@ -35,7 +35,7 @@ impl Display for RepositoryError {
         match self {
             RepositoryError::IdAlreadyExists { id } => write!(f, "Id {id} is already in use."),
             RepositoryError::Unknown(_) => {
-                write!(f, "An unknown error has occurred.")
+                write!(f, "An unknown error has occurred when accessing the database.")
             }
         }
     }

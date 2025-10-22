@@ -35,7 +35,8 @@ impl AppConfig {
             env::read_int_or_default(&Self::to_env_variable_name("DB_CONNECTION_POOL_SIZE"), 3);
         let server_port =
             env::read_int_or_default(&Self::to_env_variable_name("SERVER_PORT"), 2000);
-        let cyclic_backups = env::read(&Self::to_env_variable_name("CYCLIC_BACKUPS"));
+        let cyclic_backups =
+            env::read_or_default(&Self::to_env_variable_name("CYCLIC_BACKUPS"), "");
         let cyclic_backups = Self::parse_cyclic_backups(cyclic_backups);
 
         Self {

@@ -7,6 +7,7 @@ use crate::process::IntoResult;
 use anyhow::{anyhow, Result};
 use flate2::write::{GzEncoder, GzDecoder};
 use flate2::Compression;
+use log::info;
 use std::io::Write;
 use url::Url;
 
@@ -66,6 +67,7 @@ impl MongoDBCompressedBackupStrategy {
 impl BackupStrategy for MongoDBCompressedBackupStrategy {
     fn create_backup(&self, connection_string: &str) -> Result<(Backup, BackupFormat)> {
         let config_file = self.create_config_file(connection_string)?;
+        info!("Created temporary mongodump config file. Starting dump process...");
         let output = Command::new("mongodump")
             .args(["--config", &config_file.path, "--gzip", "--archive"])
             .stderr(Stdio::piped())

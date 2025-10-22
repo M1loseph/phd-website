@@ -9,7 +9,7 @@ on:
     tags:
       - 'system-backupper/*'
 jobs:
-  build-and-test:
+  build:
     runs-on: self-hosted
 
     steps:
@@ -23,7 +23,30 @@ jobs:
       - working-directory: system-backupper
         run: cargo test
 
-      - uses: docker/setup-buildx-action@v3
+  e2e-tests:
+    needs: build
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v5
 
-      - name: Build simple docker image for e2e tests
-        run: docker build -t system-backupper-e2e -f system-backupper/Dockerfile .
+      - name: Build docker image
+        working-directory: system-backupper/testing/e2e
+        run: docker compose build
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.13' 
+
+      - working-directory: system-backupper/testing/e2e
+        run: pip install -f requirements.txt
+
+      - name: Run tests
+        working-directory: system-backupper/testing/e2e
+        run: |
+          docker compose up -d --wait
+          pytest *.py
+
+      - name: Tear down testing environment
+        if: always()
+        working-directory: system-backupper/testing/e2e
+        run: docker compose down -v

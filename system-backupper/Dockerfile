@@ -1,7 +1,5 @@
 FROM rust:1.90.0-slim-bookworm AS build
 
-# RUN apt update && apt install -y pkg-config libssl-dev
-
 WORKDIR /build/system-backupper
 
 COPY system-backupper .
@@ -10,14 +8,26 @@ COPY lib/migrations /build/lib/migrations
 
 RUN cargo build --release
 
-FROM debian:bookworm-20250929
+FROM ubuntu:24.04
 
 # Create a non-privileged user that the app will run under.
 # See https://docs.docker.com/go/dockerfile-user-best-practices/
 RUN groupadd -r appuser && useradd --no-log-init -r -g appuser -u 10001 --home /nonexistent --shell /sbin/nologin appuser
-USER appuser
 
 COPY --from=build /build/system-backupper/target/release/system-backupper /system-backupper/system-backupper
-COPY --chown=appuser:appuser system-backupper/migrations /system-backupper/migrations/
+COPY system-backupper/migrations /system-backupper/migrations/
+RUN chown -R appuser:appuser /system-backupper
+RUN apt update && apt install curl wget -y && apt clean
+
+# Install MongoDB Database Tools
+RUN case $(uname -m) in "x86_64") OS_ARCH="x86_64" ;; "aarch64") OS_ARCH="arm64" ;; *) OS_ARCH="unsupported" ;; esac && \
+    if [ "$OS_ARCH" = "unsupported" ]; then echo "Unsupported architecture $(uname -m)."; exit 1; fi && \
+    wget https://fastdl.mongodb.org/tools/db/mongodb-database-tools-ubuntu2404-${OS_ARCH}-100.13.0.deb && \
+    apt install -y ./mongodb-database-tools-ubuntu2404-${OS_ARCH}-100.13.0.deb && \
+    rm mongodb-database-tools-ubuntu2404-${OS_ARCH}-100.13.0.deb
+
+USER appuser
+
 EXPOSE 2000
-ENTRYPOINT ["/system-backupper/system-backupper"]
+WORKDIR /system-backupper
+CMD ["./system-backupper"]
