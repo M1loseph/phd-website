@@ -17,14 +17,14 @@ RUN groupadd -r appuser && useradd --no-log-init -r -g appuser -u 10001 --home /
 COPY --from=build /build/system-backupper/target/release/system-backupper /system-backupper/system-backupper
 COPY system-backupper/migrations /system-backupper/migrations/
 RUN chown -R appuser:appuser /system-backupper
-RUN apt update && apt install curl wget -y && apt clean
-
-# Install MongoDB Database Tools
-RUN case $(uname -m) in "x86_64") OS_ARCH="x86_64" ;; "aarch64") OS_ARCH="arm64" ;; *) OS_ARCH="unsupported" ;; esac && \
+RUN apt-get update && \
+    apt-get install -y curl wget && \
+    case $(uname -m) in "x86_64") OS_ARCH="x86_64" ;; "aarch64") OS_ARCH="arm64" ;; *) OS_ARCH="unsupported" ;; esac && \
     if [ "$OS_ARCH" = "unsupported" ]; then echo "Unsupported architecture $(uname -m)."; exit 1; fi && \
     wget https://fastdl.mongodb.org/tools/db/mongodb-database-tools-ubuntu2404-${OS_ARCH}-100.13.0.deb && \
-    apt install -y ./mongodb-database-tools-ubuntu2404-${OS_ARCH}-100.13.0.deb && \
-    rm mongodb-database-tools-ubuntu2404-${OS_ARCH}-100.13.0.deb
+    apt-get install -y ./mongodb-database-tools-ubuntu2404-${OS_ARCH}-100.13.0.deb && \
+    rm mongodb-database-tools-ubuntu2404-${OS_ARCH}-100.13.0.deb && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
 USER appuser
 
