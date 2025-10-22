@@ -1,18 +1,17 @@
-use iron::prelude::*;
-use iron::status;
-use iron::Handler;
-use iron::Iron;
-use params::Params;
-use params::Value;
+use axum::extract::Query;
+use axum::extract::State;
+use axum::http::StatusCode;
+use axum::routing::get;
+use axum::Router;
 use rand::random;
-use router::Router;
+use std::collections::HashMap;
 use std::io::stdin;
 use std::io::IsTerminal;
 use std::sync::Arc;
 use std::sync::Mutex;
-use std::sync::MutexGuard;
 use std::time::Duration;
 use std::time::Instant;
+use tokio::net::TcpListener;
 
 const CORRECT_TOKEN: &str = "dbaceba3-3e25-44b6-ad6b-c6b39a2ec16a";
 const UPDATE_INTERVAL: Duration = Duration::from_secs(5);
@@ -64,84 +63,60 @@ impl MockDuckDnsServer {
     }
 }
 
-struct DDNSHandler {
-    server_data: Arc<Mutex<MockDuckDnsServer>>,
-}
-
-impl DDNSHandler {
-    fn new(server_data: Arc<Mutex<MockDuckDnsServer>>) -> Self {
-        DDNSHandler { server_data }
+fn handle_normal(
+    server_data: &mut MockDuckDnsServer,
+    params: &HashMap<String, String>,
+) -> (StatusCode, String) {
+    if params.get("token") != Some(&CORRECT_TOKEN.to_string())
+        && params.get("domain") != Some(&"phdwebsite".to_string())
+    {
+        return (StatusCode::OK, "KO".to_string());
     }
-}
-impl DDNSHandler {
-    fn handle_normal(
-        &self,
-        req: &mut Request,
-        mut server_data: MutexGuard<MockDuckDnsServer>,
-    ) -> IronResult<Response> {
-        match req.get_ref::<Params>() {
-            Ok(params) => {
-                if params.get("token") != Some(&Value::String(CORRECT_TOKEN.to_string()))
-                    && params.get("domain") != Some(&Value::String("phdwebsite".to_string()))
-                {
-                    let response = Response::with((status::Ok, "KO"));
-                    Ok(response)
-                } else {
-                    let update = if server_data.change_ip_if_needed() {
-                        "UPDATED"
-                    } else {
-                        "NOCHANGE"
-                    };
-                    match params.get("verbose") {
-                        None => Ok(Response::with((status::Ok, "OK"))),
-                        Some(&Value::String(ref query)) => match query.as_str() {
-                            "false" => Ok(Response::with((status::Ok, "OK"))),
-                            "true" => {
-                                let ip = &server_data.current_ip;
-                                Ok(Response::with((
-                                    status::Ok,
-                                    format!("OK\n{ip}\n\n{update}"),
-                                )))
-                            }
-                            _ => Ok(Response::with(status::BadRequest)),
-                        },
-                        _ => Ok(Response::with(status::BadRequest)),
-                    }
-                }
+    let update = if server_data.change_ip_if_needed() {
+        "UPDATED"
+    } else {
+        "NOCHANGE"
+    };
+    match params.get("verbose") {
+        None => (StatusCode::OK, "OK".to_string()),
+        Some(query) => match query.as_str() {
+            "false" => (StatusCode::OK, "OK".to_string()),
+            "true" => {
+                let ip = &server_data.current_ip;
+                (StatusCode::OK, format!("OK\n{ip}\n\n{update}"))
             }
-            Err(e) => Err(IronError::new(e, status::InternalServerError)),
-        }
-    }
-
-    fn handle_error_ko(&self) -> IronResult<Response> {
-        Ok(Response::with(("KO", status::Ok)))
-    }
-
-    fn handle_error_500(&self) -> IronResult<Response> {
-        Ok(Response::with(status::InternalServerError))
-    }
-}
-
-impl Handler for DDNSHandler {
-    fn handle(&self, req: &mut Request) -> IronResult<Response> {
-        println!("Handling request coming from {}", req.remote_addr);
-        let server_data = self.server_data.lock().unwrap();
-        match server_data.mode {
-            Mode::Normal => self.handle_normal(req, server_data),
-            Mode::ErrorKO => self.handle_error_ko(),
-            Mode::Error500 => self.handle_error_500(),
+            _ => (StatusCode::BAD_REQUEST, "".to_string()),
         }
     }
 }
 
-fn main() {
-    let mut router = Router::new();
+fn handle_error_ko() -> (StatusCode, String) {
+    (StatusCode::OK, "KO".to_string())
+}
+
+fn handle_error_500() -> (StatusCode, String) {
+    (StatusCode::INTERNAL_SERVER_ERROR, "".to_string())
+}
+
+async fn mocked_handler(
+    State(server_data): State<Arc<Mutex<MockDuckDnsServer>>>,
+    Query(params): Query<HashMap<String, String>>,
+) -> (StatusCode, String) {
+    println!("Handling request");
+    let mut server_data = server_data.lock().unwrap();
+    match server_data.mode {
+        Mode::Normal => handle_normal(&mut server_data, &params),
+        Mode::ErrorKO => handle_error_ko(),
+        Mode::Error500 => handle_error_500(),
+    }
+}
+
+#[tokio::main]
+async fn main() {
     let server_data = Arc::new(Mutex::new(MockDuckDnsServer::new()));
-    router.get(
-        "/update",
-        DDNSHandler::new(server_data.clone()),
-        "update-ip",
-    );
+    let router = Router::new()
+        .route("/update", get(mocked_handler))
+        .with_state(server_data.clone());
 
     std::thread::spawn(move || {
         if !stdin().is_terminal() {
@@ -185,5 +160,8 @@ fn main() {
         }
     });
 
-    Iron::new(router).http(format!("0.0.0.0:{}", PORT)).unwrap();
+    let tcp_listener = TcpListener::bind(format!("0.0.0.0:{}", PORT))
+        .await
+        .unwrap();
+    axum::serve(tcp_listener, router).await.unwrap();
 }
