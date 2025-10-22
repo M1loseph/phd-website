@@ -2,7 +2,7 @@
 
 ## Problem
 
-At the moment of writing this document, there is a debian package containing mongo database tools that support ARM64 architecture.
+At the moment of writing this document, there is no debian package containing mongo database tools that support ARM64 architecture.
 
 ## Solution
 
