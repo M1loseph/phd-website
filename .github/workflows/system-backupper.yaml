@@ -28,6 +28,8 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
+      # This step uses an already existing python installation.
+      # The setup-python action does not work on self-hosted runners with Debian (any version) as for now.
       - name: Set up Python venv and dependencies
         working-directory: system-backupper/testing/e2e
         run: |
@@ -39,10 +41,13 @@ jobs:
         working-directory: system-backupper/testing/e2e
         run: docker compose build
 
-      - name: Run tests
+      - name: Setup testing environment
+        working-directory: system-backupper/testing/e2e
+        run: docker compose up -d --wait
+
+      - name: Run e2e tests
         working-directory: system-backupper/testing/e2e
         run: |
-          docker compose up -d --wait
           source venv/bin/activate
           pytest *.py
 
