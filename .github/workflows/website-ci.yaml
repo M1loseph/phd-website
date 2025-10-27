@@ -34,7 +34,7 @@ jobs:
 
       - name: Save artifact
         if: ${{ startsWith(github.ref, 'refs/tags/phdwebsite/') }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: web-build-artifact
           path: phd_website/build/web
