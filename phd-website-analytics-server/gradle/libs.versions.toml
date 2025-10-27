@@ -1,5 +1,5 @@
 [versions]
-kotlin = "2.2.20"
+kotlin = "2.2.21"
 spring-boot = "3.5.6"
 jmh-plugin = "0.7.3"
 spotless = "8.0.0"
