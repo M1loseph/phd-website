@@ -1,6 +1,6 @@
 [versions]
 kotlin = "2.2.21"
-spring-boot = "3.5.6"
+spring-boot = "3.5.7"
 jmh-plugin = "0.7.3"
 spotless = "8.0.0"
 jib = "3.4.5"
