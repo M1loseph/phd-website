@@ -10,7 +10,7 @@ cron = "0.15.0"
 dotenv = { path = '../lib/dotenv' }
 migrations = { path = '../lib/migrations', features = ["sqlite"] }
 env_logger = "0.11.6"
-flate2 = "1.1.0"
+flate2 = "1.1.5"
 log = "0.4.26"
 rand = "0.9.0"
 rusqlite = { version = "0.34.0", features = ["chrono", "bundled"] }
