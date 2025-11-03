@@ -4,6 +4,7 @@ on:
   pull_request:
     branches: [master]
     paths: 
+      - '.github/workflows/ddns-runner-ci.yaml'
       - 'ddns-runner/**'
   push:
     tags:

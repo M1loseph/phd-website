@@ -4,6 +4,7 @@ on:
   pull_request:
     branches: [master]
     paths: 
+      - '.github/workflows/website-ci.yaml'
       - 'phd_website/**'
   push:
     branches: [master]
