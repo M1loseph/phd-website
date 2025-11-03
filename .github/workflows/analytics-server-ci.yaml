@@ -10,6 +10,7 @@ on:
       - 'analytics-server/*'
     branches: [master]
     paths: 
+      - '.github/workflows/analytics-server-ci.yaml'
       - 'phd-website-analytics-server/**'
 
 permissions:

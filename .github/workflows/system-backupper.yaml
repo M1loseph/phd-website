@@ -4,6 +4,7 @@ on:
   pull_request:
     branches: [master]
     paths: 
+      - '.github/workflows/system-backupper.yaml'
       - 'system-backupper/**'
   push:
     tags:
