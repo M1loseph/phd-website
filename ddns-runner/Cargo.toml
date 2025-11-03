@@ -21,4 +21,4 @@ anyhow = "1.0.100"
 axum = "0.8.6"
 
 [dev-dependencies]
-axum-test = "18.1.0"
+axum-test = "18.2.1"
