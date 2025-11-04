@@ -10,7 +10,7 @@ on:
     tags:
       - 'ddns-runner/*'
 jobs:
-  build-and-test:
+  build:
     runs-on: self-hosted
 
     steps:
