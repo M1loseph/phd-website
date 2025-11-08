@@ -1,3 +1,4 @@
+#!/bin/bash
 set -e 
 
 GIT_VERSION=$(git describe --tags --abbrev=0)
