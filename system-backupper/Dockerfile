@@ -6,7 +6,7 @@ COPY system-backupper .
 COPY lib/dotenv /build/lib/dotenv
 COPY lib/migrations /build/lib/migrations
 
-RUN cargo build --release
+RUN RUST_MIN_STACK=16777216 cargo build --release
 
 FROM ubuntu:24.04
 
