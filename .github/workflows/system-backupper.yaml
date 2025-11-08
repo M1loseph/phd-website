@@ -56,3 +56,35 @@ jobs:
         if: always()
         working-directory: system-backupper/testing/e2e
         run: docker compose down -v
+
+  publish-to-dockerhub:
+    needs: [ build, e2e-tests]
+    runs-on: self-hosted
+    if: ${{ startsWith(github.ref, 'refs/tags/system-backupper/') }}
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v5
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Determine version
+        working-directory: system-backupper
+        run: echo "SYSTEM_BACKUPPER_VERSION=$(./tools/current-version.sh)" >> "$GITHUB_ENV"
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          file: "system-backupper/Dockerfile"
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/system-backupper:${{ env.SYSTEM_BACKUPPER_VERSION }}

@@ -31,7 +31,7 @@ jobs:
         working-directory: ddns-runner
         run: cargo test
 
-  publish-to-dockerub:
+  publish-to-dockerhub:
     needs: build
     runs-on: self-hosted
     if: ${{ startsWith(github.ref, 'refs/tags/ddns-runner/') }}
@@ -52,7 +52,6 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Determine version
-        id: determine_version
         working-directory: ddns-runner
         run: echo "DDNS_VERSION=$(./tools/current-version.sh)" >> "$GITHUB_ENV"
 
