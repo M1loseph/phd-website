@@ -78,7 +78,6 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Determine version
-        id: determine_version
         working-directory: system-backupper
         run: echo "SYSTEM_BACKUPPER_VERSION=$(./tools/current-version.sh)" >> "$GITHUB_ENV"
 

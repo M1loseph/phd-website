@@ -52,7 +52,6 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Determine version
-        id: determine_version
         working-directory: ddns-runner
         run: echo "DDNS_VERSION=$(./tools/current-version.sh)" >> "$GITHUB_ENV"
 
