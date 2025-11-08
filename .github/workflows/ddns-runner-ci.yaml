@@ -31,7 +31,7 @@ jobs:
         working-directory: ddns-runner
         run: cargo test
 
-  publish-to-dockerub:
+  publish-to-dockerhub:
     needs: build
     runs-on: self-hosted
     if: ${{ startsWith(github.ref, 'refs/tags/ddns-runner/') }}
