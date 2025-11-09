@@ -5,7 +5,7 @@ ARG TARGETARCH
 # -e - exit on error
 # -u - treat unset variables as an error
 # -x - print commands and their arguments as they are executed
-# -o pipefail - the return value of a pipeline is the status of
+# -o pipefail - the return value of a pipeline is the status of the last command to exit with a non-zero status, or zero if all commands exit successfully
 SHELL ["/bin/bash", "-eux", "-o", "pipefail", "-c"]
 RUN rustup target add x86_64-unknown-linux-gnu aarch64-unknown-linux-gnu
 
@@ -43,7 +43,7 @@ RUN apt-get update && \
 # See https://docs.docker.com/go/dockerfile-user-best-practices/
 RUN groupadd -r appuser && useradd --no-log-init -r -g appuser -u 10001 --home /nonexistent --shell /sbin/nologin appuser
 
-COPY --from=build /build/system-backupper/target/release/system-backupper /system-backupper/system-backupper
+COPY --from=build /build/system-backupper/target/*/system-backupper /system-backupper/system-backupper
 COPY system-backupper/migrations /system-backupper/migrations/
 RUN chown -R appuser:appuser /system-backupper
 
