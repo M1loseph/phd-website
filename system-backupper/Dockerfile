@@ -1,4 +1,16 @@
-FROM rust:1.90.0-slim-bookworm AS build
+FROM --platform=$BUILDPLATFORM rust:1.90.0-bookworm AS build
+ARG TARGETOS
+ARG TARGETARCH
+
+# -e - exit on error
+# -u - treat unset variables as an error
+# -x - print commands and their arguments as they are executed
+# -o pipefail - the return value of a pipeline is the status of the last command to exit with a non-zero status, or zero if all commands exit successfully
+SHELL ["/bin/bash", "-eux", "-o", "pipefail", "-c"]
+RUN rustup target add x86_64-unknown-linux-gnu aarch64-unknown-linux-gnu
+
+# Make sure we have the cross compilers available for both architectures
+RUN apt-get update && apt-get install -y gcc-aarch64-linux-gnu gcc-x86-64-linux-gnu
 
 WORKDIR /build/system-backupper
 
@@ -6,7 +18,12 @@ COPY system-backupper .
 COPY lib/dotenv /build/lib/dotenv
 COPY lib/migrations /build/lib/migrations
 
-RUN RUST_MIN_STACK=16777216 cargo build --release
+RUN if [[ "${TARGETARCH}" == "amd64" ]]; \
+    then \
+      cargo build --release --target x86_64-unknown-linux-gnu && mv ./target/x86_64-unknown-linux-gnu/release/system-backupper ./target/release/system-backupper; \
+    else \
+      cargo build --release --target aarch64-unknown-linux-gnu && mv ./target/aarch64-unknown-linux-gnu/release/system-backupper ./target/release/system-backupper; \
+    fi
 
 FROM ubuntu:24.04
 
