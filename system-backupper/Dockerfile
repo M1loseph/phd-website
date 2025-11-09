@@ -18,7 +18,12 @@ COPY system-backupper .
 COPY lib/dotenv /build/lib/dotenv
 COPY lib/migrations /build/lib/migrations
 
-RUN if [[ "${TARGETARCH}" == "amd64" ]]; then cargo build --release --target x86_64-unknown-linux-gnu; else cargo build --release --target aarch64-unknown-linux-gnu; fi
+RUN if [[ "${TARGETARCH}" == "amd64" ]]; \
+    then \
+      cargo build --release --target x86_64-unknown-linux-gnu && mv ./target/x86_64-unknown-linux-gnu/release/system-backupper ./target/release/system-backupper; \
+    else \
+      cargo build --release --target aarch64-unknown-linux-gnu && mv ./target/aarch64-unknown-linux-gnu/release/system-backupper ./target/release/system-backupper; \
+    fi
 
 FROM ubuntu:24.04
 
@@ -43,7 +48,7 @@ RUN apt-get update && \
 # See https://docs.docker.com/go/dockerfile-user-best-practices/
 RUN groupadd -r appuser && useradd --no-log-init -r -g appuser -u 10001 --home /nonexistent --shell /sbin/nologin appuser
 
-COPY --from=build /build/system-backupper/target/*/system-backupper /system-backupper/system-backupper
+COPY --from=build /build/system-backupper/target/release/system-backupper /system-backupper/system-backupper
 COPY system-backupper/migrations /system-backupper/migrations/
 RUN chown -R appuser:appuser /system-backupper
 
