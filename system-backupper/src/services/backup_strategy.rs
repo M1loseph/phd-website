@@ -120,10 +120,7 @@ impl PostgresCompressedBackupStrategy {
         ))?;
         let password = decode(password)
             .map_err(|e| {
-                anyhow!(
-                    "Failed to URL decode password from the connection string: {}",
-                    e
-                )
+                Error::from(e).context("Failed to URL decode password from the connection string")
             })?
             .into_owned();
 
