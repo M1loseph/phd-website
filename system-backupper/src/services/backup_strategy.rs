@@ -13,6 +13,8 @@ use url::Url;
 use urlencoding::decode;
 
 pub trait BackupStrategy: Send + Sync {
+    fn is_target_healhy(&self, connection_string: &str) -> Result<bool>;
+
     fn create_backup(&self, connection_string: &str) -> Result<(Backup, BackupFormat)>;
 
     fn restore_backup(&self, connection_string: &str, drop: bool, backup: Backup) -> Result<()>;
@@ -66,6 +68,15 @@ impl MongoDBCompressedBackupStrategy {
 }
 
 impl BackupStrategy for MongoDBCompressedBackupStrategy {
+    fn is_target_healhy(&self, connection_string: &str) -> Result<bool> {
+        info!("Checking MongoDB target health...");
+        let output = Command::new("mongosh")
+            .args(["--eval", "db.adminCommand('ping')", connection_string])
+            .output()?;
+
+        Ok(output.status.success())
+    }
+
     fn create_backup(&self, connection_string: &str) -> Result<(Backup, BackupFormat)> {
         let config_file = self.create_config_file(connection_string)?;
         info!("Created temporary mongodump config file. Starting dump process...");
@@ -165,6 +176,27 @@ impl PostgresCompressedBackupStrategy {
 }
 
 impl BackupStrategy for PostgresCompressedBackupStrategy {
+    fn is_target_healhy(&self, connection_string: &str) -> Result<bool> {
+        let pg_dump_options = self.parse_connection_string(connection_string)?;
+
+        let process_output = Command::new("pg_dump")
+            .args([
+                "--username",
+                &pg_dump_options.username,
+                "--port",
+                &pg_dump_options.port.to_string(),
+                "--host",
+                &pg_dump_options.host,
+                "--format",
+                "tar",
+                &pg_dump_options.database,
+            ])
+            .env("PGPASSWORD", &pg_dump_options.password)
+            .output()?;
+
+        Ok(process_output.status.success())
+    }
+
     fn create_backup(&self, connection_string: &str) -> Result<(Backup, BackupFormat)> {
         let pg_dump_options = self.parse_connection_string(connection_string)?;
 

@@ -36,12 +36,15 @@ RUN apt-get update && \
     sh -c "echo 'deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt $VERSION_CODENAME-pgdg main' > /etc/apt/sources.list.d/pgdg.list" && \
     apt-get update && \
     apt-get install -y postgresql-client-18 && \
-    # Install MongoDB Database Tools
+    # Install MongoDB Database Tools and MongoSH
     case $(uname -m) in "x86_64") OS_ARCH="x86_64" ;; "aarch64") OS_ARCH="arm64" ;; *) OS_ARCH="unsupported" ;; esac && \
     if [ "$OS_ARCH" = "unsupported" ]; then echo "Unsupported architecture $(uname -m)."; exit 1; fi && \
     wget https://fastdl.mongodb.org/tools/db/mongodb-database-tools-ubuntu2404-${OS_ARCH}-100.13.0.deb && \
     apt-get install -y ./mongodb-database-tools-ubuntu2404-${OS_ARCH}-100.13.0.deb && \
     rm mongodb-database-tools-ubuntu2404-${OS_ARCH}-100.13.0.deb && \
+    wget -qO- https://www.mongodb.org/static/pgp/server-8.0.asc | tee /etc/apt/trusted.gpg.d/server-8.0.asc && \
+    echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu noble/mongodb-org/8.0 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-8.0.list && \
+    apt-get update && apt-get install -y mongodb-mongosh && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Create a non-privileged user that the app will run under.

@@ -35,6 +35,11 @@ impl From<BackupMetadata> for ArchiveBackupResponse {
 }
 
 #[derive(Serialize)]
+pub struct BackupHealthCheckResponse {
+    pub is_healthy: bool,
+}
+
+#[derive(Serialize)]
 pub enum BackupType {
     #[serde(rename = "MANUAL")]
     Manual,

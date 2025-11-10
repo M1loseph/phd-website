@@ -58,7 +58,7 @@ services:
     ports:
       - "2000:2000"
     environment:
-      SB_BACKUP_TARGETS: mongodbSource,MongoDB,mongodb://username:password@mongo-source:27017/testdb?authSource=admin;mongodbTarget,MongoDB,mongodb://username:password@mongo-target:27017/testdb?authSource=admin;postgresSource,Postgres,postgres://username:password@postgres-source:5432/testdb;postgresTarget,Postgres,postgres://username:password@postgres-target:5432/testdb
+      SB_BACKUP_TARGETS: mongodbSource,MongoDB,mongodb://username:password@mongo-source:27017/testdb?authSource=admin;mongodbTarget,MongoDB,mongodb://username:password@mongo-target:27017/testdb?authSource=admin;mongodbWithTypo,MongoDB,mongodb://sername:password@mongo-source:27017/testdb?authSource=admin;postgresSource,Postgres,postgres://username:password@postgres-source:5432/testdb;postgresTarget,Postgres,postgres://username:password@postgres-target:5432/testdb;postgresWithTypo,Postgres,postgres://username:assword@postgres-target:5432/testdb
       RUST_LOG: info
     healthcheck:
       test: [ "CMD", "curl", "http://localhost:2000/internal/status/health" ]
