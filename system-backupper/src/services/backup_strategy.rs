@@ -4,12 +4,13 @@ use std::{fs, process::Command};
 
 use crate::model::{Backup, BackupFormat};
 use crate::process::IntoResult;
-use anyhow::{anyhow, Result};
-use flate2::write::{GzEncoder, GzDecoder};
+use anyhow::{anyhow, Error, Result};
+use flate2::write::{GzDecoder, GzEncoder};
 use flate2::Compression;
 use log::info;
 use std::io::Write;
 use url::Url;
+use urlencoding::decode;
 
 pub trait BackupStrategy: Send + Sync {
     fn create_backup(&self, connection_string: &str) -> Result<(Backup, BackupFormat)>;
@@ -117,22 +118,50 @@ impl PostgresCompressedBackupStrategy {
         let password = url.password().ok_or(anyhow!(
             "Missing password in the postgres connection string"
         ))?;
+        let password = decode(password)
+            .map_err(|e| {
+                anyhow!(
+                    "Failed to URL decode password from the connection string: {}",
+                    e
+                )
+            })?
+            .into_owned();
+
         let username = url.username();
+        let username = decode(username)
+            .map_err(|e| {
+                Error::from(e).context("Failed to URL decode username from the connection string")
+            })?
+            .into_owned();
+
         let port = url
             .port()
             .ok_or(anyhow!("Missing port in the postgres connection string"))?;
+
         let host = url
             .host_str()
             .ok_or(anyhow!("Missing host in the postgres connection string"))?;
-        let database = url.path().strip_prefix("/").ok_or(anyhow!(
+        let host = decode(host)
+            .map_err(|e| {
+                Error::from(e).context("Failed to URL decode host from the connection string")
+            })?
+            .into_owned();
+
+        let path = decode(url.path())
+            .map_err(|e| {
+                Error::from(e)
+                    .context("Failed to URL decode database name from the connection string")
+            })?
+            .into_owned();
+        let database = path.strip_prefix("/").ok_or(anyhow!(
             "Missing database name in the postgres connection string"
         ))?;
 
         Ok(PostgresOptions {
-            password: password.to_string(),
-            username: username.to_string(),
+            password,
+            username,
             port: port.into(),
-            host: host.to_string(),
+            host,
             database: database.to_string(),
         })
     }
@@ -179,7 +208,7 @@ impl BackupStrategy for PostgresCompressedBackupStrategy {
             &pg_restore_options.host,
             "--dbname",
             &pg_restore_options.database,
-            "--single-transaction"
+            "--single-transaction",
         ];
         if drop {
             args.extend_from_slice(&["--clean", "--if-exists"]);
@@ -195,8 +224,43 @@ impl BackupStrategy for PostgresCompressedBackupStrategy {
             .stdin(Stdio::piped())
             .stderr(Stdio::piped())
             .spawn()?;
-        process.stdin.take().unwrap().write_all(&decompressed_backup)?;
+        process
+            .stdin
+            .take()
+            .unwrap()
+            .write_all(&decompressed_backup)?;
         let _ = process.wait_with_output()?.into_result()?;
         Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn should_parse_connection_string_plaintext() {
+        let strategy = PostgresCompressedBackupStrategy::new();
+        let conn_str = "postgres://user:password@localhost:5432/mydb";
+        let options = strategy.parse_connection_string(conn_str).unwrap();
+
+        assert_eq!(options.username, "user");
+        assert_eq!(options.password, "password");
+        assert_eq!(options.host, "localhost");
+        assert_eq!(options.port, 5432);
+        assert_eq!(options.database, "mydb");
+    }
+
+    #[test]
+    fn should_parse_connection_string_and_decode_all_components() {
+        let strategy = PostgresCompressedBackupStrategy::new();
+        let conn_str = "postgres://us%40er:pa%24%24word@local%68ost:5432/my%2Fdb";
+        let options = strategy.parse_connection_string(conn_str).unwrap();
+
+        assert_eq!(options.username, "us@er");
+        assert_eq!(options.password, "pa$$word");
+        assert_eq!(options.host, "localhost");
+        assert_eq!(options.port, 5432);
+        assert_eq!(options.database, "my/db");
     }
 }
