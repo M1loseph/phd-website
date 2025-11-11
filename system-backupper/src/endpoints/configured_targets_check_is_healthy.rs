@@ -95,6 +95,7 @@ mod tests {
 
     #[tokio::test]
     async fn should_return_health_response() {
+        // given
         let backupping_service_mock = BackuppingServiceMock {
             response: || Ok(true),
         };
@@ -108,8 +109,10 @@ mod tests {
 
         let server = TestServer::new(router).unwrap();
 
+        // when
         let response = server.post("/api/v1/targets/testTarget/health").await;
 
+        // then
         response.assert_status(StatusCode::OK);
         response.assert_json(&json!({
             "is_healthy": true
@@ -118,6 +121,7 @@ mod tests {
 
     #[tokio::test]
     async fn should_return_lock_status_code_when_target_is_locked() {
+        // given
         let backupping_service_mock = BackuppingServiceMock {
             response: || {
                 Err(BackupHealthCheckError::BackupTargetLocked {
@@ -136,8 +140,10 @@ mod tests {
 
         let server = TestServer::new(router).unwrap();
 
+        // when
         let response = server.post("/api/v1/targets/testTarget/health").await;
 
+        // then
         response.assert_status(StatusCode::LOCKED);
         response.assert_json(&json!({
             "error_code": "BACKUP_TARGET_LOCKED",
