@@ -97,8 +97,11 @@ mod tests {
         fn read_all_configured_targets(&self) -> &Vec<ConfiguredBackupTarget> {
             unimplemented!()
         }
-        
-        fn check_if_target_is_healthy(&self, _target_name: &str) -> Result<bool, crate::services::BackupHealthCheckError> {
+
+        fn check_if_target_is_healthy(
+            &self,
+            _target_name: &str,
+        ) -> Result<bool, crate::services::BackupHealthCheckError> {
             unimplemented!()
         }
     }
