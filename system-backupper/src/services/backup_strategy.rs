@@ -190,7 +190,7 @@ impl BackupStrategy for PostgresCompressedBackupStrategy {
                 "--dbname",
                 &pg_dump_options.database,
                 "--command",
-                "'SELECT 1;'",
+                "SELECT 1;",
             ])
             .env("PGPASSWORD", &pg_dump_options.password)
             .output()?;
