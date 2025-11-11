@@ -1,5 +1,6 @@
 use crate::{
     errorstack::to_error_stack,
+    lock::LockError,
     model::{BackupId, BackupTargetKind},
 };
 use std::{
@@ -125,5 +126,48 @@ impl Display for BackupFindError {
 impl Debug for BackupFindError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         to_error_stack(f, self)
+    }
+}
+
+pub enum BackupHealthCheckError {
+    BackupTargetNotFound { name: String },
+    BackupTargetLocked { name: String, cause: LockError },
+    Unknown(anyhow::Error),
+}
+
+impl StdError for BackupHealthCheckError {
+    fn source(&self) -> Option<&(dyn StdError + 'static)> {
+        match self {
+            BackupHealthCheckError::BackupTargetNotFound { name: _ } => None,
+            BackupHealthCheckError::Unknown(error) => Some(error.as_ref()),
+            BackupHealthCheckError::BackupTargetLocked { name: _, cause } => Some(cause),
+        }
+    }
+}
+
+impl Debug for BackupHealthCheckError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        to_error_stack(f, self)
+    }
+}
+
+impl Display for BackupHealthCheckError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            BackupHealthCheckError::BackupTargetNotFound { name } => {
+                write!(f, "Backup target {} was not found.", name)
+            }
+            BackupHealthCheckError::Unknown(_) => write!(f, "An unexpected error occurred."),
+            BackupHealthCheckError::BackupTargetLocked {
+                name,
+                cause: _cause,
+            } => write!(f, "Backup target {} is undergoing another operation.", name),
+        }
+    }
+}
+
+impl From<anyhow::Error> for BackupHealthCheckError {
+    fn from(value: anyhow::Error) -> Self {
+        Self::Unknown(value)
     }
 }

@@ -71,7 +71,6 @@ mod tests {
         create_backup_result_provider: fn(&str) -> Result<BackupMetadata, BackupCreateError>,
     }
 
-    #[allow(unused_variables)]
     impl BackuppingService for BackuppingServiceMock {
         fn create_backup(
             &self,
@@ -88,14 +87,21 @@ mod tests {
 
         fn restore_backup(
             &self,
-            target_name: &str,
-            backup_id: u64,
-            drop: bool,
+            _target_name: &str,
+            _backup_id: u64,
+            _drop: bool,
         ) -> Result<(), crate::services::BackupRestoreError> {
             unimplemented!()
         }
 
         fn read_all_configured_targets(&self) -> &Vec<ConfiguredBackupTarget> {
+            unimplemented!()
+        }
+
+        fn check_if_target_is_healthy(
+            &self,
+            _target_name: &str,
+        ) -> Result<bool, crate::services::BackupHealthCheckError> {
             unimplemented!()
         }
     }

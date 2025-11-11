@@ -18,6 +18,20 @@ def __target_connection():
         cur.execute(f"DROP TABLE IF EXISTS {TABLE_NAME};")
     return conn
 
+def test_health_endpoint_returns_true_for_postgres_source():
+    response = requests.post("http://localhost:2000/api/v1/targets/postgresSource/health")
+    response.raise_for_status()
+    assert response.json() == {"is_healthy": True}
+
+    response = requests.post("http://localhost:2000/api/v1/targets/postgresTarget/health")
+    response.raise_for_status()
+    assert response.json() == {"is_healthy": True}
+
+def test_health_endpoint_returns_false_for_wrong_target():
+    response = requests.post("http://localhost:2000/api/v1/targets/postgresWithTypo/health")
+    response.raise_for_status()
+    assert response.json() == {"is_healthy": False}
+
 def test_create_backup_and_restore_it_to_an_empty_database():
     source_conn = __source_connection()
     target_conn = __target_connection()

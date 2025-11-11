@@ -18,8 +18,8 @@ use axum::{
 use connection_pool::ConnectionPool;
 use dotenv;
 use endpoints::{
-    backups_create, backups_read_all, configured_targets_read_all,
-    configured_targets_restore_backup, healthy,
+    backups_create, backups_read_all, configured_targets_check_is_healthy,
+    configured_targets_read_all, configured_targets_restore_backup, healthy,
 };
 use file_system_repositories::{FileSystemBackupRepository, SQLiteBackupMetadataRepository};
 use jobs::{CronJobs, ScheduledBackupJob};
@@ -85,6 +85,10 @@ async fn main() -> Result<()> {
         .route(
             "/api/v1/targets/{target_name}/backups/{backup_id}",
             post(configured_targets_restore_backup),
+        )
+        .route(
+            "/api/v1/targets/{target_name}/health",
+            post(configured_targets_check_is_healthy),
         )
         .route("/api/v1/backups", get(backups_read_all))
         .route("/api/v1/backups/{target_name}", post(backups_create))

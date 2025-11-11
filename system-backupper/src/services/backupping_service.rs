@@ -3,6 +3,7 @@ use crate::model::{
     BackupId, BackupMetadata, BackupMetadataRepository, BackupRepository, BackupTarget,
     BackupTargetKind, BackupType, ConfiguredBackupTarget, RandomId, RepositoryError,
 };
+use crate::services::BackupHealthCheckError;
 use chrono::Local;
 use log::info;
 use std::result::Result;
@@ -32,6 +33,8 @@ pub trait BackuppingService: Send + Sync {
     ) -> Result<(), BackupRestoreError>;
 
     fn read_all_configured_targets(&self) -> &Vec<ConfiguredBackupTarget>;
+
+    fn check_if_target_is_healthy(&self, target_name: &str) -> Result<bool, BackupHealthCheckError>;
 }
 
 pub struct BackuppingServiceImpl {
@@ -151,6 +154,20 @@ impl BackuppingService for BackuppingServiceImpl {
     fn read_all_configured_targets(&self) -> &Vec<ConfiguredBackupTarget> {
         &self.backup_targets
     }
+
+    fn check_if_target_is_healthy(&self, target_name: &str) -> Result<bool, BackupHealthCheckError> {
+        let _lock = self.lock_manager.lock(target_name)?;
+        let backup_target = self.find_target_by_name(target_name).ok_or_else(|| {
+            BackupHealthCheckError::BackupTargetNotFound {
+                name: target_name.to_string(),
+            }
+        })?;
+
+        let strategy = self.pick_strategy_by_target_kind(&backup_target.target_kind);
+        strategy
+            .is_target_healthy(&backup_target.connection_string)
+            .map_err(|e| BackupHealthCheckError::Unknown(e))
+    }
 }
 
 impl BackuppingServiceImpl {
@@ -237,5 +254,17 @@ impl From<anyhow::Error> for BackupRestoreError {
 impl From<anyhow::Error> for BackupCreateError {
     fn from(value: anyhow::Error) -> Self {
         Self::Unknown(value.into())
+    }
+}
+
+impl From<LockError> for BackupHealthCheckError {
+    fn from(lock_error: LockError) -> Self {
+        match &lock_error {
+            LockError::LockAlreadyExists(lock_key) => BackupHealthCheckError::BackupTargetLocked {
+                name: lock_key.clone(),
+                cause: lock_error,
+            },
+            _ => BackupHealthCheckError::Unknown(anyhow::Error::new(lock_error)),
+        }
     }
 }
