@@ -165,7 +165,7 @@ impl BackuppingService for BackuppingServiceImpl {
 
         let strategy = self.pick_strategy_by_target_kind(&backup_target.target_kind);
         strategy
-            .is_target_healhy(&backup_target.connection_string)
+            .is_target_healthy(&backup_target.connection_string)
             .map_err(|e| BackupHealthCheckError::Unknown(e))
     }
 }

@@ -13,7 +13,7 @@ use url::Url;
 use urlencoding::decode;
 
 pub trait BackupStrategy: Send + Sync {
-    fn is_target_healhy(&self, connection_string: &str) -> Result<bool>;
+    fn is_target_healthy(&self, connection_string: &str) -> Result<bool>;
 
     fn create_backup(&self, connection_string: &str) -> Result<(Backup, BackupFormat)>;
 
@@ -68,7 +68,7 @@ impl MongoDBCompressedBackupStrategy {
 }
 
 impl BackupStrategy for MongoDBCompressedBackupStrategy {
-    fn is_target_healhy(&self, connection_string: &str) -> Result<bool> {
+    fn is_target_healthy(&self, connection_string: &str) -> Result<bool> {
         info!("Checking MongoDB target health...");
         let output = Command::new("mongosh")
             .args(["--eval", "db.adminCommand('ping')", connection_string])
@@ -176,10 +176,10 @@ impl PostgresCompressedBackupStrategy {
 }
 
 impl BackupStrategy for PostgresCompressedBackupStrategy {
-    fn is_target_healhy(&self, connection_string: &str) -> Result<bool> {
+    fn is_target_healthy(&self, connection_string: &str) -> Result<bool> {
         let pg_dump_options = self.parse_connection_string(connection_string)?;
 
-        let process_output = Command::new("pg_dump")
+        let process_output = Command::new("psql")
             .args([
                 "--username",
                 &pg_dump_options.username,
@@ -187,9 +187,10 @@ impl BackupStrategy for PostgresCompressedBackupStrategy {
                 &pg_dump_options.port.to_string(),
                 "--host",
                 &pg_dump_options.host,
-                "--format",
-                "tar",
+                "--dbname",
                 &pg_dump_options.database,
+                "--command",
+                "'SELECT 1;'",
             ])
             .env("PGPASSWORD", &pg_dump_options.password)
             .output()?;
