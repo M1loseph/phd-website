@@ -77,7 +77,7 @@ async fn main() -> Result<()> {
     let mut cron_jobs = CronJobs::new();
     for job in app_config.cyclic_backups {
         let task = ScheduledBackupJob::new(job.target_name, backupping_service.clone());
-        cron_jobs.start(&job.cron_schedule, task)?;
+        cron_jobs.start(job.cron_schedule, task)?;
     }
 
     let router = Router::new()

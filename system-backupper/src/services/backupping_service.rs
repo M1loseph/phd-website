@@ -34,7 +34,8 @@ pub trait BackuppingService: Send + Sync {
 
     fn read_all_configured_targets(&self) -> &Vec<ConfiguredBackupTarget>;
 
-    fn check_if_target_is_healthy(&self, target_name: &str) -> Result<bool, BackupHealthCheckError>;
+    fn check_if_target_is_healthy(&self, target_name: &str)
+        -> Result<bool, BackupHealthCheckError>;
 }
 
 pub struct BackuppingServiceImpl {
@@ -155,7 +156,10 @@ impl BackuppingService for BackuppingServiceImpl {
         &self.backup_targets
     }
 
-    fn check_if_target_is_healthy(&self, target_name: &str) -> Result<bool, BackupHealthCheckError> {
+    fn check_if_target_is_healthy(
+        &self,
+        target_name: &str,
+    ) -> Result<bool, BackupHealthCheckError> {
         let _lock = self.lock_manager.lock(target_name)?;
         let backup_target = self.find_target_by_name(target_name).ok_or_else(|| {
             BackupHealthCheckError::BackupTargetNotFound {

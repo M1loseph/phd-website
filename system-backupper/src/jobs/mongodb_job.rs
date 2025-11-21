@@ -41,4 +41,8 @@ impl Task for ScheduledBackupJob {
             }
         }
     }
+
+    fn task_name(&self) -> &str {
+        &self.backup_target_name
+    }
 }

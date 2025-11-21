@@ -1,4 +1,9 @@
-use std::{collections::HashMap, fs, path::Path, sync::{Mutex, MutexGuard}};
+use std::{
+    collections::HashMap,
+    fs,
+    path::Path,
+    sync::{Mutex, MutexGuard},
+};
 
 use anyhow::{Error, Result};
 use rusqlite::Connection;
