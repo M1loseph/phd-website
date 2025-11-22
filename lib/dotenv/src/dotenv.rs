@@ -1,5 +1,5 @@
-use regex::Regex;
 use lazy_static::lazy_static;
+use regex::Regex;
 
 lazy_static! {
     static ref CORRECT_ENV_VARIABLE_REGEX: Regex = Regex::new("[a-zA-Z_]+[a-zA-Z0-9_]*").unwrap();

@@ -108,7 +108,6 @@ impl From<model::BackupFormat> for BackupFormat {
     }
 }
 
-
 #[derive(Serialize)]
 pub struct BackupTargetResponse {
     pub name: String,

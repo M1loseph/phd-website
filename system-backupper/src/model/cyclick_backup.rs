@@ -1,4 +1,3 @@
-
 #[derive(Debug)]
 pub struct CyclicBackup {
     pub target_name: String,

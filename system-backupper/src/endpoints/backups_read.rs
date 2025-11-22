@@ -20,10 +20,7 @@ pub async fn backups_read_all(
             Ok(Json(response))
         }
         Err(err) => {
-            error!(
-                "An error has occurred when listing backups.\n{:?}",
-                err
-            );
+            error!("An error has occurred when listing backups.\n{:?}", err);
             let response_body = ApiError {
                 error_code: ErrorCode::InternalError,
                 message: format!("{}", err),
