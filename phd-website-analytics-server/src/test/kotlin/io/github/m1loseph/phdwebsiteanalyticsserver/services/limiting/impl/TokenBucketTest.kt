@@ -9,7 +9,7 @@ import java.time.ZoneId
 
 class TokenBucketTest {
   @Test
-  fun givenNewBucket_whenCalledOnce_thenRemainingTimeShouldBeEqualToRefillDuration() {
+  fun `given new bucket when called once then remaining time should be equal to refill duration`() {
     val fixedClock = Clock.fixed(Instant.now(), ZoneId.systemDefault())
     val tokenBucket =
       TokenBucket(

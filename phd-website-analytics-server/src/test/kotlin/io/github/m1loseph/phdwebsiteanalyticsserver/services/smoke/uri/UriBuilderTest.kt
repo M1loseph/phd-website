@@ -6,7 +6,7 @@ import java.net.URI
 
 class UriBuilderTest {
   @Test
-  fun givenUriWithoutQueryParameters_whenNewParametersAreAdded_thenShouldHaveInResultingUri() {
+  fun `given uri without query parameters when new parameters are added then should have in resulting uri`() {
     val uri = URI("http://website.com")
     val uriWithQuery =
       UriBuilder
@@ -19,7 +19,7 @@ class UriBuilderTest {
   }
 
   @Test
-  fun givenUriWithQueryParameters_whenTheSameQueryParamIsAdded_thenShouldBeOverwritten() {
+  fun `given uri with query parameters when the same query param is added then should be overwritten`() {
     val uri = URI("http://website.com?query1=value1#fragment")
     val uriWithQuery = UriBuilder.fromURI(uri).withQueryParameter("query1", "changed").build()
 

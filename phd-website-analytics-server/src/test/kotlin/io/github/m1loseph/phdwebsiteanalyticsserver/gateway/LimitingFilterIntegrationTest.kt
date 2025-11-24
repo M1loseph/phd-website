@@ -33,7 +33,7 @@ class LimitingFilterIntegrationTest : RedisAndMongoFixture() {
   }
 
   @Test
-  fun whenCalledTooManyTimes_thenShouldRejectNextRequest() {
+  fun `when called too many times then should reject next request`() {
     repeat(ALLOWED_REQUESTS_WITHOUT_BLOCKING + 1) { requestNumber ->
       webTestClient
         .post()
@@ -61,7 +61,7 @@ class LimitingFilterIntegrationTest : RedisAndMongoFixture() {
   }
 
   @Test
-  fun whenCalledTooManyTimes_butReceivedOptionsRequest_thenShouldNotReject() {
+  fun `when called too many times but received options request then should not reject`() {
     repeat(ALLOWED_REQUESTS_WITHOUT_BLOCKING) { _ ->
       webTestClient
         .post()

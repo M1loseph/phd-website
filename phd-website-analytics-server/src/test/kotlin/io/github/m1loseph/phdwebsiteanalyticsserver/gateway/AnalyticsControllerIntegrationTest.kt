@@ -29,7 +29,7 @@ class AnalyticsControllerIntegrationTest : RedisAndMongoFixture() {
   lateinit var appOpenedEventRepository: AppOpenedEventRepository
 
   @Test
-  fun whenSendPageOpenedEvent_withIncorrectPageName_thenShouldReturnBadRequestStatus() {
+  fun `when send page opened event with incorrect page name then should return bad request status`() {
     webTestClient
       .post()
       .uri("/api/v1/analytics/pageOpened")
@@ -49,7 +49,7 @@ class AnalyticsControllerIntegrationTest : RedisAndMongoFixture() {
   }
 
   @Test
-  fun shouldEstablishSession() {
+  fun `should establish session`() {
     val appOpenedEventResponse =
       webTestClient
         .post()
@@ -93,7 +93,7 @@ class AnalyticsControllerIntegrationTest : RedisAndMongoFixture() {
   }
 
   @Test
-  fun whenSendPageOpenedEvent_withoutEstablishingSession_thenShouldReturnBadRequest() {
+  fun `when send page opened event without establishing session then should return bad request`() {
     webTestClient
       .post()
       .uri("/api/v1/analytics/pageOpened")
@@ -114,7 +114,7 @@ class AnalyticsControllerIntegrationTest : RedisAndMongoFixture() {
 
   @ParameterizedTest
   @MethodSource("invalidAppOpenedEventPayloads")
-  fun whenSendAppOpenedEvent_withIncorrectPayload_thenShouldReturnBadRequest(invalidPayload: String) {
+  fun `when send app opened event with incorrect payload then should return bad request`(invalidPayload: String) {
     webTestClient
       .post()
       .uri("/api/v1/analytics/appOpened")

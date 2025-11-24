@@ -10,7 +10,7 @@ class JvmCompressingBucketSnapshotSerializerTest {
   private val serializer = JvmCompressingBucketSnapshotSerializer()
 
   @Test
-  fun whenSerializedAndDeserialized_thenContentShouldBeIdentical() {
+  fun `when serialized and deserialized then content should be identical`() {
     val snapshot =
       TokenBucketSnapshot(
         limit = 100L,

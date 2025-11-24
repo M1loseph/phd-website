@@ -33,7 +33,7 @@ class LimitingServiceTest {
 
   @Test
   @OptIn(ExperimentalCoroutinesApi::class)
-  fun whenCalledFromMultipleThreads_thenShouldCountCorrectly() =
+  fun `when called from multiple threads then should count correctly`() =
     runTest {
       repeat(1000) { launch { limitingService.incrementGlobalUsage() } }
       advanceUntilIdle()
