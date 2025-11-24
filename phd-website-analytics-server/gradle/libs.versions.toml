@@ -20,9 +20,10 @@ jakarta-validation-api = { group = "jakarta.validation", name = "jakarta.validat
 jedis = { group = "redis.clients", name = "jedis", version.ref = "jedis" }
 
 spring-boot-starter-test = { group = "org.springframework.boot", name = "spring-boot-starter-test" }
+spring-boot-starter-webflux-test = { group = "org.springframework.boot", name = "spring-boot-starter-webflux-test" }
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test" }
 reactor-test = { group = "io.projectreactor", name = "reactor-test" }
-test-containers = { group = "org.testcontainers", name = "junit-jupiter" }
+test-containers = { group = "org.testcontainers", name = "testcontainers-junit-jupiter" }
 mockito-kotlin = { group = "org.mockito.kotlin", name = "mockito-kotlin", version.ref = "mockito" }
 
 [plugins]

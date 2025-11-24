@@ -37,7 +37,7 @@ dependencies {
 
   implementation(libs.jedis)
 
-
+  testImplementation(libs.spring.boot.starter.webflux.test)
   testImplementation(libs.spring.boot.starter.test)
   testImplementation(libs.kotlinx.coroutines.test)
   testImplementation(libs.reactor.test)
