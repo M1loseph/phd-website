@@ -18,7 +18,7 @@ regex = "1.10.6"
 sha2 = "0.10.8"
 signal-hook = "0.3.17"
 anyhow = "1.0.100"
-axum = "0.8.6"
+axum = "0.8.7"
 
 [dev-dependencies]
 axum-test = "18.2.1"
