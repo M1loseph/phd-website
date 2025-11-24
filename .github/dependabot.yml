@@ -4,24 +4,47 @@ updates:
     directory: "/phd_website"
     schedule:
       interval: "weekly"
+    groups:
+      all:
+        patterns:
+          - "*"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
+    groups:
+      all:
+        patterns:
+          - "*"
   - package-ecosystem: "gradle"
     directory: "/phd-website-analytics-server"
     schedule:
       interval: "weekly"
+    groups:
+      all:
+        patterns:
+          - "*"
   - package-ecosystem: "cargo"
     directory: "/ddns-runner"
     schedule:
       interval: "weekly"
+    groups:
+      all:
+        patterns:
+          - "*"
   - package-ecosystem: "cargo"
     directory: "/duck-dns-server-mock"
     schedule:
       interval: "weekly"
+    groups:
+      all:
+        patterns:
+          - "*"
   - package-ecosystem: "cargo"
     directory: "/system-backupper"
     schedule:
       interval: "weekly"
-  
+    groups:
+      all:
+        patterns:
+          - "*"

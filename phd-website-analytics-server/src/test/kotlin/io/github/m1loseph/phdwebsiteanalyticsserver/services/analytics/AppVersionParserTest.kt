@@ -10,7 +10,7 @@ import org.junit.jupiter.params.provider.MethodSource
 class AppVersionParserTest {
   @ParameterizedTest
   @MethodSource("implementationsToTest")
-  fun shouldParseSimpleVersionWithMajorAndMinor(parser: AppVersionParser) {
+  fun `should parse simple version with major and minor`(parser: AppVersionParser) {
     val version = parser.parse("1.2")
     assertThat(version).isEqualTo(
       AppVersion(
@@ -23,7 +23,7 @@ class AppVersionParserTest {
 
   @ParameterizedTest
   @MethodSource("implementationsToTest")
-  fun shouldParseVersionWithTwoDigits(parser: AppVersionParser) {
+  fun `should parse version with two digits`(parser: AppVersionParser) {
     val version = parser.parse("11.22")
     assertThat(version).isEqualTo(
       AppVersion(
@@ -36,7 +36,7 @@ class AppVersionParserTest {
 
   @ParameterizedTest
   @MethodSource("implementationsToTest")
-  fun shouldParseVersionWithCommitsCountAndCommitHash(parser: AppVersionParser) {
+  fun `should parse version with commits count and commit hash`(parser: AppVersionParser) {
     val version = parser.parse("11.22-2-gabdef1123")
     assertThat(version).isEqualTo(
       AppVersion(
@@ -51,7 +51,7 @@ class AppVersionParserTest {
 
   @ParameterizedTest
   @MethodSource("invalidVersionArguments")
-  fun whenInvalidVersionIsProvided_thenShouldFailParsingWithAnAppropriateException(
+  fun `when invalid version is provided then should fail parsing with an appropriate exception`(
     parser: AppVersionParser,
     invalidString: String,
   ) {
