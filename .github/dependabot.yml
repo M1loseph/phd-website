@@ -3,7 +3,7 @@ updates:
   - package-ecosystem: "pub"
     directory: "/phd_website"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
     groups:
       all:
         patterns:
@@ -11,7 +11,7 @@ updates:
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
     groups:
       all:
         patterns:
@@ -19,7 +19,7 @@ updates:
   - package-ecosystem: "gradle"
     directory: "/phd-website-analytics-server"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
     groups:
       all:
         patterns:
@@ -27,7 +27,7 @@ updates:
   - package-ecosystem: "cargo"
     directory: "/ddns-runner"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
     groups:
       all:
         patterns:
@@ -35,7 +35,7 @@ updates:
   - package-ecosystem: "cargo"
     directory: "/duck-dns-server-mock"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
     groups:
       all:
         patterns:
@@ -43,8 +43,9 @@ updates:
   - package-ecosystem: "cargo"
     directory: "/system-backupper"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
     groups:
       all:
         patterns:
           - "*"
+
