@@ -13,9 +13,7 @@ import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTest
 import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.reactive.server.WebTestClient
-import org.testcontainers.junit.jupiter.Testcontainers
 
-@Testcontainers
 @SpringBootTest(useMainMethod = UseMainMethod.ALWAYS)
 @AutoConfigureWebTestClient
 @ActiveProfiles("limiting-filter-test")

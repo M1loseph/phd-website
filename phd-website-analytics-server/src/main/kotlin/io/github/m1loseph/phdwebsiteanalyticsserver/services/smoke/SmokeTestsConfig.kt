@@ -20,7 +20,7 @@ import java.net.URI
 class SmokeTestsConfig(
   private val meterRegistry: MeterRegistry,
 ) {
-  @Value("\${spring.data.mongodb.uri}")
+  @Value($$"${spring.mongodb.uri}")
   lateinit var connectionString: String
 
   @Bean

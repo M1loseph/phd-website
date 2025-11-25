@@ -11,12 +11,10 @@ abstract class RedisAndMongoFixture {
     private const val REDIS_PORT = 6379
     private const val MONGODB_PORT = 27017
 
-    @JvmStatic
     val redis: GenericContainer<*> =
       GenericContainer(DockerImageName.parse("redis:7.2.4"))
         .withExposedPorts(REDIS_PORT)
 
-    @JvmStatic
     val mongodb: GenericContainer<*> =
       GenericContainer(DockerImageName.parse("mongo:7.0.5"))
         .withExposedPorts(MONGODB_PORT)
@@ -47,7 +45,7 @@ abstract class RedisAndMongoFixture {
       registry.add("web.limiting.redisUrl") {
         "redis://${redis.host}:${redis.getMappedPort(REDIS_PORT)}"
       }
-      registry.add("spring.data.mongodb.uri") {
+      registry.add("spring.mongodb.uri") {
         "mongodb://test:test@${mongodb.host}:${mongodb.getMappedPort(MONGODB_PORT)}/analytics-server-db?authSource=admin"
       }
     }

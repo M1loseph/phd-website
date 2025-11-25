@@ -3,7 +3,6 @@ package io.github.m1loseph.phdwebsiteanalyticsserver.gateway
 import fixture.RedisAndMongoFixture
 import io.github.m1loseph.phdwebsiteanalyticsserver.services.analytics.AppOpenedEventRepository
 import io.github.m1loseph.phdwebsiteanalyticsserver.services.analytics.dto.AppOpenedEventResponse
-import io.github.m1loseph.phdwebsiteanalyticsserver.services.analytics.model.SessionId
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
@@ -49,7 +48,7 @@ class AnalyticsControllerIntegrationTest : RedisAndMongoFixture() {
   }
 
   @Test
-  fun `should establish session`() {
+  suspend fun `should establish session`() {
     val appOpenedEventResponse =
       webTestClient
         .post()
@@ -71,8 +70,8 @@ class AnalyticsControllerIntegrationTest : RedisAndMongoFixture() {
         .returnResult()
 
     val rawSessionId = appOpenedEventResponse.responseBody!!.sessionId
-    val sessionId = SessionId(UUID.fromString(rawSessionId))
-    assertThat(appOpenedEventRepository.existsBySessionId(sessionId).block()).isTrue()
+    val sessionId = UUID.fromString(rawSessionId)
+    assertThat(appOpenedEventRepository.existsBySessionId(sessionId)).isTrue()
 
     webTestClient
       .post()

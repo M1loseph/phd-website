@@ -8,7 +8,7 @@ value class SessionIdDto(
   val value: UUID,
 ) {
   companion object {
-    fun fromModel(sessionId: SessionId) = SessionIdDto(value = sessionId.rawValue)
+    fun fromModel(sessionId: SessionId) = SessionIdDto(value = sessionId)
   }
 }
 

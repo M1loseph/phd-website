@@ -33,7 +33,6 @@ dependencies {
   implementation(libs.micrometer.registry.prometheus)
 
   implementation(libs.kotlinx.coroutines.reactor)
-  implementation(libs.jakarta.validation.api)
 
   implementation(libs.jedis)
 

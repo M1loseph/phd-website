@@ -10,13 +10,12 @@ mockito = "6.1.0"
 [libraries]
 spring-boot-starter-webflux = { group = "org.springframework.boot", name = "spring-boot-starter-webflux" }
 reactor-kotlin-extensions = { group = "io.projectreactor.kotlin", name = "reactor-kotlin-extensions" }
-jackson-module-kotlin = { group = "com.fasterxml.jackson.module", name = "jackson-module-kotlin" }
+jackson-module-kotlin = { group = "tools.jackson.module", name = "jackson-module-kotlin" }
 spring-boot-starter-validation = { group = "org.springframework.boot", name = "spring-boot-starter-validation" }
 spring-boot-starter-actuator = { group = "org.springframework.boot", name = "spring-boot-starter-actuator" }
 spring-boot-starter-data-mongodb-reactive = { group = "org.springframework.boot", name = "spring-boot-starter-data-mongodb-reactive" }
 micrometer-registry-prometheus = { group = "io.micrometer", name = "micrometer-registry-prometheus" }
 kotlinx-coroutines-reactor = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-reactor" }
-jakarta-validation-api = { group = "jakarta.validation", name = "jakarta.validation-api" }
 jedis = { group = "redis.clients", name = "jedis", version.ref = "jedis" }
 
 spring-boot-starter-test = { group = "org.springframework.boot", name = "spring-boot-starter-test" }

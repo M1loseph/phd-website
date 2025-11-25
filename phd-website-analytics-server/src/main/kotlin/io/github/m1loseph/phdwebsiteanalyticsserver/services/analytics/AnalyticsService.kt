@@ -10,11 +10,13 @@ import io.github.m1loseph.phdwebsiteanalyticsserver.services.analytics.model.Pag
 import io.github.m1loseph.phdwebsiteanalyticsserver.services.analytics.model.PageOpenedEvent
 import io.github.m1loseph.phdwebsiteanalyticsserver.services.analytics.model.SessionId
 import io.github.m1loseph.phdwebsiteanalyticsserver.services.analytics.model.UserAgentName
+import io.github.m1loseph.phdwebsiteanalyticsserver.services.analytics.model.UserSession
 import kotlinx.coroutines.reactor.awaitSingle
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.time.Clock
+import java.time.Instant
 import java.util.UUID
 
 @Service
@@ -28,7 +30,7 @@ class AnalyticsService(
     createAppOpenedEventDto: CreateAppOpenedEventDto,
     userAgent: UserAgentName?,
   ): SessionId {
-    val sessionId = SessionId(UUID.randomUUID())
+    val sessionId = UUID.randomUUID()
     val appVersion = appVersionParser.parse(createAppOpenedEventDto.appVersion)
     val entity =
       AppOpenedEvent(
@@ -49,8 +51,8 @@ class AnalyticsService(
   }
 
   suspend fun persistPageOpenedEvent(createPageOpenedEventDto: CreatePageOpenedEventDto): PageOpenedEvent {
-    val sessionId = SessionId(createPageOpenedEventDto.sessionId.value)
-    if (!appOpenedEventRepository.existsBySessionId(sessionId).awaitSingle()) {
+    val sessionId = createPageOpenedEventDto.sessionId.value
+    if (!appOpenedEventRepository.existsBySessionId(sessionId)) {
       throw SessionNotFoundException(sessionId)
     }
     val entity =
@@ -65,10 +67,28 @@ class AnalyticsService(
             PageNameDto.TEACHING -> PageName.TEACHING
           },
         insertedAt = serverClock.instant(),
-        sessionId = SessionId(createPageOpenedEventDto.sessionId.value),
+        sessionId = createPageOpenedEventDto.sessionId.value,
       )
     logger.info("Saving PageOpenedEvent event: {}", entity)
     return pageOpenedEventRepository.save(entity).awaitSingle()
+  }
+
+  suspend fun findSessionsBetweenDates(
+    from: Instant,
+    to: Instant,
+  ): List<UserSession> {
+    val sessions = appOpenedEventRepository.findByInsertedAtBetween(from, to)
+    val pageEventsGrouped =
+      pageOpenedEventRepository
+        .findBySessionIdIn(sessions.map { it.sessionId })
+        .groupBy { it.sessionId }
+
+    return sessions.map { appOpenedEvent ->
+      UserSession(
+        appOpenedEvent = appOpenedEvent,
+        pageOpenedEvents = (pageEventsGrouped[appOpenedEvent.sessionId] ?: emptyList()).sortedBy { it.eventTime },
+      )
+    }
   }
 
   companion object {
