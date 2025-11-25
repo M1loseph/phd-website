@@ -1,6 +1,9 @@
 spring:
   profiles:
     default: local
+  mongodb:
+    representation:
+      uuid: java-legacy
 web:
   limiting:
     fullBucketExpiration: PT1M

@@ -29,7 +29,7 @@ class AnalyticsController(
         createAppOpenedEvent,
         UserAgentName.fromNullable(userAgent),
       )
-    val response = AppOpenedEventResponse(sessionId.rawValue.toString())
+    val response = AppOpenedEventResponse(sessionId.toString())
     return ResponseEntity(response, HttpStatus.CREATED)
   }
 

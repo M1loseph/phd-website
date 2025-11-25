@@ -4,19 +4,16 @@ import fixture.RedisAndMongoFixture
 import io.github.m1loseph.phdwebsiteanalyticsserver.services.limiting.impl.IpAddressBucketId
 import io.github.m1loseph.phdwebsiteanalyticsserver.services.limiting.impl.TokenBucketRepository
 import org.assertj.core.api.Assertions.assertThat
-import org.hamcrest.core.IsEqual
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.SpringBootTest.UseMainMethod
+import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient
 import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.reactive.server.WebTestClient
-import org.testcontainers.junit.jupiter.Testcontainers
 
-@Testcontainers
 @SpringBootTest(useMainMethod = UseMainMethod.ALWAYS)
 @AutoConfigureWebTestClient
 @ActiveProfiles("limiting-filter-test")
@@ -78,7 +75,7 @@ class LimitingFilterIntegrationTest : RedisAndMongoFixture() {
         ).header("x-forwarded-for", X_FORWARDED_FOR_HEADER_VALUE)
         .exchange()
         .expectStatus()
-        .value(IsEqual(201))
+        .value { assertThat(it).isEqualTo(201) }
     }
 
     webTestClient
@@ -87,11 +84,9 @@ class LimitingFilterIntegrationTest : RedisAndMongoFixture() {
       .header("x-forwarded-for", X_FORWARDED_FOR_HEADER_VALUE)
       .exchange()
       .expectStatus()
-      .value(IsEqual(200))
-  }
-
-  companion object {
-    const val ALLOWED_REQUESTS_WITHOUT_BLOCKING = 5
-    const val X_FORWARDED_FOR_HEADER_VALUE = "200.200.200.200"
+      .value { assertThat(it).isEqualTo(200) }
   }
 }
+
+const val ALLOWED_REQUESTS_WITHOUT_BLOCKING = 5
+const val X_FORWARDED_FOR_HEADER_VALUE = "200.200.200.200"

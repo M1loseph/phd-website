@@ -1,28 +1,28 @@
 [versions]
 kotlin = "2.2.21"
-spring-boot = "3.5.7"
+spring-boot = "4.0.0"
 jmh-plugin = "0.7.3"
 spotless = "8.1.0"
-jib = "3.4.5"
-jedis = "7.0.0"
+jib = "3.5.1"
+jedis = "7.1.0"
 mockito = "6.1.0"
 
 [libraries]
 spring-boot-starter-webflux = { group = "org.springframework.boot", name = "spring-boot-starter-webflux" }
 reactor-kotlin-extensions = { group = "io.projectreactor.kotlin", name = "reactor-kotlin-extensions" }
-jackson-module-kotlin = { group = "com.fasterxml.jackson.module", name = "jackson-module-kotlin" }
+jackson-module-kotlin = { group = "tools.jackson.module", name = "jackson-module-kotlin" }
 spring-boot-starter-validation = { group = "org.springframework.boot", name = "spring-boot-starter-validation" }
 spring-boot-starter-actuator = { group = "org.springframework.boot", name = "spring-boot-starter-actuator" }
 spring-boot-starter-data-mongodb-reactive = { group = "org.springframework.boot", name = "spring-boot-starter-data-mongodb-reactive" }
 micrometer-registry-prometheus = { group = "io.micrometer", name = "micrometer-registry-prometheus" }
 kotlinx-coroutines-reactor = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-reactor" }
-jakarta-validation-api = { group = "jakarta.validation", name = "jakarta.validation-api" }
 jedis = { group = "redis.clients", name = "jedis", version.ref = "jedis" }
 
 spring-boot-starter-test = { group = "org.springframework.boot", name = "spring-boot-starter-test" }
+spring-boot-starter-webflux-test = { group = "org.springframework.boot", name = "spring-boot-starter-webflux-test" }
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test" }
 reactor-test = { group = "io.projectreactor", name = "reactor-test" }
-test-containers = { group = "org.testcontainers", name = "junit-jupiter" }
+test-containers = { group = "org.testcontainers", name = "testcontainers-junit-jupiter" }
 mockito-kotlin = { group = "org.mockito.kotlin", name = "mockito-kotlin", version.ref = "mockito" }
 
 [plugins]

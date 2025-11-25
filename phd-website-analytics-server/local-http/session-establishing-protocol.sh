@@ -4,7 +4,7 @@ set -e
 SESSION_ID=$(curl -X POST \
   -H 'content-type: application/json' \
   -H 'x-forwarded-for: 200.200.200.200' \
-  --data '{ "environment": "pwr_server", "eventTime": "2020-10-10T10:10:10.000Z" }' \
+  --data '{ "environment": "pwr_server", "eventTime": "2020-10-10T10:10:10.000Z", "appVersion": "1.0" }' \
   --silent \
   http://localhost:10000/api/v1/analytics/appOpened | jq .sessionId)
 
