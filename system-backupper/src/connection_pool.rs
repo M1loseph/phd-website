@@ -1,12 +1,11 @@
+use anyhow::{Error, Result};
+use rusqlite::Connection;
 use std::{
     collections::HashMap,
     fs,
     path::Path,
     sync::{Mutex, MutexGuard},
 };
-
-use anyhow::{Error, Result};
-use rusqlite::Connection;
 
 pub struct ConnectionPool {
     connection_pool: HashMap<u32, Mutex<Connection>>,
