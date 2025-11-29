@@ -1,5 +1,5 @@
 mod cron_jobs;
-mod mongodb_job;
+mod scheduled_backup_job;
 
 pub use cron_jobs::CronJobs;
-pub use mongodb_job::ScheduledBackupJob;
+pub use scheduled_backup_job::ScheduledBackupJob;

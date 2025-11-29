@@ -1,9 +1,6 @@
 use std::sync::Arc;
-
 use log::{error, info};
-
 use crate::{model::BackupType, services::BackuppingService};
-
 use super::cron_jobs::Task;
 
 pub struct ScheduledBackupJob {
@@ -22,7 +19,7 @@ impl ScheduledBackupJob {
 
 impl Task for ScheduledBackupJob {
     fn run_task(&self) {
-        info!("Starting a scheduled mongodb full backup task");
+        info!("Starting a scheduled full backup task for target: {}", self.backup_target_name);
         match self
             .backupping_service
             .create_backup(&self.backup_target_name, BackupType::Scheduled)
