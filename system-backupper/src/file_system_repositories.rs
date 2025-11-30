@@ -1,12 +1,3 @@
-use std::{
-    error::Error as StdError,
-    fmt::{Debug, Display},
-    fs::{self, File},
-    io::{ErrorKind, Write},
-    num::ParseIntError,
-    path::Path,
-};
-
 use crate::{
     connection_pool::ConnectionPool,
     model::{
@@ -18,6 +9,14 @@ use crate::{errorstack::to_error_stack, model::BackupTarget};
 use log::info;
 use rusqlite::Error as RustqliteError;
 use rusqlite::{params, ErrorCode, Row};
+use std::{
+    error::Error as StdError,
+    fmt::{Debug, Display},
+    fs::{self, File},
+    io::{ErrorKind, Write},
+    num::ParseIntError,
+    path::Path,
+};
 
 static MONGODB_DIR: &str = "mongodb";
 static POSTGRES_DIR: &str = "postgres";

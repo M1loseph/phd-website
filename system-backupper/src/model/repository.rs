@@ -1,8 +1,7 @@
-use std::fmt::Display;
-use std::{error::Error as StdError, fmt::Debug};
-
 use super::{Backup, BackupId, BackupMetadata};
 use crate::errorstack::to_error_stack;
+use std::fmt::Display;
+use std::{error::Error as StdError, fmt::Debug};
 
 pub enum RepositoryError {
     IdAlreadyExists { id: u64 },
