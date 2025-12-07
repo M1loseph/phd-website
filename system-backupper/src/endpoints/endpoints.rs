@@ -116,8 +116,7 @@ async fn configured_targets_read_all(
         .map(|target| {
             let host = Url::parse(&target.connection_string)
                 .ok()
-                .map(|uri| uri.host_str().map(|host| host.to_string()))
-                .flatten();
+                .and_then(|uri| uri.host_str().map(|host| host.to_string()));
             BackupTargetResponse {
                 host,
                 name: target.target_name.clone(),
