@@ -224,22 +224,22 @@ mod tests {
     use chrono::DateTime;
     use serde_json::json;
 
-    struct BackuppingServiceMock<'a> {
+    struct BackuppingServiceMock {
         create_backup_mock:
             Option<fn(&str, BackupType) -> Result<BackupMetadata, BackupCreateError>>,
         read_all_backups_mock: Option<fn() -> Result<Vec<BackupMetadata>, BackupFindError>>,
         restore_backup_mock: Option<fn(&str, u64, bool) -> Result<(), BackupRestoreError>>,
-        read_all_configured_targets_mock: Option<fn() -> &'a Vec<ConfiguredBackupTarget>>,
+        configured_targets: Option<Vec<ConfiguredBackupTarget>>,
         check_if_target_is_healthy_mock: Option<fn(&str) -> Result<bool, BackupHealthCheckError>>,
     }
 
-    impl BackuppingServiceMock<'_> {
+    impl BackuppingServiceMock {
         fn new() -> Self {
             Self {
                 create_backup_mock: None,
                 read_all_backups_mock: None,
                 restore_backup_mock: None,
-                read_all_configured_targets_mock: None,
+                configured_targets: None,
                 check_if_target_is_healthy_mock: None,
             }
         }
@@ -260,6 +260,11 @@ mod tests {
             self
         }
 
+        fn with_configured_targets(mut self, targets: Vec<ConfiguredBackupTarget>) -> Self {
+            self.configured_targets = Some(targets);
+            self
+        }
+
         fn with_check_if_target_is_healthy_mock(
             mut self,
             mock: fn(&str) -> Result<bool, BackupHealthCheckError>,
@@ -269,7 +274,7 @@ mod tests {
         }
     }
 
-    impl BackuppingService for BackuppingServiceMock<'_> {
+    impl BackuppingService for BackuppingServiceMock {
         fn create_backup(
             &self,
             target_name: &str,
@@ -302,9 +307,9 @@ mod tests {
         }
 
         fn read_all_configured_targets(&self) -> &Vec<ConfiguredBackupTarget> {
-            (self
-                .read_all_configured_targets_mock
-                .expect("You did not mock read_all_configured_targets method"))()
+            self.configured_targets
+                .as_ref()
+                .expect("You did not mock read_all_configured_targets method")
         }
 
         fn check_if_target_is_healthy(
@@ -505,5 +510,42 @@ mod tests {
 
         // then
         response.assert_status(StatusCode::OK);
+    }
+
+    #[tokio::test]
+    async fn should_return_all_configured_targets() {
+        // given
+        let service = Arc::new(BackuppingServiceMock::new().with_configured_targets(vec![
+            ConfiguredBackupTarget {
+                target_name: "testTarget1".into(),
+                target_kind: BackupTargetKind::MongoDB,
+                connection_string: "mongodb://localhost:27017".into(),
+            },
+            ConfiguredBackupTarget {
+                target_name: "testTarget2".into(),
+                target_kind: BackupTargetKind::Postgres,
+                connection_string: "postgresql://user:password@myremote:5432/db".into(),
+            },
+        ]));
+
+        let test_server = TestServer::new(router_builder(service)).unwrap();
+
+        // when
+        let response = test_server.get("/api/v1/targets").await;
+
+        // then
+        response.assert_status(StatusCode::OK);
+        response.assert_json(&json!([
+            {
+                "name": "testTarget1",
+                "kind": "MONGODB",
+                "host": "localhost"
+            },
+            {
+                "name": "testTarget2",
+                "kind": "POSTGRES",
+                "host": "myremote"
+            }
+        ]));
     }
 }
