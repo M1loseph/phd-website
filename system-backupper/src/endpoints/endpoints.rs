@@ -213,9 +213,11 @@ mod tests {
 
     use super::*;
     use crate::{
-        lock::LockError, model::{
+        lock::LockError,
+        model::{
             BackupFormat, BackupMetadata, BackupTarget, BackupTargetKind, ConfiguredBackupTarget,
-        }, services::BackupFindError
+        },
+        services::BackupFindError,
     };
     use axum::{routing::post, Router};
     use axum_test::TestServer;
@@ -247,6 +249,14 @@ mod tests {
             mock: fn(&str, BackupType) -> Result<BackupMetadata, BackupCreateError>,
         ) -> Self {
             self.create_backup_mock = Some(mock);
+            self
+        }
+
+        fn with_restore_backup_mock(
+            mut self,
+            mock: fn(&str, u64, bool) -> Result<(), BackupRestoreError>,
+        ) -> Self {
+            self.restore_backup_mock = Some(mock);
             self
         }
 
@@ -449,5 +459,51 @@ mod tests {
         // then
         response.assert_status(StatusCode::OK);
         response.assert_text("OK");
+    }
+
+    #[tokio::test]
+    async fn should_restore_backup_without_drop() {
+        // given
+        let service = Arc::new(BackuppingServiceMock::new().with_restore_backup_mock(
+            |target_name, backup_id, drop| {
+                assert_eq!(target_name, "testTarget");
+                assert_eq!(backup_id, 123);
+                assert_eq!(drop, false);
+                Ok(())
+            },
+        ));
+
+        let test_server = TestServer::new(router_builder(service)).unwrap();
+
+        // when
+        let response = test_server
+            .post("/api/v1/targets/testTarget/backups/123")
+            .await;
+
+        // then
+        response.assert_status(StatusCode::OK);
+    }
+
+    #[tokio::test]
+    async fn should_restore_backup_with_drop() {
+        // given
+        let service = Arc::new(BackuppingServiceMock::new().with_restore_backup_mock(
+            |target_name, backup_id, drop| {
+                assert_eq!(target_name, "testTarget");
+                assert_eq!(backup_id, 123);
+                assert_eq!(drop, true);
+                Ok(())
+            },
+        ));
+
+        let test_server = TestServer::new(router_builder(service)).unwrap();
+
+        // when
+        let response = test_server
+            .post("/api/v1/targets/testTarget/backups/123?drop=true")
+            .await;
+
+        // then
+        response.assert_status(StatusCode::OK);
     }
 }
