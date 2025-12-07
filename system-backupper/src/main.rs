@@ -11,16 +11,9 @@ mod services;
 
 use anyhow::Result;
 use app_config::AppConfig;
-use axum::{
-    routing::{get, post},
-    Router,
-};
 use connection_pool::ConnectionPool;
 use dotenv;
-use endpoints::{
-    backups_create, backups_read_all, configured_targets_check_is_healthy,
-    configured_targets_read_all, configured_targets_restore_backup, healthy,
-};
+use endpoints::router_builder;
 use file_system_repositories::{FileSystemBackupRepository, SQLiteBackupMetadataRepository};
 use jobs::{CronJobs, ScheduledBackupJob};
 use lock::LockManager;
@@ -80,20 +73,7 @@ async fn main() -> Result<()> {
         cron_jobs.start(job.cron_schedule, task)?;
     }
 
-    let router = Router::new()
-        .route("/api/v1/targets", get(configured_targets_read_all))
-        .route(
-            "/api/v1/targets/{target_name}/backups/{backup_id}",
-            post(configured_targets_restore_backup),
-        )
-        .route(
-            "/api/v1/targets/{target_name}/health",
-            post(configured_targets_check_is_healthy),
-        )
-        .route("/api/v1/backups", get(backups_read_all))
-        .route("/api/v1/backups/{target_name}", post(backups_create))
-        .route("/internal/status/health", get(healthy))
-        .with_state(backupping_service.clone());
+    let router = router_builder(backupping_service.clone());
 
     let bind_address = format!("0.0.0.0:{}", app_config.server_port);
     let listener = TcpListener::bind(bind_address).await?;
