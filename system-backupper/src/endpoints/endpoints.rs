@@ -252,6 +252,14 @@ mod tests {
             self
         }
 
+        fn with_read_all_backups_mock(
+            mut self,
+            mock: fn() -> Result<Vec<BackupMetadata>, BackupFindError>,
+        ) -> Self {
+            self.read_all_backups_mock = Some(mock);
+            self
+        }
+
         fn with_restore_backup_mock(
             mut self,
             mock: fn(&str, u64, bool) -> Result<(), BackupRestoreError>,
@@ -545,6 +553,69 @@ mod tests {
                 "name": "testTarget2",
                 "kind": "POSTGRES",
                 "host": "myremote"
+            }
+        ]));
+    }
+
+    #[tokio::test]
+    async fn should_return_all_backups() {
+        // given
+        let service = Arc::new(BackuppingServiceMock::new().with_read_all_backups_mock(|| {
+            Ok(vec![
+                BackupMetadata {
+                    backup_id: 1,
+                    created_at: DateTime::from_str("2023-03-15T12:00:00Z").unwrap(),
+                    backup_size_bytes: 1024,
+                    backup_target: BackupTarget {
+                        kind: BackupTargetKind::MongoDB,
+                        name: "testTarget1".into(),
+                    },
+                    backup_type: BackupType::Manual,
+                    backup_format: BackupFormat::ArchiveGz,
+                },
+                BackupMetadata {
+                    backup_id: 2,
+                    created_at: DateTime::from_str("2023-03-16T12:00:00Z").unwrap(),
+                    backup_size_bytes: 2048,
+                    backup_target: BackupTarget {
+                        kind: BackupTargetKind::Postgres,
+                        name: "testTarget2".into(),
+                    },
+                    backup_type: BackupType::Scheduled,
+                    backup_format: BackupFormat::ArchiveGz,
+                },
+            ])
+        }));
+
+        let test_server = TestServer::new(router_builder(service)).unwrap();
+
+        // when
+        let response = test_server.get("/api/v1/backups").await;
+
+        // then
+        response.assert_status(StatusCode::OK);
+        response.assert_json(&json!([
+            {
+                "backup_id": 1,
+                "created_at": "2023-03-15T12:00:00Z",
+                "backup_size_bytes": 1024,
+                "backup_target": {
+                    "kind": "MONGODB",
+                    "name": "testTarget1"
+                },
+                "backup_type": "MANUAL",
+                "backup_format": "ARCHIVE_GZ"
+            },
+            {
+                "backup_id": 2,
+                "created_at": "2023-03-16T12:00:00Z",
+                "backup_size_bytes": 2048,
+                "backup_target": {
+                    "kind": "POSTGRES",
+                    "name": "testTarget2"
+                },
+                "backup_type": "SCHEDULED",
+                "backup_format": "ARCHIVE_GZ"
             }
         ]));
     }
