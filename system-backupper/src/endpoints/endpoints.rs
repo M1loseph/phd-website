@@ -57,8 +57,8 @@ async fn backups_read_all(
 ) -> Result<Json<Vec<ArchiveBackupResponse>>, (StatusCode, Json<ApiError>)> {
     info!("Got request to list all backups");
     match backupping_service.read_all_backups() {
-        Ok(mongo_backups) => {
-            let response: Vec<ArchiveBackupResponse> = mongo_backups
+        Ok(backups) => {
+            let response: Vec<ArchiveBackupResponse> = backups
                 .into_iter()
                 .map(|backup| ArchiveBackupResponse::from(backup))
                 .collect();
@@ -142,7 +142,7 @@ async fn configured_targets_restore_backup(
             r#""drop" parameter is present and set to true - restoring backup will perform drop operation"#
         );
     }
-    info!("Starting backup procedure. Backup ID = {backup_id}");
+    info!("Starting restore backup procedure. Requested backup ID = {backup_id}");
     match backupping_service.restore_backup(&target_name, backup_id, drop) {
         Ok(()) => Ok(StatusCode::OK),
         Err(err) => match &err {
@@ -219,7 +219,6 @@ mod tests {
         },
         services::BackupFindError,
     };
-    use axum::{routing::post, Router};
     use axum_test::TestServer;
     use chrono::DateTime;
     use serde_json::json;
@@ -409,14 +408,7 @@ mod tests {
                 Ok(true)
             });
 
-        let router = Router::new()
-            .route(
-                "/api/v1/targets/{target_name}/health",
-                post(configured_targets_check_is_healthy),
-            )
-            .with_state(Arc::new(backupping_service_mock));
-
-        let server = TestServer::new(router).unwrap();
+        let server = TestServer::new(router_builder(Arc::new(backupping_service_mock))).unwrap();
 
         // when
         let response = server.post("/api/v1/targets/testTarget/health").await;
@@ -440,14 +432,7 @@ mod tests {
                 })
             });
 
-        let router = Router::new()
-            .route(
-                "/api/v1/targets/{target_name}/health",
-                post(configured_targets_check_is_healthy),
-            )
-            .with_state(Arc::new(backupping_service_mock));
-
-        let server = TestServer::new(router).unwrap();
+        let server = TestServer::new(router_builder(Arc::new(backupping_service_mock))).unwrap();
 
         // when
         let response = server.post("/api/v1/targets/testTarget/health").await;
