@@ -436,4 +436,18 @@ mod tests {
             "message": "Backup target testTarget is undergoing another operation."
         }));
     }
+
+    #[tokio::test]
+    async fn should_return_healthy_status() {
+        // given
+        let service = Arc::new(BackuppingServiceMock::new());
+        let test_server = TestServer::new(router_builder(service)).unwrap();
+
+        // when
+        let response = test_server.get("/internal/status/health").await;
+
+        // then
+        response.assert_status(StatusCode::OK);
+        response.assert_text("OK");
+    }
 }
