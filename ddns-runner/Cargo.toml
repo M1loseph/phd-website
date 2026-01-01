@@ -8,17 +8,17 @@ dotenv = { path = "../lib/dotenv" }
 migrations = { path = "../lib/migrations", features = [ "postgres" ] }
 # TODO: minimize the feature list
 tokio = { version = "1", features = ["full"] }
-reqwest = { version = "0.12" }
-log = "0.4.21"
+reqwest = { version = "0.13" }
+log = "0.4.29"
 env_logger = "0.11.2"
 prometheus = "0.14.0"
 sysinfo = "0.37.2"
 tokio-postgres = "0.7.11"
 regex = "1.10.6"
 sha2 = "0.10.8"
-signal-hook = "0.3.17"
+signal-hook = "0.4.1"
 anyhow = "1.0.100"
-axum = "0.8.7"
+axum = "0.8.8"
 
 [dev-dependencies]
-axum-test = "18.3.0"
+axum-test = "18.5.0"
