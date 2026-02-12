@@ -29,5 +29,5 @@ data class AppOpenedEvent(
   @Indexed
   val sessionId: SessionId,
   val environment: Environment,
-  val appVersion: AppVersion?,
+  val appVersion: AppVersion,
 )
