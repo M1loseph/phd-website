@@ -40,12 +40,4 @@ updates:
       all:
         patterns:
           - "*"
-  - package-ecosystem: "cargo"
-    directory: "/system-backupper"
-    schedule:
-      interval: "monthly"
-    groups:
-      all:
-        patterns:
-          - "*"
 
