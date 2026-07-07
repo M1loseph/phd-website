@@ -25,14 +25,6 @@ updates:
         patterns:
           - "*"
   - package-ecosystem: "cargo"
-    directory: "/ddns-runner"
-    schedule:
-      interval: "monthly"
-    groups:
-      all:
-        patterns:
-          - "*"
-  - package-ecosystem: "cargo"
     directory: "/duck-dns-server-mock"
     schedule:
       interval: "monthly"
