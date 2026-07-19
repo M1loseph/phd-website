@@ -19,7 +19,7 @@ class NewCardLink extends StatelessWidget {
           Padding(padding: padding, child: child),
           Align(
             alignment: Alignment.bottomRight,
-            child: Icon(FontAwesomeIcons.link, size: iconSize,),
+            child: Icon(FontAwesomeIcons.link.data, size: iconSize,),
           ),
         ],
       ),

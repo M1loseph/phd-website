@@ -26,7 +26,7 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: master # https://github.com/subosito/flutter-action/issues/345
-          flutter-version: '3.35.7' # https://github.com/subosito/flutter-action/issues/342
+          flutter-version: '3.44.6' # https://github.com/subosito/flutter-action/issues/342
           # flutter-version-file: 'phd_website/pubspec.yaml' 
 
       - name: Run build script
