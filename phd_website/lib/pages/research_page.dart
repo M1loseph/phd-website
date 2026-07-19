@@ -192,7 +192,7 @@ class PublicationWidget extends StatelessWidget {
             archiveUri != null
                 ? Row(
                     children: [
-                      const Icon(FontAwesomeIcons.newspaper),
+                      Icon(FontAwesomeIcons.newspaper.data),
                       const SizedBox(width: 10),
                       Flexible(child: BodyText('Preprint')),
                       const SizedBox(width: 10),
@@ -207,7 +207,7 @@ class PublicationWidget extends StatelessWidget {
                 : SizedBox.shrink(),
             Row(
               children: [
-                const Icon(FontAwesomeIcons.calendar),
+                Icon(FontAwesomeIcons.calendar.data),
                 const SizedBox(width: 10),
                 Flexible(
                   child: Text(
@@ -265,7 +265,7 @@ class ConferenceWidget extends StatelessWidget {
             ),
             Row(
               children: [
-                const Icon(FontAwesomeIcons.calendar),
+                Icon(FontAwesomeIcons.calendar.data),
                 const SizedBox(width: 10),
                 Flexible(
                   child: Text(
@@ -282,7 +282,7 @@ class ConferenceWidget extends StatelessWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Icon(FontAwesomeIcons.award),
+                Icon(FontAwesomeIcons.award.data),
                 const SizedBox(width: 10),
                 Flexible(
                   child: Text(
